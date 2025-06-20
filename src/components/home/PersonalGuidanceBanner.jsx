@@ -16,12 +16,12 @@ const PersonalGuidanceBanner = () => {
   };
 
   return (
-<div className="relative h-[580px] xs:h-[580px] sm:h-[580px] md:h-[580px] lg:h-[580px] xl:h-[650px] -mt-10">
+<div className="relative h-[400px] xs:h-[450px] sm:h-[500px] md:h-[550px] lg:h-[580px] xl:h-[650px] -mt-10">
   {/* Background images - different for mobile and desktop */}
   <picture>
     {/* Mobile image */}
     <source 
-      srcSet="/home/phonebg.png" 
+      srcSet="/home/bg (2) 3 1 (1).png" 
       media="(max-width: 639px)"
       className="absolute top-0 left-0 w-full h-full object-cover z-0"
     />

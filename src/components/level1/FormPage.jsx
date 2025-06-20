@@ -148,8 +148,8 @@ const validateForm = (formData, frontImage, backImage, profileImage) => {
     "dob",
     "occupation",
     "levelName",
-    "courseDetailVenue",
-    "timeslot",
+    // "courseDetailVenue",
+    // "timeslot",
   ];
 
   requiredFields.forEach((field) => {
@@ -518,6 +518,7 @@ const useFormData = (initialData) => {
   return { formData, updateField, updateMultipleFields, setFormData };
 };
 
+
 // Main Form Component
 function FormPage({ onClose = () => {} }) {
   const { formData, updateField, updateMultipleFields } = useFormData({
@@ -659,57 +660,63 @@ function FormPage({ onClose = () => {} }) {
     }
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError(null);
+ const handleSubmit = async (e) => {
+  e.preventDefault();
+  setError(null);
 
-    // Validate form
-    const errors = validateForm(formData, frontImage, backImage, profileImage);
-    if (Object.keys(errors).length > 0) {
-      setFormErrors(errors);
-      setError("Please fix the errors below before submitting");
-      // Scroll to first error
-      const firstErrorField = document.querySelector(".border-red-500");
-      if (firstErrorField) {
-        firstErrorField.scrollIntoView({ behavior: "smooth", block: "center" });
-      }
-      return;
+  // Validate form
+  const errors = validateForm(formData, frontImage, backImage, profileImage);
+  if (Object.keys(errors).length > 0) {
+    console.log("Form validation errors:", errors); // Log validation errors
+    setFormErrors(errors);
+    setError("Please fix the errors below before submitting");
+    const firstErrorField = document.querySelector(".border-red-500");
+    if (firstErrorField) {
+      firstErrorField.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+    return;
+  }
+
+  try {
+    console.log("Preparing form submission...");
+
+    // Build FormData payload
+    const payload = buildFormDataPayload(
+      formData,
+      frontImageFile,
+      backImageFile,
+      profileImageFile
+    );
+
+    // Enhanced payload logging
+    console.log("Form Data Payload Contents:");
+    for (let [key, value] of payload.entries()) {
+      console.log(`${key}:`, value);
     }
 
-    try {
-      console.log("Preparing form submission...");
+    // Make actual API call
+    console.log("Making API request to:", API_CONFIG.baseURL + API_CONFIG.endpoints.registration);
+    const response = await makeRequest(() =>
+      apiService.submitRegistration(payload)
+    );
 
-      // Build FormData payload
-      const payload = buildFormDataPayload(
-        formData,
-        frontImageFile,
-        backImageFile,
-        profileImageFile
-      );
+    console.log("Registration successful - Full response:", response);
+    setShowThankYou(true);
 
-      // Log payload for debugging (don't log in production)
-      console.log("Form Data Payload:");
-      for (let [key, value] of payload.entries()) {
-        console.log(`${key}:`, value);
-      }
-
-      // Make actual API call
-      const response = await makeRequest(() =>
-        apiService.submitRegistration(payload)
-      );
-
-      console.log("Registration successful:", response);
-      setShowThankYou(true);
-
-      // Auto-close after 5 seconds
-      setTimeout(() => {
-        onClose();
-      }, 5000);
-    } catch (err) {
-      console.error("Registration failed:", err);
-      // Error is already set by the useApiCall hook
-    }
-  };
+    setTimeout(() => {
+      onClose();
+    }, 5000);
+  } catch (err) {
+    console.error("Registration failed - Error details:", {
+      message: err.message,
+      stack: err.stack,
+      response: err.response, // In case the error has a response property
+    });
+    
+    // Set a more detailed error message
+    setError(`Submission failed: ${err.message || "Unknown error"}`);
+  }
+};
 
   const handleOverlayClick = (e) => {
     if (e.target === e.currentTarget) {

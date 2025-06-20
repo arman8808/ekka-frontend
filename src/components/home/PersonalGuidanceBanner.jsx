@@ -45,7 +45,7 @@ const PersonalGuidanceBanner = () => {
       whileInView="visible"
       viewport={{ once: true }}
     >
-      Experience Transformation breakthroughs with Ekaa certificate therapist
+      Experience Transformation breakthroughs with EKAA certificate therapist
     </motion.p>
 
     {/* Button */}

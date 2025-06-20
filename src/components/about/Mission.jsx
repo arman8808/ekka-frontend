@@ -29,7 +29,7 @@ function Mission() {
             Vision
           </h3>
           <p
-            className="text-[22px] font-medium leading-[33px] text-left"
+            className="text-[18px] font-normal leading-[33px] text-left"
             style={{ color: "#F6F6F6", fontFamily: "Poppins, sans-serif" }}
           >
             A world where every person lives with emotional clarity, inner
@@ -48,7 +48,7 @@ function Mission() {
             Mission
           </h3>
           <p
-            className="text-[22px]  font-medium leading-[33px] text-left"
+           className="text-[18px] font-normal leading-[33px] text-left"
             style={{ color: "#F6F6F6", fontFamily: "Poppins, sans-serif" }}
           >
             To spread self-healing and conscious living through professional

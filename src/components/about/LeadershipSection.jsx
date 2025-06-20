@@ -31,7 +31,7 @@ const LeadershipSection = () => {
 
         {/* Right: Image */}
         <img
-          src="/AbhishekKapadia.png"
+          src="/about/abhiskhek.png"
           alt="Abhishek Kapadia"
           className="w-full max-w-[431px] h-auto md:h-[428px] object-cover shadow-lg order-1 md:order-2"
         />
@@ -53,7 +53,7 @@ const LeadershipSection = () => {
      <div className="flex flex-col md:flex-row justify-between items-center gap-10 mt-12">
   {/* Left: Image */}
   <img
-    src="/about/image 11.svg"
+    src="/about/priya.png"
     alt="Priya KP"
     className="w-full max-w-[431px] h-auto md:h-[428px] object-cover shadow-lg"
   />

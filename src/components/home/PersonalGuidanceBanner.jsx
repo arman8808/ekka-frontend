@@ -21,7 +21,7 @@ const PersonalGuidanceBanner = () => {
   <picture>
     {/* Mobile image */}
     <source 
-      srcSet="/home/bg (2) 3 1 (1).png" 
+      srcSet="/home/bg (1)1.png" 
       media="(max-width: 639px)"
       className="absolute top-0 left-0 w-full h-full object-cover z-0"
     />

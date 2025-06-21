@@ -36,12 +36,12 @@ const Faq2 = () => {
           <h2 className="text-[#6E2D79] text-2xl md:text-3xl font-semibold mb-2">
             FAQs
           </h2>
-          {/* <p className="text-[#A35F93] text-base md:text-lg">
+          <p className="text-[#A35F93] text-base md:text-lg">
             Answers to what you're thinking.
-          </p> */}
+          </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 py-8">
+        {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 py-8">
           {questions.map((faq, index) => (
             <motion.div
               key={faq.id}
@@ -54,12 +54,12 @@ const Faq2 = () => {
               <h3 className="text-[#6E2D79] font-semibold text-[24px] mb-2 flex items-start">
                 <span className="mr-2">{index + 1}.</span> {faq.question}
               </h3>
-              {/* <p className="text-[#A35F93] text-[18px] leading-relaxed">
+              <p className="text-[#A35F93] text-[18px] leading-relaxed">
                 {faq.answer}
-              </p> */}
+              </p>
             </motion.div>
           ))}
-        </div>
+        </div> */}
       </div>
     </section>
   );

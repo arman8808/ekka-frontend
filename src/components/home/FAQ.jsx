@@ -163,9 +163,9 @@ const FAQ = () => {
             <h2 className="text-[20px] sm:text-[22px] md:text-[24px] lg:text-[24px] font-medium text-[#6E2D79] mb-2 sm:mb-3 lg:mb-4 leading-tight">
               FAQs
             </h2>
-            <p className="text-[14px]  sm:text-[14px] md:text-[18px] lg:text-[18px] text-[#A35F93] mb-4 sm:mb-6 lg:mb-8 max-w-sm sm:max-w-md lg:max-w-lg mx-auto leading-relaxed">
+            {/* <p className="text-[14px]  sm:text-[14px] md:text-[18px] lg:text-[18px] text-[#A35F93] mb-4 sm:mb-6 lg:mb-8 max-w-sm sm:max-w-md lg:max-w-lg mx-auto leading-relaxed">
               Answers to what you're thinking.
-            </p>
+            </p> */}
           </motion.div>
         </div>
 

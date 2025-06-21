@@ -36,9 +36,9 @@ const Faq2 = () => {
           <h2 className="text-[#6E2D79] text-2xl md:text-3xl font-semibold mb-2">
             FAQs
           </h2>
-          <p className="text-[#A35F93] text-base md:text-lg">
+          {/* <p className="text-[#A35F93] text-base md:text-lg">
             Answers to what you're thinking.
-          </p>
+          </p> */}
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 py-8">

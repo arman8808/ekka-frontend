@@ -95,7 +95,7 @@ const FAQ = () => {
             <span className="font-bold mr-2">{index + 1}.</span>
             {faq.question}
           </span>
-
+{/* 
           <span className="text-[#6E2D79] flex-shrink-0 transition-transform duration-200 hover:scale-110">
             {isOpen ? (
               <Minus
@@ -120,11 +120,11 @@ const FAQ = () => {
                 className="transition-transform duration-200"
               />
             )}
-          </span>
+          </span> */}
         </button>
 
         {/* Answer Content with Smooth Animation */}
-        <div
+        {/* <div
           id={`faq-answer-${index}`}
           className={`
                     overflow-hidden transition-all duration-300 ease-in-out
@@ -144,7 +144,7 @@ const FAQ = () => {
               {faq.answer}
             </p>
           </div>
-        </div>
+        </div> */}
       </article>
     );
   };

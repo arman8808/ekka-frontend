@@ -54,9 +54,9 @@ const Faq2 = () => {
               <h3 className="text-[#6E2D79] font-semibold text-[24px] mb-2 flex items-start">
                 <span className="mr-2">{index + 1}.</span> {faq.question}
               </h3>
-              <p className="text-[#A35F93] text-[18px] leading-relaxed">
+              {/* <p className="text-[#A35F93] text-[18px] leading-relaxed">
                 {faq.answer}
-              </p>
+              </p> */}
             </motion.div>
           ))}
         </div>

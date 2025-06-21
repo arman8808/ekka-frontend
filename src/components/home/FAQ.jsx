@@ -163,15 +163,13 @@ const FAQ = () => {
             <h2 className="text-[20px] sm:text-[22px] md:text-[24px] lg:text-[24px] font-medium text-[#6E2D79] mb-2 sm:mb-3 lg:mb-4 leading-tight">
               FAQs
             </h2>
-            {/* <p className="text-[14px]  sm:text-[14px] md:text-[18px] lg:text-[18px] text-[#A35F93] mb-4 sm:mb-6 lg:mb-8 max-w-sm sm:max-w-md lg:max-w-lg mx-auto leading-relaxed">
+            <p className="text-[14px]  sm:text-[14px] md:text-[18px] lg:text-[18px] text-[#A35F93] mb-4 sm:mb-6 lg:mb-8 max-w-sm sm:max-w-md lg:max-w-lg mx-auto leading-relaxed">
               Answers to what you're thinking.
-            </p> */}
+            </p>
           </motion.div>
         </div>
 
-        {/* FAQ Container */}
         <div className="w-full max-w-6xl mx-auto">
-          {/* Mobile & Small Tablet Layout - Single Column */}
           <div className="block lg:hidden space-y-4 sm:space-y-5 md:space-y-6">
             {questions.map((faq, index) => (
               <FAQItem
@@ -183,9 +181,8 @@ const FAQ = () => {
             ))}
           </div>
 
-          {/* Large Screen Layout - Two Columns */}
-          <div className="hidden lg:grid lg:grid-cols-2 lg:gap-6 xl:gap-8 2xl:gap-10">
-            {/* Left Column */}
+          {/* <div className="hidden lg:grid lg:grid-cols-2 lg:gap-6 xl:gap-8 2xl:gap-10">
+
             <div className="space-y-5 lg:space-y-6 xl:space-y-7">
               {questions
                 .filter((_, index) => index % 2 === 0)
@@ -213,7 +210,6 @@ const FAQ = () => {
                 })}
             </div>
 
-            {/* Right Column */}
             <div className="space-y-5 lg:space-y-6 xl:space-y-7">
               {questions
                 .filter((_, index) => index % 2 !== 0)
@@ -240,7 +236,7 @@ const FAQ = () => {
                   );
                 })}
             </div>
-          </div>
+          </div> */}
         </div>
       </div>
     </section>

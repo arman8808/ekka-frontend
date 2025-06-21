@@ -21,7 +21,7 @@ const HeroSection = () => {
           transition={{ duration: 1 }}
           className="text-[14px]  sm:text-[14px] md:text-[18px] lg:text-[18px] text-[#5C2166] max-w-3xl mb-10 w-full md:w-[796px] drop-shadow-md font-normal"
         >
-          Experience transformative training, workshops, and Healing pathways with EKAA.
+          Experience transformative training, workshops, and healing pathways with EKAA.
         </motion.p>
 
         <motion.div

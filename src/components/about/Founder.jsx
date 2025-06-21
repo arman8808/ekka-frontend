@@ -108,7 +108,7 @@ const Founder = () => {
   >
     <div className="w-full h-full overflow-hidden">
       <img
-        src="/about/Yuvraj.svg"
+        src="/about/yuvraj.png"
         alt="Dr. Yuvraj Kapadia"
         className="w-full h-full object-cover"
       />

@@ -49,6 +49,7 @@ import Layout from './components/layout/Layout';
 import AllRegistration from './pages/AllRegistration';
 import ContactsTable from './pages/ContactsTable';
 import PrivacyPolicy from './components/PrivacyPolicy';
+import FamilyConstellation from './pages/FamilyConstellation';
 
 function App() {
   return (
@@ -59,6 +60,7 @@ function App() {
         <Route path="/about" element={<AboutPage />} />
         <Route path="/contact-us" element={<ContactUs />} />
         <Route path="/decode" element={<DecodePage />} />
+        <Route path="/family-constellation" element={<FamilyConstellation />} />
         {/* Dynamic route for all levels */}
         <Route path="/level/:levelNumber" element={<DynamicLevelPage />} />
         <Route path='privacy-policy' element={<PrivacyPolicy/>}/>

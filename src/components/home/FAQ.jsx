@@ -170,7 +170,7 @@ const FAQ = () => {
         </div>
 
         <div className="w-full max-w-6xl mx-auto">
-          <div className="block lg:hidden space-y-4 sm:space-y-5 md:space-y-6">
+          {/* <div className="block lg:hidden space-y-4 sm:space-y-5 md:space-y-6">
             {questions.map((faq, index) => (
               <FAQItem
                 key={faq.id}
@@ -179,7 +179,7 @@ const FAQ = () => {
                 className="max-w-full"
               />
             ))}
-          </div>
+          </div> */}
 
           {/* <div className="hidden lg:grid lg:grid-cols-2 lg:gap-6 xl:gap-8 2xl:gap-10">
 

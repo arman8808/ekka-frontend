@@ -79,7 +79,7 @@ const courseData = [
       "Equip yourself with deep spiritual tools for advanced therapeutic transformation",
       "Introduction to Regression & Spiritual Hypnosis",
     ],
-    duration: "2 Day",
+    duration: "6 Day",
     skill: "All levels",
     buttonText: "Enroll Now",
     videoSrc:
@@ -98,7 +98,7 @@ const courseData = [
       "Gain tools to address spiritual roots of physical illnesses",
       "Techniques to Open Energy Channels and Prepare Therapy Space",
     ],
-    duration: "6 Day",
+    duration: "8 Day",
     skill: "All levels",
     buttonText: "Enroll Now",
     videoSrc:

@@ -1,7 +1,9 @@
 import React from "react";
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 
 const PersonalGuidanceBanner = () => {
+  const navigate=useNavigate()
   const fadeUpVariants = {
     hidden: { opacity: 0, y: 50 },
     visible: {
@@ -57,6 +59,7 @@ const PersonalGuidanceBanner = () => {
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true }}
+          onClick={()=>navigate('/privacy-policy')}
         >
           Find a Therapist Near Me
         </motion.button>

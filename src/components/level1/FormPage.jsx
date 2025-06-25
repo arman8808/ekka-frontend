@@ -377,10 +377,10 @@ const ThankYouMessage = () => (
   >
     <div className="mb-6">
       <CheckCircle className="mx-auto h-16 w-16 text-green-500 mb-4" />
-      <h2 className="text-3xl font-bold text-[#6E2D79] mb-4">THANK YOU</h2>
+      {/* <h2 className="text-3xl font-bold text-[#6E2D79] mb-4">THANK YOU</h2> */}
       <p className="text-lg text-gray-600 leading-relaxed">
-        Registration submitted successfully! One of our representatives will be
-        in contact with you shortly.
+        Thank you for Registration. Payment link has ben sent on your registered
+        Mail ID
       </p>
     </div>
   </div>
@@ -517,7 +517,6 @@ const useFormData = (initialData) => {
 
   return { formData, updateField, updateMultipleFields, setFormData };
 };
-
 
 // Main Form Component
 function FormPage({ onClose = () => {} }) {
@@ -660,63 +659,66 @@ function FormPage({ onClose = () => {} }) {
     }
   };
 
- const handleSubmit = async (e) => {
-  e.preventDefault();
-  setError(null);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError(null);
 
-  // Validate form
-  const errors = validateForm(formData, frontImage, backImage, profileImage);
-  if (Object.keys(errors).length > 0) {
-    console.log("Form validation errors:", errors); // Log validation errors
-    setFormErrors(errors);
-    setError("Please fix the errors below before submitting");
-    const firstErrorField = document.querySelector(".border-red-500");
-    if (firstErrorField) {
-      firstErrorField.scrollIntoView({ behavior: "smooth", block: "center" });
-    }
-    return;
-  }
-
-  try {
-    console.log("Preparing form submission...");
-
-    // Build FormData payload
-    const payload = buildFormDataPayload(
-      formData,
-      frontImageFile,
-      backImageFile,
-      profileImageFile
-    );
-
-    // Enhanced payload logging
-    console.log("Form Data Payload Contents:");
-    for (let [key, value] of payload.entries()) {
-      console.log(`${key}:`, value);
+    // Validate form
+    const errors = validateForm(formData, frontImage, backImage, profileImage);
+    if (Object.keys(errors).length > 0) {
+      console.log("Form validation errors:", errors); // Log validation errors
+      setFormErrors(errors);
+      setError("Please fix the errors below before submitting");
+      const firstErrorField = document.querySelector(".border-red-500");
+      if (firstErrorField) {
+        firstErrorField.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+      return;
     }
 
-    // Make actual API call
-    console.log("Making API request to:", API_CONFIG.baseURL + API_CONFIG.endpoints.registration);
-    const response = await makeRequest(() =>
-      apiService.submitRegistration(payload)
-    );
+    try {
+      console.log("Preparing form submission...");
 
-    console.log("Registration successful - Full response:", response);
-    setShowThankYou(true);
+      // Build FormData payload
+      const payload = buildFormDataPayload(
+        formData,
+        frontImageFile,
+        backImageFile,
+        profileImageFile
+      );
 
-    setTimeout(() => {
-      onClose();
-    }, 5000);
-  } catch (err) {
-    console.error("Registration failed - Error details:", {
-      message: err.message,
-      stack: err.stack,
-      response: err.response, // In case the error has a response property
-    });
-    
-    // Set a more detailed error message
-    setError(`Submission failed: ${err.message || "Unknown error"}`);
-  }
-};
+      // Enhanced payload logging
+      console.log("Form Data Payload Contents:");
+      for (let [key, value] of payload.entries()) {
+        console.log(`${key}:`, value);
+      }
+
+      // Make actual API call
+      console.log(
+        "Making API request to:",
+        API_CONFIG.baseURL + API_CONFIG.endpoints.registration
+      );
+      const response = await makeRequest(() =>
+        apiService.submitRegistration(payload)
+      );
+
+      console.log("Registration successful - Full response:", response);
+      setShowThankYou(true);
+
+      setTimeout(() => {
+        onClose();
+      }, 5000);
+    } catch (err) {
+      console.error("Registration failed - Error details:", {
+        message: err.message,
+        stack: err.stack,
+        response: err.response, // In case the error has a response property
+      });
+
+      // Set a more detailed error message
+      setError(`Submission failed: ${err.message || "Unknown error"}`);
+    }
+  };
 
   const handleOverlayClick = (e) => {
     if (e.target === e.currentTarget) {

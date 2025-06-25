@@ -6,7 +6,7 @@ import Header from "../components/Header";
 import Faq2 from "../components/decode/Faq2";
 import TestimonialCarousel from "../components/home/Testimonials";
 import { levelsData } from "../components/data/ich.levels.data";
-import FormPage from '../components/level1/FormPage';
+import FormPage from "../components/level1/FormPage";
 const ICHLevels = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const location = useLocation();
@@ -96,8 +96,7 @@ const ICHLevels = () => {
                                 >
                                   <div className="w-2 h-2 bg-[#C183B2] rounded-full mt-2 flex-shrink-0"></div>
                                   <span className="text-[#6E2D79] text-sm sm:text-base">
-                                    <p>{item.heading}</p>{" "}
-                                    {item.description}
+                                    <p>{item.heading}</p> {item.description}
                                   </span>
                                 </div>
                               ))}
@@ -433,11 +432,52 @@ const ICHLevels = () => {
           </div>
         </section>
       )}
+      <section className="">
+        <div className="max-w-5xl mx-auto">
+          <div className="mb-6">
+            <div className="flex items-center gap-2 mb-2">
+              {/* <div className="w-[40px] h-[40px] sm:w-[50px] sm:h-[50px] bg-[#C183B2] rounded-full flex items-center justify-center">
+                <span className="text-white font-semibold text-sm sm:text-base">
+                  3
+                </span>
+              </div> */}
+              <h2 className="text-[20px] sm:text-[24px] text-[#6E2D79] font-semibold">
+                Upcoming Workshop
+              </h2>
+            </div>
+            <hr className="mt-2 border-t border-purple-300" />
+          </div>
+
+          <div className="overflow-x-auto">
+            <table className="min-w-full border border-purple-300 rounded-lg overflow-hidden shadow-sm">
+              <thead>
+                <tr className="bg-[#6E2D79] text-white text-left text-sm sm:text-base">
+                  <th className="px-4 py-3 font-medium">City</th>
+                  <th className="px-4 py-3 font-medium">Venue</th>
+                  <th className="px-4 py-3 font-medium">Date</th>
+                  <th className="px-4 py-3 font-medium">Time</th>
+                </tr>
+              </thead>
+              <tbody>
+                {scheduleData.map((item, idx) => (
+                  <tr
+                    key={idx}
+                    className=" border-t border-[#A35F93] text-sm sm:text-base"
+                  >
+                    <td className="px-4 py-3">{item.city}</td>
+                    <td className="px-4 py-3">{item.venue}</td>
+                    <td className="px-4 py-3">{item.date}</td>
+                    <td className="px-4 py-3">{item.time}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
 
       {/* Registration Form Modal */}
-      {isModalOpen && (
-        <FormPage onClose={handleCloseModal} />
-      )}
+      {isModalOpen && <FormPage onClose={handleCloseModal} />}
       <TestimonialCarousel />
       <Faq2 />
       <Footer />

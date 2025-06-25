@@ -9,42 +9,11 @@ const UpcomingSessions = () => {
   const sessions = [
     {
       id: 1,
-      workshop: "Decode Foundation",
-      city: "Mumbai",
-      date: "June 15, 2023",
-      time: "9:00 AM - 5:00 PM",
-      capacity: "25 Seats",
-      price: "₹ 4500",
-      status: "Open",
-    },
-    {
-      id: 2,
-      workshop: "Healing Roots",
-      city: "Delhi",
-      date: "June 22, 2023",
-      time: "10:00 AM - 6:00 PM",
-      capacity: "20 Seats",
-      price: "₹ 5000",
-      status: "Open",
-    },
-    {
-      id: 3,
-      workshop: "Ancestral Connections",
-      city: "Bangalore",
-      date: "July 5, 2023",
-      time: "9:30 AM - 5:30 PM",
-      capacity: "18 Seats",
-      price: "₹ 4800",
-      status: "Open",
-    },
-    {
-      id: 4,
-      workshop: "Family Harmony",
-      city: "Chennai",
-      date: "July 15, 2023",
-      time: "9:00 AM - 5:00 PM",
-      capacity: "22 Seats",
-      price: "₹ 4200",
+      Venue: "Decode Foundation",
+      date: "June 15, 2025",
+      time: "9:00  - 17:00 GMT-7",
+      capacity: "8 Seats",
+      price: "$ 375",
       status: "Open",
     },
   ];
@@ -71,13 +40,7 @@ const UpcomingSessions = () => {
                       scope="col"
                       className="px-6 py-4 text-left text-base font-semibold text-white uppercase tracking-wider rounded-tl-2xl"
                     >
-                      Workshop
-                    </th>
-                    <th
-                      scope="col"
-                      className="px-6 py-4 text-left text-base font-semibold text-white uppercase tracking-wider"
-                    >
-                      City
+                      Venue
                     </th>
                     <th
                       scope="col"
@@ -103,6 +66,7 @@ const UpcomingSessions = () => {
                     >
                       Price
                     </th>
+
                     <th
                       scope="col"
                       className="px-6 py-4 text-left text-base font-semibold text-white uppercase tracking-wider"
@@ -120,11 +84,9 @@ const UpcomingSessions = () => {
                       className="hover:bg-purple-50 transition-colors"
                     >
                       <td className="px-6 py-4 whitespace-nowrap text-base font-medium text-[#6E2D79]">
-                        {session.workshop}
+                        {session.Venue}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-base text-[#6E2D79]">
-                        {session.city}
-                      </td>
+
                       <td className="px-6 py-4 whitespace-nowrap text-base text-[#6E2D79]">
                         {session.date}
                       </td>
@@ -181,11 +143,7 @@ const UpcomingSessions = () => {
             transition={{ type: "spring", damping: 25 }}
             className="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden"
           >
-            <FamilySessionForm
-              onClose={() => setShowModal(false)}
-              availableSessions={selectedWorkshop.availableSlots}
-              workshopName={selectedWorkshop.workshop}
-            />
+            <FamilySessionForm onClose={() => setShowModal(false)} />
           </motion.div>
         </motion.div>
       )}

@@ -6,7 +6,7 @@ export const levelsData = {
       "Begin your journey into clinical hypnotherapy with fundamental techniques for subconscious reprogramming",
     duration: "2 Days",
     certification: "EKAA Integrated Clinical Hypnotherapy Foundation",
-    price: "₹24,600.00",
+    price: "$600",
     next_session: "",
     enrollment_features: [
       "2-Day Intensive Workshop",
@@ -91,7 +91,7 @@ export const levelsData = {
       "Certification Course in Integrated Hypnotic Modalities for Behavioral Resolutions",
     duration: "5 Days",
     certification: "EKAA Integrated Clinical Hypnotherapy Foundation",
-    price: "₹61,500.00",
+    price: "$1,500",
     next_session: "",
     enrollment_features: [
       "5-Day Intensive Workshop",
@@ -188,7 +188,7 @@ export const levelsData = {
       "Master Practitioner Certification in Advanced Hypnotherapy & Regression Techniques",
     duration: "7 Days",
     certification: "EKAA Integrated Clinical Hypnotherapy Foundation",
-    price: "₹92,250.00",
+    price: "#1,500",
     next_session: "",
     enrollment_features: [
       "7-Day Intensive Masterclass",
@@ -284,7 +284,7 @@ export const levelsData = {
     subtitle: "Certificate Course in Integrated Spiritual Hypnosis",
     duration: "6 Days",
     certification: "EKAA Integrated Clinical Hypnotherapy Foundation",
-    price: "₹73,800.00",
+    price: "$1800",
     next_session: "",
     enrollment_features: [
       "6-Day Advanced Training",
@@ -384,7 +384,7 @@ export const levelsData = {
     subtitle: "Certificate Course in Integrated Clinical Hypnotherapy",
     duration: "8 Days",
     certification: "EKAA Integrated Clinical Hypnotherapy Foundation",
-    price: "₹98,400.00",
+    price: "$2400",
     next_session: "",
     enrollment_features: [
       "8-Day Intensive Master Training",
@@ -506,7 +506,7 @@ export const levelsData = {
     subtitle: "Advanced Certificate Course for Inner Child Healing",
     duration: "6 Days",
     certification: "EKAA Integrated Clinical Hypnotherapy Foundation",
-    price: "₹90,000 + GST",
+    price: "$900",
     next_session: "25th – 30th November, 2025",
     enrollment_features: [
       "6-Day Intensive Workshop",

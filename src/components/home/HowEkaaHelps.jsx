@@ -346,7 +346,7 @@ const HowEkaaHelps = () => {
     },
     {
       title: "Parents & Teachers",
-      img: "/home/corparate.jpeg",
+      img: "/home/Parents & Teachers.png",
       videoUrl: "https://d2nxi4iq5glqsu.cloudfront.net/8-Decode+for+parents+%26+teacher.mp4",
       icon: (
         <svg

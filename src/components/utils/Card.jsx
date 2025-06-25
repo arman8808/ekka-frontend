@@ -86,6 +86,44 @@ const courseData = [
     overlayText: "DECODE YOUR BLUE PRINT",
     overlaySubtext: "15 mins",
   },
+  {
+    id: 5,
+    title: "Decode Your Blue Print",
+    subtitle: "Level 4: Decode Your Blue Print",
+    tag: "This Level covers",
+    points: [
+      "Breath-work",
+      "Chakra stretches",
+      "Inner Right – A deep trance process to release cell memory programs",
+    ],
+    duration: "2 Day",
+    skill: "All levels",
+    buttonText: "Enroll Now",
+    videoSrc:
+      "https://d2nxi4iq5glqsu.cloudfront.net/7-Decode+your+Blueprint.mp4",
+    thumbnailSrc: "/level-4.jpeg",
+    overlayText: "DECODE YOUR BLUE PRINT",
+    overlaySubtext: "15 mins",
+  },
+  {
+    id: 6,
+    title: "Decode Your Blue Print",
+    subtitle: "Level 4: Decode Your Blue Print",
+    tag: "This Level covers",
+    points: [
+      "Breath-work",
+      "Chakra stretches",
+      "Inner Right – A deep trance process to release cell memory programs",
+    ],
+    duration: "2 Day",
+    skill: "All levels",
+    buttonText: "Enroll Now",
+    videoSrc:
+      "https://d2nxi4iq5glqsu.cloudfront.net/7-Decode+your+Blueprint.mp4",
+    thumbnailSrc: "/level-4.jpeg",
+    overlayText: "DECODE YOUR BLUE PRINT",
+    overlaySubtext: "15 mins",
+  },
 ];
 
 // Video Player Component
@@ -306,7 +344,7 @@ const Card = () => {
     if (findLevel) {
       setSelectedLevel(findLevel.subtitle);
       localStorage.setItem("level", findLevel.title);
-      navigate(`/level/${levelNumber}`);
+      navigate(`/ich/levels?level=${levelNumber}`);
     } else {
       console.log("Level not found");
     }

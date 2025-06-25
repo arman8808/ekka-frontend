@@ -13,7 +13,7 @@ import { useNavigate } from "react-router-dom";
 const courseData = [
   {
     id: 1,
-    title: "Decode Your Mind",
+    title: "Clinical Hypnotherapy – Level I",
     subtitle: "Level 1: Decode Your Mind",
     tag: "This Level Course",
     points: [
@@ -31,7 +31,7 @@ const courseData = [
   },
   {
     id: 2,
-    title: "Decode Your Behaviour",
+    title: "Clinical Hypnotherapy – Level II",
     subtitle: "Level 2: Decode Your Behaviour",
     tag: "This Level explains",
     points: [
@@ -50,7 +50,7 @@ const courseData = [
   },
   {
     id: 3,
-    title: "Decode Your Relationships",
+    title: "Clinical Hypnotherapy – Level III",
     subtitle: "Level 3: Decode Your Relationships",
     tag: "This Level covers",
     points: [
@@ -69,7 +69,7 @@ const courseData = [
   },
   {
     id: 4,
-    title: "Decode Your Blue Print",
+    title: "Clinical Hypnotherapy – Level IV",
     subtitle: "Level 4: Decode Your Blue Print",
     tag: "This Level covers",
     points: [
@@ -88,7 +88,7 @@ const courseData = [
   },
   {
     id: 5,
-    title: "Decode Your Blue Print",
+    title: "Clinical Hypnotherapy – Level V",
     subtitle: "Level 4: Decode Your Blue Print",
     tag: "This Level covers",
     points: [
@@ -107,7 +107,7 @@ const courseData = [
   },
   {
     id: 6,
-    title: "Decode Your Blue Print",
+    title: "Born Again",
     subtitle: "Level 4: Decode Your Blue Print",
     tag: "This Level covers",
     points: [

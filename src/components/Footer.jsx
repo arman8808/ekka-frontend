@@ -65,14 +65,31 @@ const Footer = () => {
           <img src="/footer/trustpilot.svg" alt="footer" loading="lazy" />
         </motion.span>{" "}
         <motion.div className="flex items-center gap-2">
-          <span className="bg-white rounded-[50%] p-2 cursor-pointer">
-            <MdOutlineFacebook className="text-[#6E2D79] text-xl cursor-pointer" />
+          <span className="bg-white rounded-[50%] p-2 cursor-pointer hover:bg-[#f0f0f0] transition-colors">
+            <a
+              href="https://www.facebook.com/share/1LQY2EvYNu/?mibextid=wwXIfr"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <MdOutlineFacebook className="text-[#6E2D79] text-xl cursor-pointer" />
+            </a>
           </span>
-          <span className="bg-white rounded-[50%] p-2 cursor-pointer">
-            <FaSquareInstagram className="text-[#6E2D79] text-xl " />
+
+          <span className="bg-white rounded-[50%] p-2 cursor-pointer hover:bg-[#f0f0f0] transition-colors">
+            <a
+              href="https://www.instagram.com/ekaa_institute?igsh=OTJneW5xM3RtcGV0"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <FaSquareInstagram className="text-[#6E2D79] text-xl" />
+            </a>
           </span>
-          <span className="bg-white rounded-[50%] p-2 cursor-pointer">
-            <IoLogoLinkedin className="text-[#6E2D79] text-xl cursor-pointer" />
+
+          <span className="bg-white rounded-[50%] p-2 cursor-pointer hover:bg-[#f0f0f0] transition-colors">
+            <a href="#" target="_blank" rel="noopener noreferrer">
+              {" "}
+              <IoLogoLinkedin className="text-[#6E2D79] text-xl cursor-pointer" />
+            </a>{" "}
           </span>
         </motion.div>
       </motion.div>

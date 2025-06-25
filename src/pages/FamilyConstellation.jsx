@@ -11,27 +11,22 @@ function FamilyConstellation() {
     <div>
       {" "}
       <Header />
-       <HeroSection content={
+      <HeroSection
+        content={
           <div className="text-center">
-            <div className="flex flex-col sm:flex-row justify-center items-center gap-4 mt-8">
-              <button className="bg-[#6E2D79] text-white rounded-full px-8 py-4 font-medium transition-colors hover:bg-[#5c2166] w-full sm:w-auto sm:min-w-[275px] text-center">
-                Step into clarity
-              </button>
-              <button className="bg-[#6E2D79] text-white rounded-full px-8 py-4 font-medium transition-colors hover:bg-[#5c2166] w-full sm:w-auto sm:min-w-[275px] text-center">
-                Decode your inner patterns
-              </button>
-            </div>
+            <h1 className="max-w-[90%] md:max-w-[1331px] text-white font-[Poppins] text-[30px] sm:text-[35px] md:text-[60px] lg:text-[65px] font-semibold leading-[44px] sm:leading-[60px] md:leading-[72px] mb-2 sm:mb-4 -mt-8 sm:-mt-12">
+              Family Constellation
+            </h1>
           </div>
         }
-        contentPosition='below'
-        />
+        contentPosition="above"
+      />
       <div
         className="py-16 px-4 md:px-8"
         style={{
           background: `linear-gradient(to right, rgba(193, 131, 178, 0.1),rgb(212,195,213,0.8) )`,
         }}
       >
-        
         <div className="max-w-3xl mx-auto text-center">
           <h2 className="text-2xl font-bold text-[#6E2D79] mb-5">
             About Family Constellation
@@ -44,7 +39,7 @@ function FamilyConstellation() {
         </div>
       </div>
       <ProfileCard />
-      <UpcomingSessions/>
+      <UpcomingSessions />
       <FAQ />
       <Testimonials />
       <Footer />

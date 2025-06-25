@@ -21,7 +21,8 @@ const HeroSection = () => {
           transition={{ duration: 1 }}
           className="text-[14px]  sm:text-[14px] md:text-[18px] lg:text-[18px] text-[#5C2166] max-w-3xl mb-10 w-full md:w-[796px] drop-shadow-md font-normal"
         >
-          Experience transformative training, workshops, and healing pathways with EKAA.
+          Experience transformative training, workshops, and healing pathways
+          with EKAA.
         </motion.p>
 
         <motion.div
@@ -31,20 +32,22 @@ const HeroSection = () => {
           className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4 mb-6"
         >
           {/* Trainings Button */}
-         <a href="#trainings-section">
-          <button className="bg-[#6E2D79] w-full sm:w-[200px] h-[57px] text-white px-[14px] py-[12px] rounded-full text-[14px] sm:text-[14px] md:text-[22px] font-medium cursor-pointer flex justify-center items-center">
-            <div>Trainings</div>
-          </button>
+          <a href="#trainings-section">
+            <button className="bg-[#6E2D79] w-full sm:w-[200px] h-[57px] text-white px-[14px] py-[12px] rounded-full text-[14px] sm:text-[14px] md:text-[22px] font-medium cursor-pointer flex justify-center items-center">
+              <div>Trainings</div>
+            </button>
           </a>
 
           {/* Constellation Button */}
-          <button className="border border-[#6E2D79] w-full sm:w-[200px] h-[57px] text-[#6E2D79] px-[14px] py-[12px] rounded-full text-[14px] sm:text-[14px] md:text-[22px] font-medium hover:bg-purple-100 transition cursor-pointer flex justify-center items-center">
-            <div>Constellation</div>
-          </button>
-
+          <a href="/family-constellation">
+            {" "}
+            <button className="border border-[#6E2D79] w-full sm:w-[200px] h-[57px] text-[#6E2D79] px-[14px] py-[12px] rounded-full text-[14px] sm:text-[14px] md:text-[22px] font-medium hover:bg-purple-100 transition cursor-pointer flex justify-center items-center">
+              <div>Constellation</div>
+            </button>
+          </a>
         </motion.div>
 
-        <Link to={'/about'}>
+        <Link to={"/about"}>
           <motion.a
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -61,5 +64,3 @@ const HeroSection = () => {
 };
 
 export default HeroSection;
-
-

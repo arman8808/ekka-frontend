@@ -115,7 +115,7 @@ export default function TrainingPrograms() {
               therapists and help others heal using subconscious mind.
             </p>
 
-            <Link to="/decode">
+            <Link to="/ich">
               <button className="text-[#C183B2] font-[Poppins] text-lg sm:text-xl md:text-[22px] font-medium leading-tight sm:leading-[33px] underline transition-colors mt-auto cursor-pointer">
                 Know More
               </button>

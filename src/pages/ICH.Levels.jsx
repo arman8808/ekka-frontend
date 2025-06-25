@@ -6,7 +6,7 @@ import Header from "../components/Header";
 import Faq2 from "../components/decode/Faq2";
 import TestimonialCarousel from "../components/home/Testimonials";
 import { levelsData } from "../components/data/ich.levels.data";
-
+import FormPage from '../components/level1/FormPage';
 const ICHLevels = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const location = useLocation();
@@ -96,7 +96,7 @@ const ICHLevels = () => {
                                 >
                                   <div className="w-2 h-2 bg-[#C183B2] rounded-full mt-2 flex-shrink-0"></div>
                                   <span className="text-[#6E2D79] text-sm sm:text-base">
-                                    <strong>{item.heading}</strong>{" "}
+                                    <p>{item.heading}</p>{" "}
                                     {item.description}
                                   </span>
                                 </div>
@@ -435,9 +435,9 @@ const ICHLevels = () => {
       )}
 
       {/* Registration Form Modal */}
-      {/* {isModalOpen && (
+      {isModalOpen && (
         <FormPage onClose={handleCloseModal} />
-      )} */}
+      )}
       <TestimonialCarousel />
       <Faq2 />
       <Footer />

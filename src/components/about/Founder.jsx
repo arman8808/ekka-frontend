@@ -97,89 +97,85 @@ const textVariants = {
 
 const Founder = () => {
   return (
- <div className="flex flex-col lg:flex-row w-full bg-white">
-  {/* Left side - Image */}
-  <motion.div
-    className="w-full lg:w-[607px] lg:h-[591px] flex items-center justify-center flex-shrink-0"
-    variants={imageVariants}
-    initial="hidden"
-    whileInView="visible"
-    viewport={{ once: true }}
-  >
-    <div className="w-full h-full overflow-hidden">
-      <img
-        src="/about/yuvraj.png"
-        alt="Dr. Yuvraj Kapadia"
-        className="w-full h-full object-cover"
-      />
-    </div>
-  </motion.div>
-
-  {/* Right side - Text Content */}
-  <motion.div
-    className="relative flex-shrink-0 flex flex-col justify-center px-6 sm:px-10 md:px-14 py-10 w-full lg:w-[calc(100%-607px)] h-auto min-h-[591px] bg-cover bg-center overflow-hidden"
-    variants={textVariants}
-    initial="hidden"
-    whileInView="visible"
-    viewport={{ once: true }}
-  >
-    {/* Main content container with proper constraints */}
-    <div className="relative z-10 w-full max-w-[765px] mx-auto overflow-y-auto">
-      <h1 className="text-[18px] sm:text-[20px] md:text-[24px] font-medium text-[#6E2D79] font-[Poppins] mb-2">
-        Meet Our Director
-      </h1>
-
-      <h2 className="text-[22px] md:text-[26px] font-bold text-[#6E2D79] font-[Poppins]">
-        Dr. Yuvraj Kapadia
-      </h2>
-      <p className="text-[18px] md:text-[20px] font-medium text-[#6E2D79] font-[Poppins] mb-4">
-        Founder-Director & CEO
-      </p>
-
-      <div className="space-y-4 text-[#A35F93] font-[Poppins] text-[16px] sm:text-[18px] leading-[1.6]">
-        <p>
-          Dr. Yuvraj Kapadia, a gold medalist in Microbiology from Mumbai
-          University, began his career as a financial expert before dedicating
-          his life to empowering minds. Today, he is a globally respected
-          hypnotherapy and regression training expert who encourages
-          independent thinking and self-liberation from limiting beliefs and
-          conditioning.
-        </p>
-
-        <p>
-          He has conducted transformational workshops for leading
-          organizations such as Fidelity Investments, HSBC, and the TAJ Group
-          of Hotels. Internationally, he has been a keynote trainer in cities
-          like Dubai, Singapore, Hong Kong, and Bangkok.
-        </p>
-
-        <p>
-          A distinguished global faculty member of TASSO International, Dr.
-          Kapadia is one of only five trainers worldwide recognized by the
-          institute. He has represented EKAA (formerly CHII) at multiple World
-          Congresses on Regression Therapies (WCRT), presenting pioneering
-          work on emotional empowerment, parallel realities, and the body–mind
-          connection in healing.
-        </p>
-
-        <p>
-          His visionary leadership continues to shape EKAA's mission to spread
-          conscious transformation across the world.
-        </p>
-      </div>
-    </div>
-
-    {/* Contact us link at bottom-right */}
-    <div className="absolute bottom-4 right-6 z-10 mt-4">
-      <Link
-        to="/contact-us"
-        className="text-[#6E2D79] underline text-sm font-medium transition-colors duration-200 hover:text-[#4a1a5e]"
+    <div className="flex flex-col lg:flex-row w-full bg-white">
+      {/* Left side - Image */}
+      <motion.div
+        className="w-full lg:w-[607px] lg:h-[591px] flex items-center justify-center flex-shrink-0"
+        variants={imageVariants}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true }}
       >
-        Contact us
-      </Link>
+        <div className="w-full h-full overflow-hidden">
+          <img
+            src="/about/yuvraj.png"
+            alt="Dr. Yuvraj Kapadia"
+            className="w-full h-full object-cover"
+          />
+        </div>
+      </motion.div>
+
+      {/* Right side - Text Content */}
+      <motion.div
+        className="relative flex-shrink-0 flex flex-col justify-center px-6 sm:px-10 md:px-14 py-10 w-full lg:w-[calc(100%-607px)] h-auto min-h-[591px] bg-cover bg-center overflow-hidden"
+        variants={textVariants}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true }}
+      >
+        {/* Main content container with proper constraints */}
+        <div className="relative z-10 w-full max-w-[765px] mx-auto overflow-y-auto">
+          <h2 className="text-[22px] md:text-[26px] font-bold text-[#6E2D79] font-[Poppins]">
+            Dr. Yuvraj Kapadia
+          </h2>
+          <p className="text-[18px] md:text-[20px] font-medium text-[#6E2D79] font-[Poppins] mb-4">
+            Founder-Director & CEO
+          </p>
+
+          <div className="space-y-4 text-[#A35F93] font-[Poppins] text-[16px] sm:text-[18px] leading-[1.6]">
+            <p>
+              Dr. Yuvraj Kapadia, a gold medalist in Microbiology from Mumbai
+              University, began his career as a financial expert before
+              dedicating his life to empowering minds. Today, he is a globally
+              respected hypnotherapy and regression training expert who
+              encourages independent thinking and self-liberation from limiting
+              beliefs and conditioning.
+            </p>
+
+            <p>
+              He has conducted transformational workshops for leading
+              organizations such as Fidelity Investments, HSBC, and the TAJ
+              Group of Hotels. Internationally, he has been a keynote trainer in
+              cities like Dubai, Singapore, Hong Kong, and Bangkok.
+            </p>
+
+            <p>
+              A distinguished global faculty member of TASSO International, Dr.
+              Kapadia is one of only five trainers worldwide recognized by the
+              institute. He has represented EKAA (formerly CHII) at multiple
+              World Congresses on Regression Therapies (WCRT), presenting
+              pioneering work on emotional empowerment, parallel realities, and
+              the body–mind connection in healing.
+            </p>
+
+            <p>
+              His visionary leadership continues to shape EKAA's mission to
+              spread conscious transformation across the world.
+            </p>
+          </div>
+        </div>
+
+        {/* Contact us link at bottom-right */}
+        {/* <div className="absolute bottom-4 right-6 z-10 mt-4">
+          <Link
+            to="/contact-us"
+            className="text-[#6E2D79] underline text-sm font-medium transition-colors duration-200 hover:text-[#4a1a5e]"
+          >
+            Contact us
+          </Link>
+        </div> */}
+      </motion.div>
     </div>
-  </motion.div>
-</div>
   );
 };
 

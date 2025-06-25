@@ -4,8 +4,8 @@ import FamilySessionForm from "./FamilySessionForm";
 import { motion, AnimatePresence } from "framer-motion";
 const UpcomingSessions = () => {
   const [showModal, setShowModal] = useState(false);
-  const [selectedWorkshop, setSelectedWorkshop] = useState("");
 
+  const [selectedWorkshop, setSelectedWorkshop] = useState(null);
   const sessions = [
     {
       id: 1,
@@ -58,7 +58,7 @@ const UpcomingSessions = () => {
     <div className="py-16 px-4 md:px-8 bg-white">
       <div className="max-w-7xl mx-auto">
         <h2 className="text-[1.5rem] font-normal text-center text-[#6E2D79] mb-12">
-          Upcoming Sessions
+          Programs Details
         </h2>
 
         <div className="overflow-x-auto">
@@ -181,7 +181,11 @@ const UpcomingSessions = () => {
             transition={{ type: "spring", damping: 25 }}
             className="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden"
           >
-            <FamilySessionForm />
+            <FamilySessionForm
+              onClose={() => setShowModal(false)}
+              availableSessions={selectedWorkshop.availableSlots}
+              workshopName={selectedWorkshop.workshop}
+            />
           </motion.div>
         </motion.div>
       )}

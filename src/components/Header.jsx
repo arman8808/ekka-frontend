@@ -166,7 +166,7 @@ const Header = () => {
 
   const [showHeader, setShowHeader] = useState(true);
   const sidebarRef = useRef(null);
-
+  const [isWorkshopOpen, setIsWorkshopOpen] = useState(false);
   useEffect(() => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
@@ -302,24 +302,51 @@ const Header = () => {
           >
             Decode
           </Link>
-          {/* <Link to="/therapy" className="text-lg font-medium hover:text-[#6E2D79] transition-colors">
-            Therapy
-          </Link>
-          <Link to="/workshop" className="text-lg font-medium hover:text-[#6E2D79] transition-colors">
-            Workshop
-          </Link> */}
-          <Link
-            to="/family-constellation"
-            className="text-lg font-medium hover:text-[#6E2D79] transition-colors"
-          >
-            Family Constellation
-          </Link>{" "}
           <Link
             to="/ich"
             className="text-lg font-medium hover:text-[#6E2D79] transition-colors"
           >
             ICH
-          </Link>{" "}
+          </Link>
+
+          {/* Workshop Dropdown */}
+          <div className="relative">
+            <button
+              onClick={() => setIsWorkshopOpen(!isWorkshopOpen)}
+              className="flex items-center justify-between w-full text-lg font-medium hover:text-[#6E2D79] transition-colors"
+            >
+              <span>Workshop</span>
+              <svg
+                className={`w-4 h-4 ml-2 transition-transform ${
+                  isWorkshopOpen ? "rotate-180" : ""
+                }`}
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M19 9l-7 7-7-7"
+                />
+              </svg>
+            </button>
+
+            {isWorkshopOpen && (
+              <div className="mt-2 pl-4 space-y-3 animate-fadeIn">
+                <Link
+                  to="/family-constellation"
+                  className="block text-lg font-medium hover:text-[#6E2D79] transition-colors"
+                  onClick={() => setIsWorkshopOpen(false)}
+                >
+                  Family Constellation
+                </Link>
+              </div>
+            )}
+          </div>
+
           <Link
             to="/contact-us"
             className="text-lg font-medium hover:text-[#6E2D79] transition-colors"

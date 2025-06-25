@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 
 const ProfileCard = () => {
   return (
- <div className="bg-[#6E2D79] text-white py-12 px-4 md:py-16 md:px-8">
+    <div className="bg-[#6E2D79] text-white py-12 px-4 md:py-16 md:px-8">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -29,10 +29,10 @@ const ProfileCard = () => {
           <div className="space-y-6">
             <div>
               <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-2">
-                Yuvraj Sir
+                About Facilitator
               </h1>
               <p className="text-xl md:text-2xl text-purple-200 italic font-light border-l-4 border-white/30 pl-4 py-1">
-                Master Facilitator & Transformational Guide
+                Dr Yuvraj Kapadia , Master Facilitator & Transformational Guide
               </p>
             </div>
 
@@ -41,7 +41,8 @@ const ProfileCard = () => {
                 With over <span className="font-semibold">12 years</span> of
                 experience in family systems therapy, Yuvraj Sir has facilitated
                 hundreds of constellation workshops across India. His gentle yet
-                profound approach creates a safe container for deep healing work.
+                profound approach creates a safe container for deep healing
+                work.
               </p>
               <p className="leading-relaxed md:leading-loose">
                 Originally trained in psychology, Yuvraj discovered Family
@@ -53,10 +54,10 @@ const ProfileCard = () => {
 
             <motion.a
               href="/about"
-              whileHover={{ 
+              whileHover={{
                 scale: 1.05,
                 backgroundColor: "#ffffff",
-                color: "#6E2D79"
+                color: "#6E2D79",
               }}
               whileTap={{ scale: 0.95 }}
               className="inline-block mt-4 px-8 py-3.5 bg-white/10 backdrop-blur-sm text-white text-lg font-semibold rounded-lg border-2 border-white/20 hover:border-white/40 transition-all max-w-[200px]"

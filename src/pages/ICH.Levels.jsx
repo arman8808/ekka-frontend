@@ -40,7 +40,7 @@ const ICHLevels = () => {
         }}
       >
         <h1 className="text-[#6E2D79] font-[Poppins] text-[30px] sm:text-[35px] md:text-[60px] lg:text-[65px] font-semibold leading-[44px] sm:leading-[60px] md:leading-[72px] mb-2 sm:mb-4 -mt-8 sm:-mt-12">
-          Level {levelData.level}: {levelData.title}
+          {levelData.title}
         </h1>
         <p className="text-[#5C2166] font-[Poppins] text-[16px] sm:text-[18px] lg:text-[18px] font-normal leading-[24px] px-4 mb-6">
           {levelData.subtitle}

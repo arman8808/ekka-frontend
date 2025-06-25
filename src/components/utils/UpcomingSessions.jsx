@@ -4,7 +4,7 @@ import FamilySessionForm from "./FamilySessionForm";
 import { motion, AnimatePresence } from "framer-motion";
 const UpcomingSessions = () => {
   const [showModal, setShowModal] = useState(false);
-
+  const [selectedSession, setSelectedSession] = useState(null);
   const [selectedWorkshop, setSelectedWorkshop] = useState(null);
   const sessions = [
     {
@@ -18,8 +18,9 @@ const UpcomingSessions = () => {
     },
   ];
 
-  const handleEnroll = (workshop) => {
-    setSelectedWorkshop(workshop);
+  const handleEnroll = (session) => {
+    setSelectedWorkshop(session);
+     setSelectedSession(session);
     setShowModal(true);
   };
 
@@ -112,7 +113,7 @@ const UpcomingSessions = () => {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-base">
                         <button
-                          onClick={() => handleEnroll(session.workshop)}
+                          onClick={() => handleEnroll(session)}
                           className="px-4 py-2 bg-[#6E2D79] text-white rounded-lg hover:bg-[#8a3c97] transition-colors shadow-sm text-base"
                         >
                           Enroll Now
@@ -143,7 +144,11 @@ const UpcomingSessions = () => {
             transition={{ type: "spring", damping: 25 }}
             className="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden"
           >
-            <FamilySessionForm onClose={() => setShowModal(false)} />
+            <FamilySessionForm
+              onClose={() => setShowModal(false)}
+              selectedSession={selectedSession}
+              availableSessions={[selectedSession]}
+            />
           </motion.div>
         </motion.div>
       )}

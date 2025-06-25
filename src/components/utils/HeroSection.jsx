@@ -1,6 +1,6 @@
-import React, { useState, useRef, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Play, Pause, X, Volume2, VolumeX, Settings } from "lucide-react";
+import React, { useState, useRef, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Play, Pause, Volume2, VolumeX, Settings, X } from 'lucide-react'; // or your icon library
 
 const HeroVideoSection = ({
   content = (
@@ -14,7 +14,7 @@ const HeroVideoSection = ({
     </div>
   ),
   buttonContent = (
-    <div className="group relative bg-white/90 backdrop-blur-sm rounded-full p-6 shadow-2xl border-2 border-white/30 hover:bg-white transition-all duration-300">
+    <div className="group relative bg-white/90 backdrop-blur-sm rounded-full p-6 shadow-2xl border-2 border-white/30 hover:bg-white transition-all duration-300 z-10">
       <div className="absolute inset-0 bg-gradient-to-r from-[#6E2D79]/20 to-[#5C2166]/20 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
       <Play className="w-8 h-8 text-[#6E2D79] ml-1 relative z-10" />
     </div>
@@ -23,7 +23,7 @@ const HeroVideoSection = ({
   videoUrl = "https://d2nxi4iq5glqsu.cloudfront.net/1-Introduction+-+Decode+landing+video+decode+page.mp4",
   thumbnailUrl = "/decodethumb.png",
   containerClass = "relative w-full h-[825px] sm:h-[700px] md:h-[825px] overflow-hidden",
-  contentContainerClass = "absolute inset-0 flex flex-col justify-center items-center text-center px-4",
+  contentContainerClass = "absolute inset-0 flex flex-col justify-center items-center text-center px-4 z-10",
 }) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -226,7 +226,7 @@ const HeroVideoSection = ({
       >
         {/* Thumbnail Background */}
         <motion.div
-          className="absolute inset-0 w-full h-full"
+          className="absolute inset-0 w-full h-full z-0"
           style={{
             backgroundImage: `url('${thumbnailUrl}')`,
             backgroundSize: "cover",
@@ -239,7 +239,7 @@ const HeroVideoSection = ({
           initial={{ opacity: 0 }}
           animate={{ opacity: 0.1 }}
           transition={{ duration: 1.5 }}
-          className="absolute inset-0 bg-gradient-to-b from-purple-900/20 to-transparent"
+          className="absolute inset-0 bg-gradient-to-b from-purple-900/20 to-transparent z-0"
         />
 
         {/* Content Overlay */}
@@ -253,10 +253,40 @@ const HeroVideoSection = ({
               : "flex-col"
           }`}
         >
-          {/* Position conditional rendering */}
-      
+          {/* Content position handling for all cases */}
+          {contentPosition === "above" && (
+            <>
+              <motion.div variants={textVariants}>
+                {content}
+              </motion.div>
+              <motion.div
+                variants={playIconVariants}
+                whileHover="hover"
+                whileTap={{ scale: 0.95 }}
+                onClick={handlePlayButtonClick}
+                className="mt-8"
+              >
+                {buttonContent}
+              </motion.div>
+            </>
+          )}
 
-        
+          {contentPosition === "below" && (
+            <>
+              <motion.div
+                variants={playIconVariants}
+                whileHover="hover"
+                whileTap={{ scale: 0.95 }}
+                onClick={handlePlayButtonClick}
+                className="mb-8"
+              >
+                {buttonContent}
+              </motion.div>
+              <motion.div variants={textVariants}>
+                {content}
+              </motion.div>
+            </>
+          )}
 
           {contentPosition === "left" && (
             <>

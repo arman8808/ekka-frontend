@@ -302,13 +302,24 @@ const Header = () => {
           >
             Decode
           </Link>
-
           {/* <Link to="/therapy" className="text-lg font-medium hover:text-[#6E2D79] transition-colors">
             Therapy
           </Link>
           <Link to="/workshop" className="text-lg font-medium hover:text-[#6E2D79] transition-colors">
             Workshop
           </Link> */}
+          <Link
+            to="/family-constellation"
+            className="text-lg font-medium hover:text-[#6E2D79] transition-colors"
+          >
+            Family Constellation
+          </Link>{" "}
+          <Link
+            to="/ich"
+            className="text-lg font-medium hover:text-[#6E2D79] transition-colors"
+          >
+            ICH
+          </Link>{" "}
           <Link
             to="/contact-us"
             className="text-lg font-medium hover:text-[#6E2D79] transition-colors"

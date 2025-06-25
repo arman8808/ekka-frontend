@@ -4,7 +4,7 @@ import Header from "../components/Header";
 import Testimonials from "../components/home/Testimonials";
 import FAQ from "../components/home/FAQ";
 import HeroSection from "../components/utils/HeroSection";
-import Card from "../components/decode/Card";
+import Card from "../components/utils/Card.jsx";
 function ICH() {
   return (
     <div>
@@ -13,18 +13,15 @@ function ICH() {
       <HeroSection
         content={
           <div className="text-center">
-            <div className="flex flex-col sm:flex-row justify-center items-center gap-4 mt-8">
-              <button className="bg-[#6E2D79] text-white rounded-full px-8 py-4 font-medium transition-colors hover:bg-[#5c2166] w-full sm:w-auto sm:min-w-[275px] text-center">
-                Step into clarity
-              </button>
-              <button className="bg-[#6E2D79] text-white rounded-full px-8 py-4 font-medium transition-colors hover:bg-[#5c2166] w-full sm:w-auto sm:min-w-[275px] text-center">
-                Decode your inner patterns
-              </button>
-            </div>
+            <h1 className="max-w-[90%] md:max-w-[1331px] text-white font-[Poppins] text-[30px] sm:text-[35px] md:text-[60px] lg:text-[65px] font-semibold leading-[44px] sm:leading-[60px] md:leading-[72px] mb-2 sm:mb-4 -mt-8 sm:-mt-12">
+              ICH
+            </h1>
+            <p className="text-white font-[Poppins] text-[16px] sm:text-[18px] lg:text-[18px] font-normal leading-[24px] px-4 mb-8">
+              Transform your Mind, Behavior, Relationships, and Blueprint
+            </p>
           </div>
         }
-        contentPosition='below'
-        
+        contentPosition="above"
       />
       <Card />
       <FAQ />

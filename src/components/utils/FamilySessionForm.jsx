@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 
-const FamilySessionForm = ({ onClose, availableSessions, workshopName }) => {
+const FamilySessionForm = ({ onClose, availableSessions, selectedSession }) => {
   const [familyMembers, setFamilyMembers] = useState([{ name: "" }]);
   const {
     register,
@@ -45,7 +45,7 @@ const FamilySessionForm = ({ onClose, availableSessions, workshopName }) => {
   };
 
   return (
-    <div className="max-w-2xl mx-auto bg-white rounded-xl overflow-hidden">
+    <div className="max-w-2xl mx-auto bg-white rounded-xl overflow-hidden z-9999">
       <div className="relative">
         <button
           onClick={onClose}
@@ -74,6 +74,10 @@ const FamilySessionForm = ({ onClose, availableSessions, workshopName }) => {
           <h2 className="text-2xl font-bold text-[#6E2D79] mb-2">
             Book Your Family Session
           </h2>
+          <p className="text-gray-600 mb-2">
+            Selected Session: {selectedSession?.Venue} on{" "}
+            {selectedSession?.date}
+          </p>
           <div className="w-16 h-1 bg-[#6E2D79] mx-auto"></div>
         </div>
 
@@ -87,15 +91,18 @@ const FamilySessionForm = ({ onClose, availableSessions, workshopName }) => {
 
               <div className="space-y-3">
                 {availableSessions?.map((session) => (
-                  <div key={session.id} className="flex items-center">
+                  <div
+                    key={session.id}
+                    className="flex items-center bg-gray-50 p-3 rounded-lg"
+                  >
                     <input
                       type="radio"
                       id={session.id}
                       value={`${session.date} - ${session.time}`}
+                      checked // This makes it checked by default
+                      readOnly // Makes it not changeable
                       className="h-4 w-4 text-[#6E2D79] focus:ring-[#6E2D79] border-[#E5D0E9]"
-                      {...register("sessionSlot", {
-                        required: "Please select a time slot",
-                      })}
+                      {...register("sessionSlot")}
                     />
                     <label
                       htmlFor={session.id}
@@ -103,10 +110,14 @@ const FamilySessionForm = ({ onClose, availableSessions, workshopName }) => {
                     >
                       <span className="font-medium">{session.date}</span>
                       <span className="text-gray-500 ml-2">{session.time}</span>
+                      <span className="block text-gray-500">
+                        {session.Venue}
+                      </span>
                     </label>
                   </div>
                 ))}
               </div>
+
               {errors.sessionSlot && (
                 <p className="mt-2 text-red-500 text-sm">
                   {errors.sessionSlot.message}

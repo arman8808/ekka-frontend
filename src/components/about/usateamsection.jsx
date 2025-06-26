@@ -14,7 +14,7 @@ function Usateamsection() {
         {/* Right: Text */}
         <div className="flex-1 text-[#5E3D8A]">
           <h2 className="text-xl sm:text-2xl leading-[24px] font-medium text-[#6E2D79] font-poppins mb-2">
-            Dr Manoj Kumar Bhardwaj
+            Dr Manoj Kumar Bhardwaj, M.D.
           </h2>
           <p className="text-base sm:text-lg leading-[30px] text-[#A35F93] font-medium">
             Dr. Manoj Kumar Bhardwaj is a board-certified physician in Family
@@ -59,8 +59,7 @@ function Usateamsection() {
         {/* Left: Text */}
         <div className="flex-1 text-[#5E3D8A] order-2 md:order-1">
           <h2 className="text-xl sm:text-2xl leading-[24px] font-medium text-[#6E2D79] font-poppins mb-2">
-            Dr. Sonia Gupte’s <br />
-            Founder “Enso-nia “California
+            Dr. Sonia Gupte’s, M.D.
           </h2>
           <p className="text-base sm:text-lg leading-[30px] text-[#A35F93] font-medium">
             Dr. Jyoti Behl Bhardwaj is a board-certified physician in Family
@@ -119,7 +118,7 @@ function Usateamsection() {
         {/* Right: Text */}
         <div className="flex-1 text-[#5E3D8A]">
           <h2 className="text-xl sm:text-2xl leading-[24px] font-medium text-[#6E2D79] font-poppins mb-2">
-            Priya KP
+            Dr. Jyoti Behl Bhardwaj, M.D.
           </h2>
           <p className="text-base sm:text-lg leading-[30px] text-[#A35F93] font-medium">
             Dr. Jyoti Behl Bhardwaj is a board-certified physician in Family

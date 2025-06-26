@@ -206,6 +206,70 @@ const FamilySessionForm = ({ onClose, availableSessions, selectedSession }) => {
               )}
             </div>
 
+            {/* Email Address */}
+            <div>
+              <label className="block text-[#6E2D79] font-medium mb-2">
+                Email Address
+              </label>
+              <input
+                type="email"
+                placeholder="your@email.com"
+                className={`w-full px-4 py-3 rounded-lg border border-[#E5D0E9] bg-white/90 focus:outline-none focus:ring-1 focus:ring-[#6E2D79] text-gray-700 ${
+                  errors.email ? "border-red-300" : ""
+                }`}
+                {...register("email", {
+                  required: "Email is required",
+                  pattern: {
+                    value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                    message: "Invalid email address",
+                  },
+                })}
+              />
+              {errors.email && (
+                <p className="mt-2 text-red-500 text-sm">
+                  {errors.email.message}
+                </p>
+              )}
+            </div>
+
+            {/* Contact Number (USA) */}
+            <div>
+              <label className="block text-[#6E2D79] font-medium mb-2">
+                Contact Number (USA)
+              </label>
+              <div className="flex">
+                <div className="w-16 mr-2">
+                  <input
+                    type="text"
+                    value="+1"
+                    readOnly
+                    className="w-full px-4 py-3 rounded-lg border border-[#E5D0E9] bg-gray-100 text-gray-700"
+                  />
+                </div>
+                <div className="flex-1">
+                  <input
+                    type="tel"
+                    placeholder="(123) 456-7890"
+                    className={`w-full px-4 py-3 rounded-lg border border-[#E5D0E9] bg-white/90 focus:outline-none focus:ring-1 focus:ring-[#6E2D79] text-gray-700 ${
+                      errors.phone ? "border-red-300" : ""
+                    }`}
+                    {...register("phone", {
+                      required: "Phone number is required",
+                      pattern: {
+                        value: /^\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}$/,
+                        message: "Please enter a valid US phone number",
+                      },
+                    })}
+                  />
+                </div>
+              </div>
+              {errors.phone && (
+                <p className="mt-2 text-red-500 text-sm">
+                  {errors.phone.message}
+                </p>
+              )}
+            </div>
+
             {/* Submit Button */}
             <div className="pt-4">
               <button

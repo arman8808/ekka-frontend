@@ -425,7 +425,7 @@ const AllRegistration = () => {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 100000);
       
-      const response = await fetch('https://ekaausa.com/api/registration', {
+      const response = await fetch(`${import.meta.env.VITE_API_URL+'registration'}` , {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',

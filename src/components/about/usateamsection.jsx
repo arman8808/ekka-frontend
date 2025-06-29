@@ -154,6 +154,35 @@ function Usateamsection() {
         {/* Right Circle */}
         <div className="w-2 h-2 bg-[#B879D3] rounded-full absolute top-1/2 -translate-y-1/2 right-0"></div>
       </div>
+
+      {/* Top Section */}
+      <div className="flex flex-col md:flex-row justify-between items-start gap-10 mb-12">
+        {/* Left: Text */}
+        <div className="flex-1 text-[#5E3D8A] order-2 md:order-1">
+          <h2 className="text-xl sm:text-2xl leading-[24px] font-medium text-[#6E2D79] font-poppins mb-2">
+            Dr Aiyasawmy, M.D.
+          </h2>
+        </div>
+
+        {/* Right: Image */}
+        <img
+          src="/about/Dr Aiyasawmy.jpeg"
+          alt="Abhishek Kapadia"
+          className="w-full max-w-[431px] h-auto md:h-[428px] object-cover shadow-lg order-1 md:order-2"
+        />
+      </div>
+
+      {/* Horizontal Line */}
+      <div className="relative w-full my-8">
+        {/* Horizontal Line */}
+        <div className="w-full h-[1px] bg-[#B879D3]"></div>
+
+        {/* Left Circle */}
+        <div className="w-2 h-2 bg-[#B879D3] rounded-full absolute top-1/2 -translate-y-1/2 left-0"></div>
+
+        {/* Right Circle */}
+        <div className="w-2 h-2 bg-[#B879D3] rounded-full absolute top-1/2 -translate-y-1/2 right-0"></div>
+      </div>
     </div>
   );
 }

@@ -9,18 +9,59 @@ const UpcomingSessions = () => {
   const sessions = [
     {
       id: 1,
-      Venue: "Decode Foundation",
-      date: "June 15, 2025",
-      time: "9:00  - 17:00 GMT-7",
-      capacity: "8 Seats",
-      price: "$ 375",
+      Event: "FC-10 People",
+      Date: "Aug 12, 2025",
+      Location: "Houston",
+      capacity: "10 Seats",
+      organisedby: "Dr Aiyasawmy's A/C",
+      // price: "$ 375",
+      status: "Open",
+    },
+    {
+      id: 2,
+      Event: "Decode Foundation",
+      Date: "FC With PTI",
+      Location: "Houston",
+      capacity: "10 Seats",
+      organisedby: "Dr Aiyasawmy's A/C",
+      // price: "$ 375",
+      status: "Open",
+    },
+    {
+      id: 3,
+      Event: "FC (batches of 10)",
+      Date: "Aug 22, 2025",
+      Location: "Austin",
+      capacity: "10 Seats",
+      organisedby: "Dr Manoj's A/C",
+      // price: "$ 375",
+      status: "Open",
+    },
+    {
+      id: 4,
+    Event: "FC (separate batches of 10)",
+      Date: "Aug 23, 2025",
+      Location: "Austin",
+      capacity: "10 Seats",
+      organisedby: "Dr Manoj's A/C",
+      // price: "$ 375",
+      status: "Open",
+    },
+    {
+      id: 5,
+      Event: "FC - limit 10 participants",
+      Date: "Aug 28, 2025",
+      Location: "Woodlands",
+      capacity: "10 Seats",
+      organisedby: "Dr Manoj's A/C",
+      // price: "$ 375",
       status: "Open",
     },
   ];
 
   const handleEnroll = (session) => {
     setSelectedWorkshop(session);
-     setSelectedSession(session);
+    setSelectedSession(session);
     setShowModal(true);
   };
 
@@ -41,19 +82,19 @@ const UpcomingSessions = () => {
                       scope="col"
                       className="px-6 py-4 text-left text-base font-semibold text-white uppercase tracking-wider rounded-tl-2xl"
                     >
-                      Venue
-                    </th>
-                    <th
-                      scope="col"
-                      className="px-6 py-4 text-left text-base font-semibold text-white uppercase tracking-wider"
-                    >
                       Date
                     </th>
                     <th
                       scope="col"
                       className="px-6 py-4 text-left text-base font-semibold text-white uppercase tracking-wider"
                     >
-                      Time
+                      Event
+                    </th>
+                    <th
+                      scope="col"
+                      className="px-6 py-4 text-left text-base font-semibold text-white uppercase tracking-wider"
+                    >
+                      Location
                     </th>
                     <th
                       scope="col"
@@ -65,7 +106,7 @@ const UpcomingSessions = () => {
                       scope="col"
                       className="px-6 py-4 text-left text-base font-semibold text-white uppercase tracking-wider"
                     >
-                      Price
+                      Organised by
                     </th>
 
                     <th
@@ -85,20 +126,20 @@ const UpcomingSessions = () => {
                       className="hover:bg-purple-50 transition-colors"
                     >
                       <td className="px-6 py-4 whitespace-nowrap text-base font-medium text-[#6E2D79]">
-                        {session.Venue}
+                        {session.Date}
                       </td>
 
                       <td className="px-6 py-4 whitespace-nowrap text-base text-[#6E2D79]">
-                        {session.date}
+                        {session.Event}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-base text-[#6E2D79]">
-                        {session.time}
+                        {session.Location}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-base text-[#6E2D79]">
                         {session.capacity}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-base font-semibold text-[#6E2D79]">
-                        {session.price}
+                        {session.organisedby}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-base">
                         <span
@@ -136,18 +177,18 @@ const UpcomingSessions = () => {
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+            style={{ position: 'fixed' }}
         >
           <motion.div
             initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: 20, opacity: 0 }}
             transition={{ type: "spring", damping: 25 }}
-            className="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden"
+           className="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden max-h-[90vh] flex flex-col"
           >
             <FamilySessionForm
-              onClose={() => setShowModal(false)}
+               onClose={() => setShowModal(false)}
               selectedSession={selectedSession}
-              availableSessions={[selectedSession]}
             />
           </motion.div>
         </motion.div>

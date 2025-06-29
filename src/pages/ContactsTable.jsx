@@ -16,7 +16,7 @@ const ContactsTable = () => {
     const itemsPerPage = 10;
 
     // Base URL for images
-    const BASE_URL = 'https://ekaausa.com/';
+    const BASE_URL = 'https://api.ekaausa.com/';
 
     // Fetch contacts data
     const fetchContacts = async () => {
@@ -27,7 +27,7 @@ const ContactsTable = () => {
             const controller = new AbortController();
             const timeoutId = setTimeout(() => controller.abort(), 10000);
 
-            const response = await fetch(`${import.meta.env.VITE_API_URL+'contact'}` , {
+            const response = await fetch(`${import.meta.env.VITE_API_BASE_URL+'contacts'}` , {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',

@@ -414,7 +414,7 @@ const AllRegistration = () => {
   const itemsPerPage = 10;
 
   // Base URL for images - adjust this according to your server setup
-  const BASE_IMAGE_URL = 'https://ekaausa.com/';
+  const BASE_IMAGE_URL = 'https://api.ekaausa.com/';
 
   // Fetch registration data
   const fetchRegistrations = async () => {
@@ -425,7 +425,7 @@ const AllRegistration = () => {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 100000);
       
-      const response = await fetch(`${import.meta.env.VITE_API_URL+'registration'}` , {
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL+'registration'}` , {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',

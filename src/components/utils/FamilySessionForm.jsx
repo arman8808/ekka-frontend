@@ -1,51 +1,92 @@
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
+import familyService from "../services/familyConsitalation";
+import toast from "react-hot-toast";
 
-const FamilySessionForm = ({ onClose, availableSessions, selectedSession }) => {
-  const [familyMembers, setFamilyMembers] = useState([{ name: "" }]);
+const FamilySessionForm = ({ onClose, selectedSession }) => {
+  const [IsSubmitting, setIsSubmitting] = useState(false);
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitting },
     reset,
   } = useForm();
 
-  const sessionModes = [
-    { value: "in-person", label: "In-Person Session" },
-    { value: "online", label: "Online Session" },
-    { value: "hybrid", label: "Hybrid (In-Person & Online)" },
-  ];
+  const onSubmit = async (data) => {
+    setIsSubmitting(true);
 
-  const paymentOptions = [
-    { value: "credit-card", label: "Credit Card" },
-    { value: "debit-card", label: "Debit Card" },
-    { value: "paypal", label: "PayPal" },
-    { value: "bank-transfer", label: "Bank Transfer" },
-  ];
+    // Show loading toast
+    const loadingToast = toast.loading("Processing your registration...");
 
-  const addFamilyMember = () => {
-    if (familyMembers.length < 4) {
-      setFamilyMembers([...familyMembers, { name: "" }]);
+    try {
+      // Prepare form data with session info
+      const formData = {
+        session: {
+          id: selectedSession.id,
+          Event: selectedSession.Event,
+          Date: selectedSession.Date,
+          Location: selectedSession.Location,
+          organisedby: selectedSession.organisedby,
+          capacity: selectedSession.capacity,
+          status: selectedSession.status,
+        },
+        fullName: data.fullName,
+        email: data.email,
+        phone: data.phone,
+      };
+
+      // Call the service to register session
+      const response = await familyService.registerSession(formData);
+
+      // Show success toast
+      toast.success(response.message || "Registration successful!", {
+        id: loadingToast,
+        duration: 4000,
+        position: "top-center",
+        style: {
+          background: "#6E2D79",
+          color: "#fff",
+          padding: "16px",
+          borderRadius: "8px",
+          boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+        },
+        iconTheme: {
+          primary: "#fff",
+          secondary: "#6E2D79",
+        },
+      });
+      onClose();
+      setTimeout(() => {
+        reset();
+        onClose();
+      }, 1000);
+    } catch (error) {
+      console.error("Registration error:", error);
+
+      // Show error toast
+      toast.error(`Registration failed: ${error.message}`, {
+        id: loadingToast,
+        duration: 5000,
+        position: "top-center",
+        style: {
+          background: "#ff4d4f",
+          color: "#fff",
+          padding: "16px",
+          borderRadius: "8px",
+          boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+        },
+        iconTheme: {
+          primary: "#fff",
+          secondary: "#ff4d4f",
+        },
+      });
+    } finally {
+      setIsSubmitting(false);
     }
   };
-
-  const removeFamilyMember = (index) => {
-    if (familyMembers.length > 1) {
-      const updatedMembers = [...familyMembers];
-      updatedMembers.splice(index, 1);
-      setFamilyMembers(updatedMembers);
-    }
-  };
-
-  const onSubmit = (data) => {
-    console.log("Form submitted:", data);
-    // Add your form submission logic here
-    reset();
-    setFamilyMembers([{ name: "" }]);
-  };
-
   return (
-    <div className="max-w-2xl mx-auto bg-white rounded-xl overflow-hidden z-9999">
+    <div className="max-w-2xl mx-auto bg-white rounded-xl overflow-hidden flex flex-col h-full">
+      {/* Close button */}
       <div className="relative">
         <button
           onClick={onClose}
@@ -69,142 +110,91 @@ const FamilySessionForm = ({ onClose, availableSessions, selectedSession }) => {
         </button>
       </div>
 
-      <div className="py-8 px-6 md:px-10">
-        <div className="text-center mb-10">
+      {/* Form content with scrollable area */}
+      <div className="py-8 px-6 md:px-10 flex-grow overflow-y-auto">
+        <div className="text-center mb-6">
           <h2 className="text-2xl font-bold text-[#6E2D79] mb-2">
-            Book Your Family Session
+            Book Your Session
           </h2>
           <p className="text-gray-600 mb-2">
-            Selected Session: {selectedSession?.Venue} on{" "}
-            {selectedSession?.date}
+            Selected Session: {selectedSession?.Event} on{" "}
+            {selectedSession?.Date}
           </p>
           <div className="w-16 h-1 bg-[#6E2D79] mx-auto"></div>
         </div>
 
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <div className="space-y-6">
-            {/* Date & Time */}
-            <div>
-              <label className="block text-[#6E2D79] font-medium mb-4">
-                Available Time Slots
-              </label>
-
-              <div className="space-y-3">
-                {availableSessions?.map((session) => (
-                  <div
-                    key={session.id}
-                    className="flex items-center bg-gray-50 p-3 rounded-lg"
-                  >
-                    <input
-                      type="radio"
-                      id={session.id}
-                      value={`${session.date} - ${session.time}`}
-                      checked // This makes it checked by default
-                      readOnly // Makes it not changeable
-                      className="h-4 w-4 text-[#6E2D79] focus:ring-[#6E2D79] border-[#E5D0E9]"
-                      {...register("sessionSlot")}
-                    />
-                    <label
-                      htmlFor={session.id}
-                      className="ml-3 block text-base text-gray-700"
-                    >
-                      <span className="font-medium">{session.date}</span>
-                      <span className="text-gray-500 ml-2">{session.time}</span>
-                      <span className="block text-gray-500">
-                        {session.Venue}
-                      </span>
-                    </label>
-                  </div>
-                ))}
-              </div>
-
-              {errors.sessionSlot && (
-                <p className="mt-2 text-red-500 text-sm">
-                  {errors.sessionSlot.message}
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+          {/* Session Details Display - Purple Theme */}
+          <div className="bg-[#F5EDF7] border border-[#C183B2] rounded-lg p-4">
+            <label className="block text-[#6E2D79] font-medium mb-3">
+              Session Details
+            </label>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <p className="text-sm text-[#6E2D79] opacity-80">Event</p>
+                <p className="font-medium text-[#6E2D79]">
+                  {selectedSession?.Event}
                 </p>
-              )}
-            </div>
-
-            {/* Family Members */}
-            <div>
-              <div className="flex justify-between items-center mb-2">
-                <label className="block text-[#6E2D79] font-medium">
-                  Family Members (up to 4)
-                </label>
-                {familyMembers.length < 4 && (
-                  <button
-                    type="button"
-                    onClick={addFamilyMember}
-                    className="flex items-center text-[#6E2D79] hover:text-[#8a3c97] transition-colors text-sm"
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-4 w-4 mr-1"
-                      viewBox="0 0 20 20"
-                      fill="currentColor"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
-                    Add member
-                  </button>
-                )}
               </div>
-
-              <div className="space-y-3">
-                {familyMembers.map((member, index) => (
-                  <div key={index} className="flex items-center">
-                    <div className="relative flex-1">
-                      <input
-                        type="text"
-                        placeholder={`Family member ${index + 1} name`}
-                        className={`w-full px-4 py-3 rounded-lg border border-[#E5D0E9] bg-white/90 focus:outline-none focus:ring-1 focus:ring-[#6E2D79] text-gray-700 ${
-                          errors[`familyMember${index}`] ? "border-red-300" : ""
-                        }`}
-                        {...register(`familyMember${index}`, {
-                          required: `Family member ${
-                            index + 1
-                          } name is required`,
-                          minLength: {
-                            value: 2,
-                            message: "Name must be at least 2 characters",
-                          },
-                        })}
-                      />
-                      {index > 0 && (
-                        <button
-                          type="button"
-                          onClick={() => removeFamilyMember(index)}
-                          className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-red-500"
-                        >
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            className="h-5 w-5"
-                            viewBox="0 0 20 20"
-                            fill="currentColor"
-                          >
-                            <path
-                              fillRule="evenodd"
-                              d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                              clipRule="evenodd"
-                            />
-                          </svg>
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              {errors[`familyMember0`] && (
-                <p className="mt-2 text-red-500 text-sm">
-                  {errors[`familyMember0`].message}
+              <div>
+                <p className="text-sm text-[#6E2D79] opacity-80">Date</p>
+                <p className="font-medium text-[#6E2D79]">
+                  {selectedSession?.Date}
                 </p>
-              )}
+              </div>
+              <div>
+                <p className="text-sm text-[#6E2D79] opacity-80">Location</p>
+                <p className="font-medium text-[#6E2D79]">
+                  {selectedSession?.Location}
+                </p>
+              </div>
+              <div>
+                <p className="text-sm text-[#6E2D79] opacity-80">
+                  Organized By
+                </p>
+                <p className="font-medium text-[#6E2D79]">
+                  {selectedSession?.organisedby}
+                </p>
+              </div>
+              <div>
+                <p className="text-sm text-[#6E2D79] opacity-80">Capacity</p>
+                <p className="font-medium text-[#6E2D79]">
+                  {selectedSession?.capacity}
+                </p>
+              </div>
+              <div>
+                <p className="text-sm text-[#6E2D79] opacity-80">Status</p>
+                <p className="font-medium text-[#6E2D79]">
+                  {selectedSession?.status}
+                </p>
+              </div>
             </div>
+          </div>
+
+          {/* Full Name */}
+          <div>
+            <label className="block text-[#6E2D79] font-medium mb-2">
+              Full Name
+            </label>
+            <input
+              type="text"
+              placeholder="Your full name"
+              className={`w-full px-4 py-3 rounded-lg border border-[#E5D0E9] bg-white focus:outline-none focus:ring-1 focus:ring-[#6E2D79] text-gray-700 ${
+                errors.fullName ? "border-red-300" : ""
+              }`}
+              {...register("fullName", {
+                required: "Full name is required",
+                minLength: {
+                  value: 2,
+                  message: "Name must be at least 2 characters",
+                },
+              })}
+            />
+            {errors.fullName && (
+              <p className="mt-2 text-red-500 text-sm">
+                {errors.fullName.message}
+              </p>
+            )}
 
             {/* Email Address */}
             <div>
@@ -274,9 +264,14 @@ const FamilySessionForm = ({ onClose, availableSessions, selectedSession }) => {
             <div className="pt-4">
               <button
                 type="submit"
-                className="w-full py-4 bg-[#6E2D79] text-white font-medium rounded-lg hover:bg-[#8a3c97] transition-colors shadow-md"
+                disabled={isSubmitting}
+                className={`w-full py-4 text-white font-medium rounded-lg transition-colors shadow-md ${
+                  isSubmitting
+                    ? "bg-gray-400 cursor-not-allowed"
+                    : "bg-[#6E2D79] hover:bg-[#8a3c97]"
+                }`}
               >
-                Complete Registration
+                {isSubmitting ? "Processing..." : "Complete Registration"}
               </button>
             </div>
           </div>

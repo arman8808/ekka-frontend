@@ -6,7 +6,7 @@ import Header from "../components/Header";
 import Faq2 from "../components/decode/Faq2";
 import TestimonialCarousel from "../components/home/Testimonials";
 import { levelsData } from "../components/data/ich.levels.data";
-import FormPage from "../components/level1/FormPage";
+import RegistrationForm from "../components/utils/ICH.Registartionform";
 const ICHLevels = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const location = useLocation();
@@ -477,7 +477,7 @@ const ICHLevels = () => {
       </section>
 
       {/* Registration Form Modal */}
-      {isModalOpen && <FormPage onClose={handleCloseModal} />}
+      {isModalOpen && <RegistrationForm onClose={handleCloseModal} />}
       <TestimonialCarousel />
       <Faq2 />
       <Footer />

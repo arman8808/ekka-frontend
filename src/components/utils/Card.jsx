@@ -24,7 +24,7 @@ const courseData = [
     duration: "2 Day",
     skill: "All levels",
     buttonText: "Enroll Now",
-    videoSrc: "https://d2nxi4iq5glqsu.cloudfront.net/4-Decode+your+Mind.mp4",
+    videoSrc: `${import.meta.env.VITE_API_Cloud_Front_URL}ICH/L1.mp4`,
     thumbnailSrc: "/ich/level1.JPG",
     overlayText: "DECODE YOUR MIND",
     overlaySubtext: "15 mins",
@@ -43,8 +43,7 @@ const courseData = [
     duration: "5 Day",
     skill: "All levels",
     buttonText: "Enroll Now",
-    videoSrc:
-      "https://d2nxi4iq5glqsu.cloudfront.net/5-Decode+your+Behaviour.mp4",
+    videoSrc: `${import.meta.env.VITE_API_Cloud_Front_URL}ICH/L2.mp4`,
     thumbnailSrc: "/ich/level2.JPG",
     overlayText: "DECODE YOUR BEHAVIOUR",
     overlaySubtext: "15 mins",
@@ -63,8 +62,7 @@ const courseData = [
     duration: "5 Day",
     skill: "All levels",
     buttonText: "Enroll Now",
-    videoSrc:
-      "https://d2nxi4iq5glqsu.cloudfront.net/6-Decode+your+Relationships.mp4",
+    videoSrc: `${import.meta.env.VITE_API_Cloud_Front_URL}ICH/L3.mp4`,
     thumbnailSrc: "/ich/level3.JPG",
     overlayText: "DECODE YOUR RELATIONSHIPS",
     overlaySubtext: "15 mins",
@@ -82,8 +80,7 @@ const courseData = [
     duration: "6 Day",
     skill: "All levels",
     buttonText: "Enroll Now",
-    videoSrc:
-      "https://d2nxi4iq5glqsu.cloudfront.net/7-Decode+your+Blueprint.mp4",
+    videoSrc: `${import.meta.env.VITE_API_Cloud_Front_URL}ICH/L4.mp4`,
     thumbnailSrc: "/ich/level4.JPG",
     overlayText: "DECODE YOUR BLUE PRINT",
     overlaySubtext: "15 mins",
@@ -101,8 +98,7 @@ const courseData = [
     duration: "8 Day",
     skill: "All levels",
     buttonText: "Enroll Now",
-    videoSrc:
-      "https://d2nxi4iq5glqsu.cloudfront.net/7-Decode+your+Blueprint.mp4",
+    videoSrc: `${import.meta.env.VITE_API_Cloud_Front_URL}ICH/L5.mp4`,
     thumbnailSrc: "/ich/level5.JPG",
     overlayText: "DECODE YOUR BLUE PRINT",
     overlaySubtext: "15 mins",
@@ -120,8 +116,7 @@ const courseData = [
     duration: "6 Day",
     skill: "All levels",
     buttonText: "Enroll Now",
-    videoSrc:
-      "https://d2nxi4iq5glqsu.cloudfront.net/7-Decode+your+Blueprint.mp4",
+    videoSrc: `${import.meta.env.VITE_API_Cloud_Front_URL}ICH/L6.mp4`,
     thumbnailSrc: "/ich/level6.JPG",
     overlayText: "DECODE YOUR BLUE PRINT",
     overlaySubtext: "15 mins",

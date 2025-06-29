@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 
 const PersonalGuidanceBanner = () => {
-  const navigate=useNavigate()
+  const navigate = useNavigate();
   const fadeUpVariants = {
     hidden: { opacity: 0, y: 50 },
     visible: {
@@ -17,14 +17,13 @@ const PersonalGuidanceBanner = () => {
   };
 
   return (
-    <div className="relative h-[400px] xs:h-[450px] sm:h-[500px] md:h-[550px] lg:h-[580px] xl:h-[650px] mt-10 sm:mt-0">
-      {/* Background images - different for mobile and desktop */}
+    <div className="relative h-[350px] xs:h-[400px] sm:h-[500px] md:h-[550px] lg:h-[580px] xl:h-[650px]  ">
       <picture>
         {/* Mobile image */}
         <source
           srcSet="/home/bg (1)1.png"
           media="(max-width: 639px)"
-          className="absolute top-0 left-0 w-full h-full object-contain sm:object-cover z-0"
+          className="absolute top-0 left-0 w-full h-full object-cover z-0" // Changed from object-contain
         />
         {/* Desktop image */}
         <img
@@ -59,7 +58,7 @@ const PersonalGuidanceBanner = () => {
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true }}
-          onClick={()=>navigate('/privacy-policy')}
+          onClick={() => navigate("/privacy-policy")}
         >
           Find a Therapist Near Me
         </motion.button>

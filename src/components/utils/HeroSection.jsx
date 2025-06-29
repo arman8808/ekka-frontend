@@ -1,6 +1,6 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Play, Pause, Volume2, VolumeX, Settings, X } from 'lucide-react'; // or your icon library
+import React, { useState, useRef, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Play, Pause, Volume2, VolumeX, Settings, X } from "lucide-react"; // or your icon library
 
 const HeroVideoSection = ({
   content = (
@@ -20,7 +20,7 @@ const HeroVideoSection = ({
     </div>
   ),
   contentPosition = "above", // 'above', 'below', 'left', 'right'
-  videoUrl = "https://d2nxi4iq5glqsu.cloudfront.net/1-Introduction+-+Decode+landing+video+decode+page.mp4",
+  videoUrl = `${import.meta.env.VITE_API_Cloud_Front_URL}ICH/hero video.mp4`,
   thumbnailUrl = "/decodethumb.png",
   containerClass = "relative w-full h-[825px] sm:h-[700px] md:h-[825px] overflow-hidden",
   contentContainerClass = "absolute inset-0 flex flex-col justify-center items-center text-center px-4 z-10",
@@ -256,9 +256,7 @@ const HeroVideoSection = ({
           {/* Content position handling for all cases */}
           {contentPosition === "above" && (
             <>
-              <motion.div variants={textVariants}>
-                {content}
-              </motion.div>
+              <motion.div variants={textVariants}>{content}</motion.div>
               <motion.div
                 variants={playIconVariants}
                 whileHover="hover"
@@ -282,9 +280,7 @@ const HeroVideoSection = ({
               >
                 {buttonContent}
               </motion.div>
-              <motion.div variants={textVariants}>
-                {content}
-              </motion.div>
+              <motion.div variants={textVariants}>{content}</motion.div>
             </>
           )}
 

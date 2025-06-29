@@ -27,7 +27,7 @@ const ContactsTable = () => {
             const controller = new AbortController();
             const timeoutId = setTimeout(() => controller.abort(), 10000);
 
-            const response = await fetch('https://ekaausa.com/api/contacts', {
+            const response = await fetch(`${import.meta.env.VITE_API_URL+'contact'}` , {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',

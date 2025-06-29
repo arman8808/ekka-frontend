@@ -3,7 +3,7 @@ import { Camera, Upload, AlertCircle, CheckCircle, User } from "lucide-react";
 
 // API Service Layer - Functional approach with centralized configuration
 const API_CONFIG = {
-  baseURL: "https://ekaausa.com/api",
+  baseURL: import.meta.env.VITE_API_URL,
   endpoints: {
     registration: "/registration",
   },

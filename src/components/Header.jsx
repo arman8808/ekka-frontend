@@ -160,16 +160,20 @@ import { IoClose } from "react-icons/io5";
 import { Link, useNavigate } from "react-router-dom";
 
 const Header = () => {
-  const negivate=useNavigate()
+  const negivate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [prevScrollY, setPrevScrollY] = useState(0);
-
   const [showHeader, setShowHeader] = useState(true);
   const sidebarRef = useRef(null);
   const [isWorkshopOpen, setIsWorkshopOpen] = useState(false);
+  const [isTrainingOpen, setIsTrainingOpen] = useState(false);
+
   useEffect(() => {
     const handleScroll = () => {
+      // Don't hide header if sidebar is open
+      if (isOpen) return;
+
       const currentScrollY = window.scrollY;
 
       // Scroll direction detection
@@ -201,19 +205,6 @@ const Header = () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [isOpen, prevScrollY]);
-  const handleScroll = () => {
-    const currentScrollY = window.scrollY;
-
-    // Detect scroll direction
-    if (currentScrollY > prevScrollY && currentScrollY > 100) {
-      setShowHeader(false); // scrolling down
-    } else {
-      setShowHeader(true); // scrolling up
-    }
-
-    setPrevScrollY(currentScrollY);
-    setScrolled(currentScrollY > 10); // original logic
-  };
 
   return (
     <header
@@ -244,7 +235,10 @@ const Header = () => {
 
         {/* Right Controls */}
         <div className="flex items-center space-x-2 md:space-x-4 lg:space-x-6">
-          <button onClick={()=>negivate('/privacy-policy')} className="hidden md:inline-flex items-center justify-center gap-[10px] px-[14px] py-[10px] lg:py-[12px] border border-[#6E2D79] rounded-full text-[#6E2D79] text-base lg:text-[18px] leading-tight lg:leading-[33px] font-medium font-[Poppins] bg-white transition whitespace-nowrap">
+          <button
+            onClick={() => negivate("/privacy-policy")}
+            className="hidden md:inline-flex items-center justify-center gap-[10px] px-[14px] py-[10px] lg:py-[12px] border border-[#6E2D79] rounded-full text-[#6E2D79] text-base lg:text-[18px] leading-tight lg:leading-[33px] font-medium font-[Poppins] bg-white transition whitespace-nowrap"
+          >
             Find a Therapist
           </button>
 
@@ -279,7 +273,10 @@ const Header = () => {
         </div>
 
         <div className="px-6 py-2">
-          <button onClick={()=>negivate('/privacy-policy')} className="inline-flex items-center justify-center gap-[10px] px-[14px] py-[10px] border border-[#6E2D79] rounded-full text-[#6E2D79] text-lg font-medium font-[Poppins] bg-white transition">
+          <button
+            onClick={() => negivate("/privacy-policy")}
+            className="inline-flex items-center justify-center gap-[10px] px-[14px] py-[10px] border border-[#6E2D79] rounded-full text-[#6E2D79] text-lg font-medium font-[Poppins] bg-white transition"
+          >
             Find a Therapist
           </button>
         </div>

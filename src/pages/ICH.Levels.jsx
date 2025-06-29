@@ -9,6 +9,7 @@ import { levelsData } from "../components/data/ich.levels.data";
 import RegistrationForm from "../components/utils/ICH.Registartionform";
 const ICHLevels = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [comingSoonAlert, setComingSoonAlert] = useState(false);
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const level = searchParams.get("level") || "1";
@@ -16,9 +17,48 @@ const ICHLevels = () => {
   const handleCloseModal = () => {
     setIsModalOpen(false);
   };
+  const handleEnrollClick = () => {
+    if (level === "1" || level === "3") {
+      setIsModalOpen(true);
+    } else {
+      setComingSoonAlert(true);
+      setTimeout(() => setComingSoonAlert(false), 3000); // Hide after 3 seconds
+    }
+  };
 
   // Data for different levels
-
+  const sessions = [
+    {
+      id: 1,
+      Event: "ICH L3 Training",
+      Date: "Aug 13-17, 2025",
+      Location: "Houston",
+      capacity: "10 Seats",
+      organisedby: "Dr Aiyasawmy's A/C",
+      // price: "$ 375",
+      status: "Open",
+    },
+    {
+      id: 2,
+      Event: "ICH L1 Training",
+      Date: "Aug 20-21, 2025",
+      Location: "Austin",
+      capacity: "10 Seats",
+      organisedby: "Dr Manoj's A/C",
+      // price: "$ 375",
+      status: "Open",
+    },
+    {
+      id: 3,
+      Event: "ICH Level 1",
+      Date: "Aug 31, 2025",
+      Location: "San Diego",
+      capacity: "10 Seats",
+      organisedby: "Dr Sonia's A/C",
+      // price: "$ 375",
+      status: "Open",
+    },
+  ];
   const scheduleData = [
     { city: "Dallas", venue: "Abc", date: "Jun 15, 2025", time: "10:00 AM" },
     { city: "Texas", venue: "Xyz", date: "Jun 20, 2025", time: "2:00 PM" },
@@ -312,7 +352,7 @@ const ICHLevels = () => {
                 )}
 
               <button
-                onClick={() => setIsModalOpen(true)}
+                onClick={handleEnrollClick} // Updated handler
                 className="text-white font-semibold transition-colors text-center mt-auto hover:opacity-90 cursor-pointer w-full py-3 sm:py-4 px-6"
                 style={{
                   borderRadius: "30px",
@@ -442,39 +482,104 @@ const ICHLevels = () => {
                 </span>
               </div> */}
               <h2 className="text-[20px] sm:text-[24px] text-[#6E2D79] font-semibold">
-                Upcoming Workshop
+                Upcoming Sessions
               </h2>
             </div>
             <hr className="mt-2 border-t border-purple-300" />
           </div>
 
           <div className="overflow-x-auto">
-            <table className="min-w-full border border-purple-300 rounded-lg overflow-hidden shadow-sm">
-              <thead>
-                <tr className="bg-[#6E2D79] text-white text-left text-sm sm:text-base">
-                  <th className="px-4 py-3 font-medium">City</th>
-                  <th className="px-4 py-3 font-medium">Venue</th>
-                  <th className="px-4 py-3 font-medium">Date</th>
-                  <th className="px-4 py-3 font-medium">Time</th>
-                </tr>
-              </thead>
-              <tbody>
-                {scheduleData.map((item, idx) => (
-                  <tr
-                    key={idx}
-                    className=" border-t border-[#A35F93] text-sm sm:text-base"
-                  >
-                    <td className="px-4 py-3">{item.city}</td>
-                    <td className="px-4 py-3">{item.venue}</td>
-                    <td className="px-4 py-3">{item.date}</td>
-                    <td className="px-4 py-3">{item.time}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+            <div className="min-w-full inline-block align-middle">
+              <div className="overflow-hidden border border-[#C183B2] p-4 rounded-2xl">
+                <table className="min-w-full divide-y divide-[#C183B2]">
+                  <thead>
+                    <tr className="bg-[#6E2D79]">
+                      <th
+                        scope="col"
+                        className="px-6 py-4 text-left text-base font-semibold text-white uppercase tracking-wider rounded-tl-2xl"
+                      >
+                        Date
+                      </th>
+                      <th
+                        scope="col"
+                        className="px-6 py-4 text-left text-base font-semibold text-white uppercase tracking-wider"
+                      >
+                        Event
+                      </th>
+                      <th
+                        scope="col"
+                        className="px-6 py-4 text-left text-base font-semibold text-white uppercase tracking-wider"
+                      >
+                        Location
+                      </th>
+                      <th
+                        scope="col"
+                        className="px-6 py-4 text-left text-base font-semibold text-white uppercase tracking-wider"
+                      >
+                        Capacity
+                      </th>
+                      <th
+                        scope="col"
+                        className="px-6 py-4 text-left text-base font-semibold text-white uppercase tracking-wider"
+                      >
+                        Organised by
+                      </th>
+
+                      <th
+                        scope="col"
+                        className="px-6 py-4 text-left text-base font-semibold text-white uppercase tracking-wider"
+                      ></th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-[#C183B2]">
+                    {sessions.map((session) => (
+                      <tr
+                        key={session.id}
+                        className="hover:bg-purple-50 transition-colors"
+                      >
+                        <td className="px-6 py-4 whitespace-nowrap text-base font-medium text-[#6E2D79]">
+                          {session.Date}
+                        </td>
+
+                        <td className="px-6 py-4 whitespace-nowrap text-base text-[#6E2D79]">
+                          {session.Event}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-base text-[#6E2D79]">
+                          {session.Location}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-base text-[#6E2D79]">
+                          {session.capacity}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-base font-semibold text-[#6E2D79]">
+                          {session.organisedby}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-base">
+                          <span
+                            className="px-3 py-1 rounded-full text-base font-medium"
+                            style={{
+                              backgroundColor: "#4ECDC41A",
+                              color: "#1E7D78",
+                            }}
+                          >
+                            {session.status}
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
           </div>
         </div>
       </section>
+      {comingSoonAlert && (
+        <div className="fixed top-4 right-4 z-50">
+          <div className="bg-[#6E2D79] text-white px-6 py-3 rounded-lg shadow-lg flex items-center">
+            <span>Registration Coming Soon!</span>
+          </div>
+        </div>
+      )}
 
       {/* Registration Form Modal */}
       {isModalOpen && <RegistrationForm onClose={handleCloseModal} />}

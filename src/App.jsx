@@ -43,6 +43,8 @@ import ICHLevels from "./pages/ICH.Levels";
 import AdminLogin from "./pages/AdminLogin";
 import ProtectedRoute from "./components/utils/ProtectedRoute";
 import AdminLayout from "./components/layouts/AdminLayout";
+import FamilyConsultationTable from "./pages/FamilyConsultationTable";
+import IchRegistration from "./pages/ICHTable";
 
 function App() {
   return (
@@ -55,7 +57,8 @@ function App() {
         <Route path="/decode" element={<DecodePage />} />
         <Route path="/family-constellation" element={<FamilyConstellation />} />
         <Route path="/ich" element={<ICH />} />
-        <Route path="/ich" element={<ICH />} />
+            <Route path="/ich/levels" element={<ICHLevels />} />
+        {/* <Route path="/ich" element={<ICH />} /> */}
         <Route path="/admin/login" element={<AdminLogin />} />
         {/* Dynamic route for all levels */}
         <Route path="/level/:levelNumber" element={<DynamicLevelPage />} />
@@ -73,15 +76,22 @@ function App() {
             </ProtectedRoute>
           }
         > */}
-      
-          <Route
-            path="all-registration-ekaausa.com.usa"
-            element={<AllRegistration />}
-          />
-          <Route
-            path="all-contacts.ekaausa.com.usa"
-            element={<ContactsTable />}
-          />
+        <Route
+          path="all-registration-ekaausa.com.usa"
+          element={<AllRegistration />}
+        />
+        <Route
+          path="all-contacts.ekaausa.com.usa"
+          element={<ContactsTable />}
+        />{" "}
+        <Route
+          path="all-FamilyConsultationTable.usa"
+          element={<FamilyConsultationTable />}
+        />{" "}
+        <Route
+          path="all-ICTable.usa"
+          element={<IchRegistration />}
+        />
         {/* </Route> */}
       </Routes>
     </>

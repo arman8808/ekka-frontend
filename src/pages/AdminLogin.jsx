@@ -25,7 +25,7 @@ const AdminLogin = () => {
       );
       console.log(response, "response");
 
-      auth.login(response.data.token);
+      // auth.login(response.data.token);
       localStorage.setItem("adminToken", response.data.token);
       navigate('/all-registration-ekaausa.com.usa');
     } catch (err) {

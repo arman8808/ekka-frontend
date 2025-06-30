@@ -23,8 +23,8 @@ const AdminLogin = () => {
           password,
         }
       );
-        auth.login(response.data.token);
-      localStorage.setItem("adminToken", response.data.token);
+        auth.login(response.token);
+      localStorage.setItem("adminToken", response.token);
     navigate(from, { replace: true });;
     } catch (err) {
       setError(

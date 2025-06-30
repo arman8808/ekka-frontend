@@ -20,6 +20,9 @@ function FamilyConstellation() {
           </div>
         }
         contentPosition="above"
+        videoUrl={`${
+          import.meta.env.VITE_API_Cloud_Front_URL
+        }FC/FC.mp4`}
       />
       <div
         className="py-16 px-4 md:px-8"

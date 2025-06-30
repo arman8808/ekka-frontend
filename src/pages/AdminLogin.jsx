@@ -23,6 +23,8 @@ const AdminLogin = () => {
           password,
         }
       );
+      console.log(response,'response');
+      
         auth.login(response.token);
       localStorage.setItem("adminToken", response.token);
     navigate(from, { replace: true });;

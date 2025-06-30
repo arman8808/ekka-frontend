@@ -512,7 +512,7 @@ const ICHLevels = () => {
                       >
                         Location
                       </th>
-                      <th
+                      {/* <th
                         scope="col"
                         className="px-6 py-4 text-left text-base font-semibold text-white uppercase tracking-wider"
                       >
@@ -523,7 +523,7 @@ const ICHLevels = () => {
                         className="px-6 py-4 text-left text-base font-semibold text-white uppercase tracking-wider"
                       >
                         Organised by
-                      </th>
+                      </th> */}
 
                       <th
                         scope="col"
@@ -547,7 +547,7 @@ const ICHLevels = () => {
                         <td className="px-6 py-4 whitespace-nowrap text-base text-[#6E2D79]">
                           {session.Location}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-base text-[#6E2D79]">
+                        {/* <td className="px-6 py-4 whitespace-nowrap text-base text-[#6E2D79]">
                           {session.capacity}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-base font-semibold text-[#6E2D79]">
@@ -563,7 +563,7 @@ const ICHLevels = () => {
                           >
                             {session.status}
                           </span>
-                        </td>
+                        </td> */}
                       </tr>
                     ))}
                   </tbody>

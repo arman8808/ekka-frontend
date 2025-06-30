@@ -96,23 +96,23 @@ const UpcomingSessions = () => {
                     >
                       Location
                     </th>
-                    <th
+                    {/* <th
                       scope="col"
                       className="px-6 py-4 text-left text-base font-semibold text-white uppercase tracking-wider"
                     >
                       Capacity
-                    </th>
-                    <th
+                    </th> */}
+                    {/* <th
                       scope="col"
                       className="px-6 py-4 text-left text-base font-semibold text-white uppercase tracking-wider"
                     >
                       Organised by
-                    </th>
-
+                    </th> */}
+{/* 
                     <th
                       scope="col"
                       className="px-6 py-4 text-left text-base font-semibold text-white uppercase tracking-wider"
-                    ></th>
+                    ></th> */}
                     <th
                       scope="col"
                       className="px-6 py-4 text-left text-base font-semibold text-white uppercase tracking-wider rounded-tr-2xl"
@@ -135,7 +135,7 @@ const UpcomingSessions = () => {
                       <td className="px-6 py-4 whitespace-nowrap text-base text-[#6E2D79]">
                         {session.Location}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-base text-[#6E2D79]">
+                      {/* <td className="px-6 py-4 whitespace-nowrap text-base text-[#6E2D79]">
                         {session.capacity}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-base font-semibold text-[#6E2D79]">
@@ -151,7 +151,7 @@ const UpcomingSessions = () => {
                         >
                           {session.status}
                         </span>
-                      </td>
+                      </td> */}
                       <td className="px-6 py-4 whitespace-nowrap text-base">
                         <button
                           onClick={() => handleEnroll(session)}

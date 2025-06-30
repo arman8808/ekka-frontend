@@ -9,7 +9,7 @@ const AdminLogin = () => {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const from =  '/all-registration-ekaausa.com.usa';
+  const from = "/all-registration-ekaausa.com.usa";
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -23,11 +23,11 @@ const AdminLogin = () => {
           password,
         }
       );
-      console.log(response,'response');
-      
-        auth.login(response.token);
-      localStorage.setItem("adminToken", response.token);
-    navigate(from, { replace: true });;
+      console.log(response, "response");
+
+      auth.login(response.data.token);
+      localStorage.setItem("adminToken", response.data.token);
+      navigate('/all-registration-ekaausa.com.usa');
     } catch (err) {
       setError(
         err.response?.data?.message || "Login failed. Please try again."

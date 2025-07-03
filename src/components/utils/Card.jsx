@@ -13,7 +13,7 @@ import { useNavigate } from "react-router-dom";
 const courseData = [
   {
     id: 1,
-    title: "Basic Course in Integrated Clinical Hypnotherapy Certification.",
+    title: "Level 1: Basic Course in Integrated Clinical Hypnotherapy Certification.",
     subtitle: "Level 1: Decode Your Mind",
     tag: "This Level Course",
     points: [
@@ -32,7 +32,7 @@ const courseData = [
   {
     id: 2,
     title:
-      "Course in Integrated Hypnotic Modalities for Behavioral Resolutions.",
+      "Level 2: Course in Integrated Hypnotic Modalities for Behavioral Resolutions.",
     subtitle: "Level 2: Decode Your Behaviour",
     tag: "This Level explains",
     points: [
@@ -51,7 +51,7 @@ const courseData = [
   {
     id: 3,
     title:
-      "Advanced Course in Integrated Hypnotic Modalities for Health Resolutions",
+      "Level 3: Advanced Course in Integrated Hypnotic Modalities for Health Resolutions",
     subtitle: "Level 3: Decode Your Relationships",
     tag: "This Level covers",
     points: [
@@ -69,7 +69,7 @@ const courseData = [
   },
   {
     id: 4,
-    title: "Certificate Course in Integrated Spiritual Hypnosis",
+    title: "Level 4: Certificate Course in Integrated Spiritual Hypnosis",
     subtitle: "Level 4: Decode Your Blue Print",
     tag: "This Level covers",
     points: [
@@ -87,7 +87,7 @@ const courseData = [
   },
   {
     id: 5,
-    title: "Certificate Course on Integrated Clinical Hypnotherapy",
+    title: "Level 5: Certificate Course on Integrated Clinical Hypnotherapy",
     subtitle: "Level 4: Decode Your Blue Print",
     tag: "This Level covers",
     points: [
@@ -105,7 +105,7 @@ const courseData = [
   },
   {
     id: 6,
-    title: "Born Again Advanced Certificate Course for Inner Child Healing",
+    title: "Level 6: Born Again Advanced Certificate Course for Inner Child Healing",
     subtitle: "Level 4: Decode Your Blue Print",
     tag: "This Level covers",
     points: [

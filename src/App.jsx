@@ -45,6 +45,7 @@ import ProtectedRoute from "./components/utils/ProtectedRoute";
 import AdminLayout from "./components/layouts/AdminLayout";
 import FamilyConsultationTable from "./pages/FamilyConsultationTable";
 import IchRegistration from "./pages/ICHTable";
+import Schedule from "./pages/Schedule";
 
 function App() {
   return (
@@ -55,6 +56,7 @@ function App() {
         <Route path="/about" element={<AboutPage />} />
         <Route path="/contact-us" element={<ContactUs />} />
         <Route path="/decode" element={<DecodePage />} />
+        <Route path="/schedule" element={<Schedule />} />
         <Route path="/family-constellation" element={<FamilyConstellation />} />
         <Route path="/ich" element={<ICH />} />
             <Route path="/ich/levels" element={<ICHLevels />} />

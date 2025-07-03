@@ -239,7 +239,7 @@ const Header = () => {
             onClick={() => negivate("/privacy-policy")}
             className="hidden md:inline-flex items-center justify-center gap-[10px] px-[14px] py-[10px] lg:py-[12px] border border-[#6E2D79] rounded-full text-[#6E2D79] text-base lg:text-[18px] leading-tight lg:leading-[33px] font-medium font-[Poppins] bg-white transition whitespace-nowrap"
           >
-            Find a Therapist
+            Book Your Event
           </button>
 
           {/* <IoCallOutline className="text-[#6E2D79] hover:text-purple-900 transition w-6 h-6 md:w-7 md:h-7 lg:w-8 lg:h-8" /> */}
@@ -277,7 +277,7 @@ const Header = () => {
             onClick={() => negivate("/privacy-policy")}
             className="inline-flex items-center justify-center gap-[10px] px-[14px] py-[10px] border border-[#6E2D79] rounded-full text-[#6E2D79] text-lg font-medium font-[Poppins] bg-white transition"
           >
-            Find a Therapist
+            Book Your Event
           </button>
         </div>
 
@@ -304,7 +304,7 @@ const Header = () => {
             to="/ich"
             className="text-lg font-medium hover:text-[#6E2D79] transition-colors"
           >
-            ICH
+            Hypnotherapy
           </Link>
 
           {/* Workshop Dropdown */}

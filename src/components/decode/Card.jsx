@@ -13,7 +13,7 @@ import { useNavigate } from "react-router-dom";
 const courseData = [
   {
     id: 1,
-    title: "Decode Your Mind",
+    title: "LEVEL 1: Decode Your Mind",
     subtitle: "Level 1: Decode Your Mind",
     tag: "This Level Course",
     points: [
@@ -31,7 +31,7 @@ const courseData = [
   },
   {
     id: 2,
-    title: "Decode Your Behaviour",
+    title: "LEVEL 2: Decode Your Behaviour",
     subtitle: "Level 2: Decode Your Behaviour",
     tag: "This Level explains",
     points: [
@@ -50,7 +50,7 @@ const courseData = [
   },
   {
     id: 3,
-    title: "Decode Your Relationships",
+    title: "LEVEL 3: Decode Your Relationships",
     subtitle: "Level 3: Decode Your Relationships",
     tag: "This Level covers",
     points: [
@@ -69,7 +69,7 @@ const courseData = [
   },
   {
     id: 4,
-    title: "Decode Your Blue Print",
+    title: "LEVEL 4: Decode Your Blue Print",
     subtitle: "Level 4: Decode Your Blue Print",
     tag: "This Level covers",
     points: [
@@ -82,6 +82,25 @@ const courseData = [
     buttonText: "Enroll Now",
     videoSrc:
       "https://d2nxi4iq5glqsu.cloudfront.net/7-Decode+your+Blueprint.mp4",
+    thumbnailSrc: "/level-4.jpeg",
+    overlayText: "DECODE YOUR BLUE PRINT",
+    overlaySubtext: "15 mins",
+  },
+  {
+    id: 5,
+    title: "LEVEL 5: DECODE THE CHILD",
+    subtitle: "Level 4: Decode Your Blue Print",
+    tag: "This Level covers",
+    points: [
+      "Breath-work",
+      "Chakra stretches",
+      "Inner Right – A deep trance process to release cell memory programs",
+    ],
+    duration: "2 Day",
+    skill: "All levels",
+    buttonText: "Enroll Now",
+    videoSrc:
+      "https://d2nxi4iq5glqsu.cloudfront.net/8-Decode+for+parents+%26+teacher.mp4",
     thumbnailSrc: "/level-4.jpeg",
     overlayText: "DECODE YOUR BLUE PRINT",
     overlaySubtext: "15 mins",

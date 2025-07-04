@@ -356,7 +356,7 @@ const Card = () => {
             <div className="w-full max-w-7xl bg-white rounded-xl border border-[#ccc] flex flex-col lg:flex-row justify-between items-start p-5 sm:p-6 lg:p-10 gap-6 sm:gap-8 z-10">
               {/* Left Side */}
               <div className="flex-1 lg:w-3/5 space-y-1">
-                <h2 className="font-['Poppins'] font-medium text-2xl sm:text-3xl md:text-4xl leading-[1.2] sm:leading-[1.3] md:leading-[72px] text-[#6E2D79]">
+                <h2 className="font-['Poppins'] font-medium text-2xl sm:text-3xl md:text-4xl leading-[1.2] sm:leading-[1.3] md:leading-[56px] text-[#6E2D79]">
                   {course.title}
                 </h2>
 

@@ -117,7 +117,11 @@ const Founder = () => {
 
       {/* Right side - Text Content */}
       <motion.div
-        className="relative flex-shrink-0 flex flex-col justify-center px-6 sm:px-10 md:px-14 py-10 w-full lg:w-[calc(100%-607px)] h-auto min-h-[591px] bg-cover bg-center overflow-hidden"
+        className="relative flex-shrink-0 flex flex-col justify-center 
+p-0 sm:px-10 md:px-14 sm:py-10 
+w-full lg:w-[calc(100%-607px)] h-auto min-h-[591px] 
+bg-cover bg-center overflow-hidden
+"
         variants={textVariants}
         initial="hidden"
         whileInView="visible"

@@ -14,9 +14,9 @@ const events = [
     location: "Austin",
     trainer: "Dr. Monoj's A/C",
     type: "CH",
-    price: "USD 3,500",
+    price: "USD 600",
     currency: "USD",
-    priceValue: 3500,
+    priceValue: 600,
     link: "/ich/levels?level=1?modal=true",
   },
   {
@@ -27,7 +27,7 @@ const events = [
     location: "Houston, USA",
     trainer: "Dr. Alyasowmy's A/C",
     type: "Family Constellations",
-    price: "USD 15,999",
+    price: "USD 375",
     currency: "USD",
     priceValue: 15999,
     link: "/family-constellation",
@@ -40,7 +40,7 @@ const events = [
     location: "Houston, USA",
     trainer: "Dr. Alyasowmy's A/C",
     type: "CH",
-    price: "USD 12,999",
+    price: "USD 1500",
     currency: "USD",
     priceValue: 12999,
     link: "/ich/levels?level=3?modal=true",
@@ -53,7 +53,7 @@ const events = [
     location: "Houston, USA",
     trainer: "Dr. Alyasowmy's A/C",
     type: "Family Constellations",
-    price: "USD 12,999",
+    price: "USD 375",
     currency: "USD",
     priceValue: 12999,
     link: "/family-constellation",
@@ -66,7 +66,7 @@ const events = [
     location: "Austin",
     trainer: "Dr. Monoj's A/C",
     type: "Family Constellations",
-    price: "USD 5,999",
+    price: "USD 375",
     currency: "USD",
     priceValue: 5999,
     link: "/family-constellation",
@@ -79,7 +79,7 @@ const events = [
     location: "Austin",
     trainer: "Dr. Monoj's A/C",
     type: "Family Constellations",
-    price: "USD 6,500",
+    price: "USD 375",
     currency: "USD",
     priceValue: 6500,
     link: "/family-constellation",
@@ -92,7 +92,7 @@ const events = [
     location: "Woodlands",
     trainer: "Dr. Monoj's A/C",
     type: "Family Constellations",
-    price: "USD 349",
+    price: "USD 375",
     currency: "USD",
     priceValue: 349,
     link: "/family-constellation",
@@ -105,7 +105,7 @@ const events = [
     location: "Woodlands",
     trainer: "",
     type: "Family Constellations",
-    price: "USD 25,999",
+    price: "USD 375",
     currency: "USD",
     priceValue: 25999,
     link: "/family-constellation",
@@ -162,7 +162,7 @@ function Schedule() {
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.8, delay: 0.2 }}
           >
-            EKAA Training Schedule
+           Event Calendar 
           </motion.h1>
 
           <motion.p
@@ -171,7 +171,7 @@ function Schedule() {
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.8, delay: 0.4 }}
           >
-            Explore our global schedule and book your seat today.
+           Explore the upcoming programs and reserve your spot today.
           </motion.p>
 
           <motion.div
@@ -359,9 +359,9 @@ function Schedule() {
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
                         onClick={() => handleRegister(event.link)}
-                        className="px-3 py-1 bg-[#6E2D79] text-white text-xs rounded-md hover:bg-[#5a2465] transition-colors cursor-pointer"
+                        className="px-3 py-2 bg-[#6E2D79] text-white text-xs rounded-md hover:bg-[#5a2465] transition-colors cursor-pointer"
                       >
-                        Register
+                        Enroll Now
                       </motion.button>
                     </td>
                   </motion.tr>

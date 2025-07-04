@@ -88,15 +88,15 @@ const courseData = [
   },
   {
     id: 5,
-    title: "LEVEL 5: DECODE THE CHILD",
-    subtitle: "Level 4: Decode Your Blue Print",
+    title: "DECODE THE CHILD",
+    subtitle: "A Transformational Workshop for Parents, Teachers, and Caregivers",
     tag: "This Level covers",
     points: [
-      "Breath-work",
+      "A Transformational Workshop for Parents, Teachers, and Caregivers",
       "Chakra stretches",
       "Inner Right – A deep trance process to release cell memory programs",
     ],
-    duration: "2 Day",
+    duration: "9 am to 1 pm",
     skill: "All levels",
     buttonText: "Enroll Now",
     videoSrc:

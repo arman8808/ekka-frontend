@@ -11,26 +11,30 @@ const events = [
     name: "ICH1 Training",
     seats: 10,
     date: "20th–21st Aug",
-    location: "Austin",
+    location: "Austin, USA",
     trainer: "Dr. Monoj's A/C",
     type: "CH",
     price: "USD 600",
     currency: "USD",
     priceValue: 600,
+    facilitator: "Yuvraj Kapadia",
     link: "/ich/levels?level=1?modal=true",
+     participants:"10 Seats"
   },
   {
     id: 2,
     name: "Family Constellations",
     seats: 10,
-    date: "12th August",
+    date: "12th Aug",
     location: "Houston, USA",
     trainer: "Dr. Alyasowmy's A/C",
     type: "Family Constellations",
     price: "USD 375",
     currency: "USD",
     priceValue: 15999,
+    facilitator: "Yuvraj Kapadia",
     link: "/family-constellation",
+     participants:"10 Seats"
   },
   {
     id: 3,
@@ -43,72 +47,84 @@ const events = [
     price: "USD 1500",
     currency: "USD",
     priceValue: 12999,
+    facilitator: "Yuvraj Kapadia",
     link: "/ich/levels?level=3?modal=true",
+     participants:"10 Seats"
   },
   {
     id: 4,
     name: "FC with PTI",
     seats: 10,
-    date: "18th August",
+    date: "18th Aug",
     location: "Houston, USA",
     trainer: "Dr. Alyasowmy's A/C",
     type: "Family Constellations",
     price: "USD 375",
     currency: "USD",
     priceValue: 12999,
+    facilitator: "Yuvraj Kapadia",
     link: "/family-constellation",
+     participants:"10 Seats"
   },
   {
     id: 5,
     name: "FC (batches of 10)",
     seats: 10,
-    date: "22nd August",
-    location: "Austin",
+    date: "22nd Aug",
+    location: "Austin, USA",
     trainer: "Dr. Monoj's A/C",
     type: "Family Constellations",
     price: "USD 375",
     currency: "USD",
     priceValue: 5999,
+    facilitator: "Yuvraj Kapadia",
     link: "/family-constellation",
+     participants:"10 Seats"
   },
   {
     id: 6,
     name: "FC (separate batches of 10)",
     seats: 10,
-    date: "23rd August",
-    location: "Austin",
+    date: "23rd Aug",
+    location: "Austin, USA",
     trainer: "Dr. Monoj's A/C",
     type: "Family Constellations",
     price: "USD 375",
     currency: "USD",
     priceValue: 6500,
+    facilitator: "Yuvraj Kapadia",
     link: "/family-constellation",
+     participants:"10 Seats"
   },
   {
     id: 7,
     name: "FC – Limit 10 participants",
     seats: 10,
-    date: "28th August",
-    location: "Woodlands",
+    date: "28th Aug",
+    location: "Woodlands, USA",
     trainer: "Dr. Monoj's A/C",
     type: "Family Constellations",
     price: "USD 375",
     currency: "USD",
     priceValue: 349,
+    facilitator: "Yuvraj Kapadia",
     link: "/family-constellation",
+     participants:"10 Seats"
   },
   {
     id: 8,
     name: "FC Session",
     seats: 10,
-    date: "29th August",
-    location: "Woodlands",
+    date: "29th Aug",
+    location: "Woodlands, USA",
     trainer: "",
     type: "Family Constellations",
     price: "USD 375",
     currency: "USD",
     priceValue: 25999,
+    facilitator: "Yuvraj Kapadia",
     link: "/family-constellation",
+    participants:"10 Seats"
   },
 ];
 function Schedule() {
@@ -162,7 +178,7 @@ function Schedule() {
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.8, delay: 0.2 }}
           >
-           Event Calendar 
+            Event Calendar
           </motion.h1>
 
           <motion.p
@@ -171,7 +187,7 @@ function Schedule() {
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.8, delay: 0.4 }}
           >
-           Explore the upcoming programs and reserve your spot today.
+            Explore the upcoming programs and reserve your spot today.
           </motion.p>
 
           <motion.div
@@ -274,7 +290,7 @@ function Schedule() {
                     Trainer
                   </th>
                   <th className="hidden lg:table-cell px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider whitespace-nowrap">
-                    Type
+                   Total Participants
                   </th>
                   <th className="px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider whitespace-nowrap">
                     Price
@@ -325,19 +341,15 @@ function Schedule() {
                     </td>
                     <td className="px-4 py-4 hidden md:table-cell">
                       <div className="text-sm text-[#2D2D2D]">
-                        {event.trainer || "-"}
+                        {event.facilitator || "-"}
                       </div>
                     </td>
                     <td className="px-4 py-4 hidden lg:table-cell">
                       <div className="text-sm">
                         <span
-                          className={`px-2 py-1 rounded-full ${
-                            event.type === "Family Constellations"
-                              ? "bg-[#20B2AA]/[0.1]"
-                              : "bg-[#f4eafd]"
-                          }`}
+                          className={`px-2 py-1 rounded-full`}
                         >
-                          {event.type}
+                          {event.participants}
                         </span>
                       </div>
                     </td>

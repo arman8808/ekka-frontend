@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { Link, useLocation, useSearchParams } from "react-router-dom";
 import { Clock, GraduationCap } from "lucide-react";
 import Footer from "../components/Footer";
 import Header from "../components/Header";
@@ -7,12 +7,14 @@ import Faq2 from "../components/decode/Faq2";
 import TestimonialCarousel from "../components/home/Testimonials";
 import { levelsData } from "../components/data/ich.levels.data";
 import RegistrationForm from "../components/utils/ICH.Registartionform";
+import { tr } from "framer-motion/client";
 const ICHLevels = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [comingSoonAlert, setComingSoonAlert] = useState(false);
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const level = searchParams.get("level") || "1";
+  const modal = searchParams.get("modal"); // "true"
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
@@ -67,7 +69,11 @@ const ICHLevels = () => {
   ];
 
   const levelData = levelsData[level] || levelsData[1];
-
+  useEffect(() => {
+    if (modal) {
+      setIsModalOpen(true);
+    }
+  }, [modal]);
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-50">
       <Header />

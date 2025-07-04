@@ -18,7 +18,7 @@ const events = [
     currency: "USD",
     priceValue: 600,
     facilitator: "Yuvraj Kapadia",
-    link: "/ich/levels?level=1?modal=true",
+    link: "/ich/levels?level=1&modal=true",
      participants:"10 Seats"
   },
   {
@@ -48,7 +48,7 @@ const events = [
     currency: "USD",
     priceValue: 12999,
     facilitator: "Yuvraj Kapadia",
-    link: "/ich/levels?level=3?modal=true",
+    link: "/ich/levels?level=3&modal=true",
      participants:"10 Seats"
   },
   {

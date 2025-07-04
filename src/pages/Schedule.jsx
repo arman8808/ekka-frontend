@@ -127,7 +127,7 @@ function Schedule() {
     >
       <Header />
       <motion.section
-        className="relative mb-4 flex flex-col justify-center items-center text-center px-4 pt-[120px] md:pt-[160px] w-full h-[calc(800px-80px)] md:h-[700px] lg:h-[700px]"
+        className="relative mb-4 flex flex-col justify-center items-center text-center px-4 pt-[120px] md:pt-[160px] w-full h-[calc(800px-80px)] md:h-[700px] lg:h-[700px] bg-center bg-no-repeat  bg-cover "
         style={{
           backgroundImage: "url('/decode/Hero Image.svg')",
           height: "541px",
@@ -359,7 +359,7 @@ function Schedule() {
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
                         onClick={() => handleRegister(event.link)}
-                        className="px-3 py-1 bg-[#6E2D79] text-white text-xs rounded-md hover:bg-[#5a2465] transition-colors"
+                        className="px-3 py-1 bg-[#6E2D79] text-white text-xs rounded-md hover:bg-[#5a2465] transition-colors cursor-pointer"
                       >
                         Register
                       </motion.button>

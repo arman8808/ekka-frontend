@@ -532,7 +532,7 @@ useEffect(() => {
             </h2>
             <button
               onClick={onClose}
-              className="text-gray-500 hover:text-gray-700 text-2xl hover:bg-gray-100 rounded-full w-8 h-8 flex items-center justify-center transition-colors"
+              className="text-gray-500 hover:text-gray-700 text-2xl hover:bg-gray-100 rounded-full w-8 h-8 flex items-center justify-center transition-colors cursor-pointer"
               aria-label="Close modal"
             >
               <X size={20} />
@@ -794,7 +794,7 @@ useEffect(() => {
               <button
                 type="button"
                 onClick={onClose}
-                className="px-6 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition-colors"
+                className="px-6 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition-colors cursor-pointer"
                 disabled={isSubmitting}
               >
                 Cancel
@@ -802,7 +802,7 @@ useEffect(() => {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className={`px-6 py-2 bg-[#6E2D79] text-white rounded-md transition-colors flex items-center justify-center min-w-[140px] ${
+                className={`px-6 py-2 bg-[#6E2D79] text-white rounded-md transition-colors flex items-center justify-center min-w-[140px] cursor-pointer ${
                   isSubmitting
                     ? "opacity-50 cursor-not-allowed"
                     : "hover:bg-[#5a2465]"

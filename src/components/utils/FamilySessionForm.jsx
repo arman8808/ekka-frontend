@@ -90,7 +90,7 @@ const FamilySessionForm = ({ onClose, selectedSession }) => {
       <div className="relative">
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 p-2 rounded-full hover:bg-gray-100 transition-colors"
+          className="absolute top-4 right-4 p-2 rounded-full hover:bg-gray-100 transition-colors cursor-pointer"
           aria-label="Close form"
         >
           <svg
@@ -265,7 +265,7 @@ const FamilySessionForm = ({ onClose, selectedSession }) => {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className={`w-full py-4 text-white font-medium rounded-lg transition-colors shadow-md ${
+                className={`w-full py-4 text-white font-medium rounded-lg transition-colors shadow-md cursor-pointer ${
                   isSubmitting
                     ? "bg-gray-400 cursor-not-allowed"
                     : "bg-[#6E2D79] hover:bg-[#8a3c97]"

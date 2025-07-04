@@ -68,7 +68,7 @@ const UpcomingSessions = () => {
   return (
     <div className="py-16 px-4 md:px-8 bg-white">
       <div className="max-w-7xl mx-auto">
-        <h2 className="text-[1.5rem] font-normal text-center text-[#6E2D79] mb-12">
+        <h2 className="text-[1.5rem] font-medium text-center text-[#6E2D79] mb-12">
           Programs Details
         </h2>
 
@@ -155,7 +155,7 @@ const UpcomingSessions = () => {
                       <td className="px-6 py-4 whitespace-nowrap text-base">
                         <button
                           onClick={() => handleEnroll(session)}
-                          className="px-4 py-2 bg-[#6E2D79] text-white rounded-lg hover:bg-[#8a3c97] transition-colors shadow-sm text-base"
+                          className="px-4 py-2 bg-[#6E2D79] text-white rounded-lg hover:bg-[#8a3c97] transition-colors shadow-sm text-base cursor-pointer"
                         >
                           Enroll Now
                         </button>

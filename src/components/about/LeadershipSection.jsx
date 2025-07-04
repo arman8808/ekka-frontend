@@ -10,7 +10,7 @@ const LeadershipSection = () => {
           <h2 className="text-xl sm:text-2xl leading-[24px] font-medium text-[#6E2D79] font-poppins mb-2">
             Abhishek Kapadia
           </h2>
-          <p className="text-base sm:text-lg leading-[30px] text-[#A35F93] font-medium">
+          <p className="text-base sm:text-lg leading-[30px] text-[#A35F93] font-normal ">
             Abhishek Yuvraj Kapadia officially joined EKAA in January 2015 as
             the Strategic Business Head. With a fresh, dynamic approach, he has
             played a key role in expanding EKAA's presence to several new
@@ -61,7 +61,7 @@ const LeadershipSection = () => {
           <h2 className="text-xl sm:text-2xl leading-[24px] font-medium text-[#6E2D79] font-poppins mb-2">
             Priya KP
           </h2>
-          <p className="text-base sm:text-lg leading-[30px] text-[#A35F93] font-medium">
+          <p className="text-base sm:text-lg leading-[30px] text-[#A35F93] font-normal">
             Priya K. P holds a Master's in Microbiology from Bangalore
             University and an Advanced Diploma in Counselling and Psychology
             from Australia. She has played a pivotal role in transforming CHII
@@ -70,7 +70,7 @@ const LeadershipSection = () => {
             Analysis, her interests span early childhood development, youth
             wellbeing, and family systems.
           </p>
-          <p className="text-base sm:text-lg leading-[30px] text-[#A35F93] font-medium mt-2">
+          <p className="text-base sm:text-lg leading-[30px] text-[#A35F93] font-normal mt-2">
             Priya brings vast experience from multinational corporates,
             combining strategic thinking with creative vision and strong
             governance. She excels at streamlining systems, introducing
@@ -78,7 +78,7 @@ const LeadershipSection = () => {
             she supervises training content, certifies teachers and students,
             and drives innovation in workshops and programs.
           </p>
-          <p className="text-base sm:text-lg leading-[30px] text-[#A35F93] font-medium mt-2">
+          <p className="text-base sm:text-lg leading-[30px] text-[#A35F93] font-normal mt-2">
             Her global outlook is enriched through regular participation in
             international seminars. She is passionate about reducing toxic
             stress in children, preventing emotional abuse, addressing the

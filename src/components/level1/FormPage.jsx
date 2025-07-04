@@ -846,7 +846,7 @@ function FormPage({ onClose = () => {} }) {
             </h2>
             <button
               onClick={onClose}
-              className="text-gray-500 hover:text-gray-700 text-2xl hover:bg-gray-100 rounded-full w-8 h-8 flex items-center justify-center transition-colors"
+              className="text-gray-500 hover:text-gray-700 text-2xl hover:bg-gray-100 rounded-full w-8 h-8 flex items-center justify-center transition-colors cursor-pointer "
               aria-label="Close modal"
             >
               ×
@@ -1164,11 +1164,11 @@ function FormPage({ onClose = () => {} }) {
             </div>
 
             {/* Submit Buttons */}
-            <div className="flex flex-col sm:flex-row justify-end gap-4 pt-6 border-t border-gray-200">
+            <div className="flex flex-col sm:flex-row justify-end gap-4 pt-6 border-t border-gray-200 ">
               <button
                 type="button"
                 onClick={onClose}
-                className="px-6 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition-colors"
+                className="px-6 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition-colors cursor-pointer"
                 disabled={loading}
               >
                 Cancel
@@ -1176,7 +1176,7 @@ function FormPage({ onClose = () => {} }) {
               <button
                 type="submit"
                 disabled={loading}
-                className={`px-6 py-2 bg-[#6E2D79] text-white rounded-md transition-colors flex items-center justify-center min-w-[140px] ${
+                className={`px-6 py-2 bg-[#6E2D79] text-white rounded-md transition-colors flex items-center justify-center min-w-[140px] cursor-pointer ${
                   loading
                     ? "opacity-50 cursor-not-allowed"
                     : "hover:bg-[#5a2465]"
@@ -1184,7 +1184,7 @@ function FormPage({ onClose = () => {} }) {
               >
                 {loading ? (
                   <>
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2 "></div>
                     Submitting...
                   </>
                 ) : (

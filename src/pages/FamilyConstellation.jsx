@@ -32,7 +32,7 @@ function FamilyConstellation() {
         }}
       >
         <div className="max-w-3xl mx-auto text-center">
-          <h2 className="text-2xl font-bold text-[#6E2D79] mb-5">
+          <h2 className="text-2xl font-medium text-[#6E2D79] mb-5">
             About Family Constellation
           </h2>
           <p className="text-lg text-[#6E2D79] leading-relaxed">

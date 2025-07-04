@@ -185,10 +185,10 @@ const TestimonialCarousel = () => {
           </div>
 
           {/* Navigation Buttons */}
-          <div className="flex justify-center gap-4 mt-8 sm:mt-12">
+          <div className="flex justify-center gap-4 mt-8 sm:mt-12 ">
             <motion.button
               onClick={handlePrev}
-              className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-[#C183B2] text-white  flex items-center justify-center  transition-colors duration-300"
+              className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-[#C183B2] text-white  flex items-center justify-center  transition-colors duration-300 cursor-pointer"
               aria-label="Previous testimonial"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
@@ -197,7 +197,7 @@ const TestimonialCarousel = () => {
             </motion.button>
             <motion.button
               onClick={handleNext}
-              className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-[#6E2D79] text-white flex items-center justify-center  transition-colors duration-300"
+              className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-[#6E2D79] text-white flex items-center justify-center  transition-colors duration-300 cursor-pointer"
               aria-label="Next testimonial"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}

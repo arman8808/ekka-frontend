@@ -250,9 +250,9 @@ const Herosection = () => {
             whileHover="hover"
             whileTap={{ scale: 0.95 }}
             onClick={handlePlayButtonClick}
-            className="group relative bg-white/90 backdrop-blur-sm rounded-full p-6 shadow-2xl border-2 border-white/30 hover:bg-white transition-all duration-300"
+            className="group relative bg-white/90 backdrop-blur-sm rounded-full p-6 shadow-2xl border-2 border-white/30 hover:bg-white transition-all duration-300 cursor-pointer"
           >
-            <div className="absolute inset-0 bg-gradient-to-r from-[#6E2D79]/20 to-[#5C2166]/20 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            <div className="absolute inset-0 bg-gradient-to-r from-[#6E2D79]/20 to-[#5C2166]/20 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 " />
             <Play className="w-8 h-8 text-[#6E2D79] ml-1 relative z-10" />
           </motion.button>
         </motion.div>
@@ -280,7 +280,7 @@ const Herosection = () => {
               {/* Close Button */}
               <button
                 onClick={handleCloseDialog}
-                className="absolute top-3 right-3 z-30 bg-black/50 hover:bg-black/70 rounded-full p-2 transition-all duration-200 backdrop-blur-sm"
+                className="absolute top-3 right-3 z-30 bg-black/50 hover:bg-black/70 rounded-full p-2 transition-all duration-200 backdrop-blur-sm cursor-pointer"
               >
                 <X className="w-5 h-5 text-white" />
               </button>
@@ -306,7 +306,7 @@ const Herosection = () => {
                 {showControls && (
                   <div className="absolute left-1/2 -translate-x-1/2 bottom-0 z-20 flex flex-col items-center px-2 sm:px-0">
                     <div
-                      className="flex flex-col bg-[#6E2D79] rounded-full px-2.5 py-1.5 sm:px-3 sm:py-2 lg:px-4 lg:py-2 w-full max-w-sm sm:max-w-lg lg:w-[622px] lg:h-[51px]"
+                      className="flex flex-col bg-[#6E2D79] rounded-full px-2.5 py-1.5 sm:px-3 sm:py-2 lg:px-4 lg:py-2 w-full max-w-sm sm:max-w-lg lg:w-[622px] lg:h-[51px] "
                       style={{
                         width: "min(calc(100vw - 64px), 622px)",
                         flexShrink: 0,

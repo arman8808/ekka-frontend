@@ -259,7 +259,7 @@ const ContactUsPage = () => {
         initial="hidden"
         animate="visible"
         variants={ANIMATION_CONFIG.staggerContainer}
-        className="relative z-10 text-center pt-20 pb-16"
+        className="relative z-10 text-center pt-20 pb-16 mt-14"
       >
         <motion.h1
           variants={ANIMATION_CONFIG.fadeInUp}

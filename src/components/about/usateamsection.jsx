@@ -16,7 +16,7 @@ function Usateamsection() {
           <h2 className="text-xl sm:text-2xl leading-[24px] font-medium text-[#6E2D79] font-poppins mb-2">
             Dr Manoj Kumar Bhardwaj, M.D.
           </h2>
-          <p className="text-base sm:text-lg leading-[30px] text-[#A35F93] font-medium">
+          <p className="text-base sm:text-lg leading-[30px] text-[#A35F93] font-normal">
             Dr. Manoj Kumar Bhardwaj is a board-certified physician in Family
             Medicine (Baylor College of Medicine), Internal Medicine (Houston
             Methodist Hospital), and Lifestyle Medicine (ABLM), based in
@@ -24,7 +24,7 @@ function Usateamsection() {
             a certified Clinical Integrated Hypnotherapist specializing in
             Transpersonal Regression Therapy.
           </p>
-          <p className="text-base sm:text-lg leading-[30px] text-[#A35F93] font-medium mt-2">
+          <p className="text-base sm:text-lg leading-[30px] text-[#A35F93] font-normal mt-2">
             Driven by a deep interest in Mind-Body Medicine, Dr. Bhardwaj blends
             scientific knowledge with holistic healing practices. His approach
             focuses on guiding patients beyond pain and illness toward deeper
@@ -32,7 +32,7 @@ function Usateamsection() {
             integrating diverse modalities, he helps clients align their
             physical, mental, and emotional well-being.
           </p>
-          <p className="text-base sm:text-lg leading-[30px] text-[#A35F93] font-medium mt-2">
+          <p className="text-base sm:text-lg leading-[30px] text-[#A35F93] font-normal mt-2">
             Outside his medical and therapeutic work, he enjoys skiing,
             swimming, and spending time with his wife and three children. His
             mission is to support others in unlocking their potential, healing
@@ -61,7 +61,7 @@ function Usateamsection() {
           <h2 className="text-xl sm:text-2xl leading-[24px] font-medium text-[#6E2D79] font-poppins mb-2">
             Dr. Sonia Gupte’s, M.D.
           </h2>
-          <p className="text-base sm:text-lg leading-[30px] text-[#A35F93] font-medium">
+          <p className="text-base sm:text-lg leading-[30px] text-[#A35F93] font-normal">
             Dr. Sonia Gupte is the Founder of Enso-nia (California), a
             Board-Certified Clinical Hypnotherapist, Senior EKAA Trainer, and
             the international best-selling author of WITHIN. Based in the United
@@ -69,14 +69,14 @@ function Usateamsection() {
             by integrating clinical hypnotherapy with mainstream medicine,
             promoting a mind-body approach to healing.
           </p>
-          <p className="text-base sm:text-lg leading-[30px] text-[#A35F93] font-medium mt-2">
+          <p className="text-base sm:text-lg leading-[30px] text-[#A35F93] font-normal mt-2">
             With over 15 years of experience as a Family Medicine Physician, Dr.
             Gupte chose to leave conventional practice to fully dedicate herself
             to clinical hypnotherapy. For more than a decade, she has helped
             thousands across the globe discover healing by accessing their own
             inner resources.
           </p>
-          <p className="text-base sm:text-lg leading-[30px] text-[#A35F93] font-medium mt-2">
+          <p className="text-base sm:text-lg leading-[30px] text-[#A35F93] font-normal mt-2">
             Passionate about education and advocacy, she actively trains medical
             professionals and fosters global awareness about hypnotherapy
             through workshops and research. Her work bridges the gap between
@@ -119,7 +119,7 @@ function Usateamsection() {
           <h2 className="text-xl sm:text-2xl leading-[24px] font-medium text-[#6E2D79] font-poppins mb-2">
             Dr. Jyoti Behl Bhardwaj, M.D.
           </h2>
-          <p className="text-base sm:text-lg leading-[30px] text-[#A35F93] font-medium">
+          <p className="text-base sm:text-lg leading-[30px] text-[#A35F93] font-normal">
             Dr. Jyoti Behl Bhardwaj is a board-certified physician in Family
             Medicine (UT) and Lifestyle Medicine (ABLM), who brings a rare and
             powerful blend of modern medical science and intuitive healing into
@@ -127,7 +127,7 @@ function Usateamsection() {
             skillfully bridges the gap between physical health and energetic
             alignment, guiding her patients toward deep, lasting well-being.
           </p>
-          <p className="text-base sm:text-lg leading-[30px] text-[#A35F93] font-medium mt-2">
+          <p className="text-base sm:text-lg leading-[30px] text-[#A35F93] font-normal mt-2">
             Her approach emphasizes the integration of mind, body, and spirit,
             fostering healing that goes beyond symptom management to address
             root causes. Outside of her professional life, Dr. Bhardwaj finds
@@ -135,7 +135,7 @@ function Usateamsection() {
             nurturing family relationships, and expressing herself through the
             joy of dance.
           </p>
-          <p className="text-base sm:text-lg leading-[30px] text-[#A35F93] font-medium mt-2">
+          <p className="text-base sm:text-lg leading-[30px] text-[#A35F93] font-normal mt-2">
             She holds a heartfelt belief in the innate healing potential of
             every individual and sees health as a journey of self-discovery and
             connection. Her work reflects a deep respect for the

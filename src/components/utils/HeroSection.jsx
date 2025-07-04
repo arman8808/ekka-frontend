@@ -14,7 +14,7 @@ const HeroVideoSection = ({
     </div>
   ),
   buttonContent = (
-    <div className="group relative bg-white/90 backdrop-blur-sm rounded-full p-6 shadow-2xl border-2 border-white/30 hover:bg-white transition-all duration-300 z-10">
+    <div className="group relative bg-white/90 backdrop-blur-sm rounded-full p-6 shadow-2xl border-2 border-white/30 hover:bg-white transition-all duration-300 z-10 cursor-pointer">
       <div className="absolute inset-0 bg-gradient-to-r from-[#6E2D79]/20 to-[#5C2166]/20 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
       <Play className="w-8 h-8 text-[#6E2D79] ml-1 relative z-10" />
     </div>
@@ -346,7 +346,7 @@ const HeroVideoSection = ({
               {/* Close Button */}
               <button
                 onClick={handleCloseDialog}
-                className="absolute top-3 right-3 z-30 bg-black/50 hover:bg-black/70 rounded-full p-2 transition-all duration-200 backdrop-blur-sm"
+                className="absolute top-3 right-3 z-30 bg-black/50 hover:bg-black/70 rounded-full p-2 transition-all duration-200 backdrop-blur-sm cursor-pointer"
               >
                 <X className="w-5 h-5 text-white" />
               </button>

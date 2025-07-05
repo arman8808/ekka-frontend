@@ -805,8 +805,8 @@ function FormPage({ onClose = () => {} }) {
   // City options for select dropdown
   const cityOptions = [
     {
-      value: "New York | Ekaa Centre Auditorium | 17:00 (GMT-4)",
-      label: "New York | Ekaa Centre Auditorium | 17:00 (GMT-4)",
+      value: "Houston | Decode The Child | 10th Aug",
+      label: "Houston | Decode The Child | 10th Aug",
     },
     {
       value: "Los Angeles | Conference Center | 19:00 (GMT-7)",

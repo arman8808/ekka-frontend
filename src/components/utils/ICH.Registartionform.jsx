@@ -44,12 +44,12 @@ const hearAboutOptions = [
 // City options for select dropdown
 const cityOptions = [
   {
-    value: "New York | Ekaa Centre Auditorium | 17:00 (GMT-4)",
-    label: "New York | Ekaa Centre Auditorium | 17:00 (GMT-4)",
+    value: "Houston | ICH L3 Training | 13th-17th Aug",
+    label: "Houston | ICH L3 Training | 13th-17th Aug",
   },
   {
-    value: "Los Angeles | Conference Center | 19:00 (GMT-7)",
-    label: "Los Angeles | Conference Center | 19:00 (GMT-7)",
+    value: "Houston | ICH L1 Training | 20th-21th Aug",
+    label: "Houston | ICH L1 Training | 20th-21th Aug",
   },
   {
     value: "Chicago | Training Room | 20:00 (GMT-5)",
@@ -377,7 +377,7 @@ const FormCheckbox = ({ label, name, register, error, className = "" }) => (
   </div>
 );
 
-const RegistrationForm = ({ onClose = () => {} }) => {
+const RegistrationForm = ({ onClose = () => {}, level }) => {
   const [showThankYou, setShowThankYou] = useState(false);
   const [apiError, setApiError] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -460,6 +460,10 @@ const RegistrationForm = ({ onClose = () => {} }) => {
         }
       });
 
+      if (level) {
+        formData.append("level", level);
+      }
+
       // Show loading toast
       const loadingToast = toast.loading("Submitting registration...");
 
@@ -502,18 +506,18 @@ const RegistrationForm = ({ onClose = () => {} }) => {
       document.body.style.overflow = "unset";
     };
   }, [onClose]);
-useEffect(() => {
-  return () => {
-    // Cleanup preview URLs when component unmounts
-    const fields = ['profileImage', 'frontImage', 'backImage'];
-    fields.forEach(field => {
-      const value = watch(field);
-      if (value?.preview) {
-        URL.revokeObjectURL(value.preview);
-      }
-    });
-  };
-}, []);
+  useEffect(() => {
+    return () => {
+      // Cleanup preview URLs when component unmounts
+      const fields = ["profileImage", "frontImage", "backImage"];
+      fields.forEach((field) => {
+        const value = watch(field);
+        if (value?.preview) {
+          URL.revokeObjectURL(value.preview);
+        }
+      });
+    };
+  }, []);
   return (
     <div
       className="fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-[111111]"

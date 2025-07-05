@@ -8,18 +8,34 @@ import { ChevronDown } from "lucide-react";
 const events = [
   {
     id: 9,
-    name: "Master Class for Teachers",
+    name: "DECODE The Child",
     seats: "Not Limited",
     date: "10th Aug",
     location: "Houston, USA",
     trainer: "Dr. Alyasowmy's A/C",
     type: "Family Constellations",
-    price: "USD 375",
+    price: "USD 35",
     currency: "USD",
     priceValue: 15999,
     facilitator: "Yuvraj Kapadia",
     link: "/level/5?modal=true",
     participants: "10 Seats",
+  },
+  {
+    id: 8,
+    name: "Masterclass for Corporates",
+    seats: "Not Limited",
+    date: "1tth Aug",
+    location: "Houston, USA",
+    trainer: "",
+    type: "Family Constellations",
+    price: "USD 375",
+    currency: "USD",
+    priceValue: 25999,
+    facilitator: "Yuvraj Kapadia",
+    link: "/family-constellation?id=6&modal=true",
+    participants: "10 Seats",
+    noenroll: true,
   },
   {
     id: 2,
@@ -38,7 +54,7 @@ const events = [
   },
   {
     id: 3,
-    name: "Advanced Course in Integrated Hypnotic Modalities for Health Resolutions",
+    name: "Level 3 of Hypnotherapy Training, Advanced Course in Integrated Hypnotic Modalities for Health Resolutions",
     seats: "Not Limited",
     date: "13th–17th Aug",
     location: "Houston, USA",
@@ -68,7 +84,7 @@ const events = [
   },
   {
     id: 1,
-    name: "Basic Course in Integrated Clinical Hypnotherapy Certification",
+    name: "Level 1 of Hypnotherapy Training, Basic Course in Integrated Clinical Hypnotherapy Certification",
     seats: "Not Limited",
     date: "20th–21st Aug",
     location: "Austin, USA",
@@ -113,6 +129,22 @@ const events = [
     participants: "10 Seats",
   },
   {
+    id: 10,
+    name: "Masterclass for doctors",
+    seats: "Not Limited",
+    date: "27th Aug",
+    location: "Houston, USA",
+    trainer: "",
+    type: "Family Constellations",
+    price: "USD 375",
+    currency: "USD",
+    priceValue: 25999,
+    facilitator: "Yuvraj Kapadia",
+    link: "/family-constellation?id=6&modal=true",
+    participants: "10 Seats",
+    noenroll: true,
+  },
+  {
     id: 7,
     name: "Family Constellation",
     seats: 10,
@@ -125,21 +157,6 @@ const events = [
     priceValue: 349,
     facilitator: "Yuvraj Kapadia",
     link: "/family-constellation?id=5&modal=true",
-    participants: "10 Seats",
-  },
-  {
-    id: 8,
-    name: "Family Constellation",
-    seats: 10,
-    date: "29th Aug",
-    location: "Woodlands, USA",
-    trainer: "",
-    type: "Family Constellations",
-    price: "USD 375",
-    currency: "USD",
-    priceValue: 25999,
-    facilitator: "Yuvraj Kapadia",
-    link: "/family-constellation?id=6&modal=true",
     participants: "10 Seats",
   },
 ];
@@ -283,116 +300,115 @@ function Schedule() {
         ))}
       </motion.section>
       <div className="px-4 py-8">
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.5 }}
-          className="bg-white rounded-lg shadow-md overflow-hidden"
-        >
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-[#6E2D79]">
-                <tr>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider whitespace-nowrap">
-                    Event
-                  </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider whitespace-nowrap">
-                    Date
-                  </th>
-                  <th className="hidden sm:table-cell px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider whitespace-nowrap">
-                    Location
-                  </th>
-                  <th className="hidden md:table-cell px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider whitespace-nowrap">
-                    Facilitator
-                  </th>
-                  <th className="hidden lg:table-cell px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider whitespace-nowrap">
-                    Total Participants
-                  </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider whitespace-nowrap">
-                    Price
-                  </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider whitespace-nowrap">
-                    Action
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {events.map((event, index) => (
-                  <motion.tr
-                    key={event.id}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.3, delay: index * 0.05 }}
-                    whileHover={{ backgroundColor: "rgba(249, 250, 251, 1)" }}
-                    className="group"
-                  >
-                    <td className="px-4 py-4">
-                      <div className="flex flex-col">
-                        <span className="text-sm font-bold text-[#2D2D2D]">
-                          {event.name}
-                        </span>
-                        <span className="sm:hidden text-xs text-[#2D2D2D]">
-                          {event.date} • {event.location}
-                        </span>
-                        <span className="md:hidden text-xs text-[#2D2D2D]">
-                          {event.trainer && `Trainer: ${event.trainer}`}
-                        </span>
-                        <span className="lg:hidden text-xs text-[#2D2D2D]">
-                          Type: {event.type}
-                        </span>
-                      </div>
-                    </td>
-                    <td className="px-4 py-4 hidden sm:table-cell">
-                      <div className="text-sm text-[#2D2D2D] whitespace-nowrap">
-                        {event.date}
-                      </div>
-                    </td>
-                    <td className="px-4 py-4 hidden sm:table-cell">
-                      <div className="text-sm text-[#2D2D2D]">
-                        {event.location}
-                      </div>
-                    </td>
-                    <td className="px-4 py-4 hidden md:table-cell">
-                      <div className="text-sm text-[#2D2D2D]">
-                        {event.facilitator || "-"}
-                      </div>
-                    </td>
-                    <td className="px-4 py-4 hidden lg:table-cell">
-                      <div className="text-sm">
-                        <span className={`px-2 py-1 rounded-full`}>
-                          {event.seats}
-                        </span>
-                      </div>
-                    </td>
-                    <td className="px-4 py-4">
-                      <span
-                        className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                          event.currency === "AED"
-                            ? "bg-blue-100 text-blue-800"
-                            : event.currency === "USD"
-                            ? "bg-green-100 text-green-800"
-                            : "bg-yellow-100 text-yellow-800"
-                        }`}
-                      >
-                        {event.price}
-                      </span>
-                    </td>
-                    <td className="px-4 py-4">
-                      <motion.button
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                        onClick={() => handleRegister(event.link)}
-                        className="px-3 py-2 bg-[#6E2D79] text-white text-xs rounded-md hover:bg-[#5a2465] transition-colors cursor-pointer"
-                      >
-                        Enroll Now
-                      </motion.button>
-                    </td>
-                  </motion.tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </motion.div>
+     <motion.div
+  initial={{ opacity: 0 }}
+  animate={{ opacity: 1 }}
+  transition={{ duration: 0.5 }}
+  className="bg-white rounded-lg shadow-md overflow-hidden"
+>
+  <div className="overflow-x-auto">
+    <table className="min-w-full divide-y divide-gray-200">
+      <thead className="bg-[#6E2D79]">
+        <tr>
+          <th className="px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider whitespace-nowrap">
+            Event
+          </th>
+          <th className="px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider whitespace-nowrap">
+            Date
+          </th>
+          <th className="px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider whitespace-nowrap">
+            Location
+          </th>
+          <th className="px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider whitespace-nowrap">
+            Facilitator
+          </th>
+          <th className="px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider whitespace-nowrap">
+            Total Participants
+          </th>
+          <th className="px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider whitespace-nowrap">
+            Price
+          </th>
+          <th className="px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider whitespace-nowrap">
+            Action
+          </th>
+        </tr>
+      </thead>
+      <tbody className="bg-white divide-y divide-gray-200">
+        {events.map((event, index) => (
+          <motion.tr
+            key={event.id}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, delay: index * 0.05 }}
+            whileHover={{ backgroundColor: "rgba(249, 250, 251, 1)" }}
+            className="group"
+          >
+            <td className="px-4 py-4">
+              <div className="flex flex-col">
+                <span className="text-sm font-bold text-[#2D2D2D]">
+                  {event.name}
+                </span>
+              </div>
+            </td>
+            <td className="px-4 py-4">
+              <div className="text-sm text-[#2D2D2D] whitespace-nowrap">
+                {event.date}
+              </div>
+            </td>
+            <td className="px-4 py-4">
+              <div className="text-sm text-[#2D2D2D]">
+                {event.location}
+              </div>
+            </td>
+            <td className="px-4 py-4">
+              <div className="text-sm text-[#2D2D2D]">
+                {event.facilitator || "-"}
+              </div>
+            </td>
+            <td className="px-4 py-4">
+              <div className="text-sm">
+                <span className={`px-2 py-1 rounded-full`}>
+                  {event.seats}
+                </span>
+              </div>
+            </td>
+            <td className="px-4 py-4">
+              {event.noenroll ? (
+                <span className="text-sm text-[#2D2D2D]">-</span>
+              ) : (
+                <span
+                  className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                    event.currency === "AED"
+                      ? "bg-blue-100 text-blue-800"
+                      : event.currency === "USD"
+                      ? "bg-green-100 text-green-800"
+                      : "bg-yellow-100 text-yellow-800"
+                  }`}
+                >
+                  {event.price}
+                </span>
+              )}
+            </td>
+            <td className="px-4 py-4">
+              {event.noenroll ? (
+                <span className="text-sm text-[#2D2D2D]">-</span>
+              ) : (
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => handleRegister(event.link)}
+                  className="px-3 py-2 bg-[#6E2D79] text-white text-xs rounded-md hover:bg-[#5a2465] transition-colors cursor-pointer"
+                >
+                  Enroll Now
+                </motion.button>
+              )}
+            </td>
+          </motion.tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+</motion.div>
       </div>
       <TestimonialCarousel />
       <Footer />

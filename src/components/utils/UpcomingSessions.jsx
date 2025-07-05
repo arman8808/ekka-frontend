@@ -57,16 +57,16 @@ const UpcomingSessions = ({ id, modal }) => {
       // price: "$ 375",
       status: "Open",
     },
-    {
-      id: 6,
-      Event: "Family Constellation",
-      Date: "Aug 29, 2025",
-      Location: "	Woodlands",
-      capacity: "10 Seats",
-      organisedby: "Dr Manoj's A/C",
-      // price: "$ 375",
-      status: "Open",
-    },
+    // {
+    //   id: 6,
+    //   Event: "Family Constellation",
+    //   Date: "Aug 29, 2025",
+    //   Location: "	Woodlands",
+    //   capacity: "10 Seats",
+    //   organisedby: "Dr Manoj's A/C",
+    //   // price: "$ 375",
+    //   status: "Open",
+    // },
   ];
  useEffect(() => {
     if (id && modal) {

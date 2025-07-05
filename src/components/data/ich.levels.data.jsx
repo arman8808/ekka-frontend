@@ -188,7 +188,7 @@ export const levelsData = {
       "Master Practitioner Certification in Advanced Hypnotherapy & Regression Techniques",
     duration: "7 Days",
     certification: "EKAA Integrated Clinical Hypnotherapy Foundation",
-    price: "#1,500",
+    price: "$1,500",
     next_session: "",
     enrollment_features: [
       "7-Day Intensive Masterclass",

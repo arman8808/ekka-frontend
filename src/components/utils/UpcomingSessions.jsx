@@ -19,8 +19,8 @@ const UpcomingSessions = () => {
     },
     {
       id: 2,
-      Event: "Decode Foundation",
-      Date: "FC With PTI",
+      Event: "FC With PTI",
+      Date: "Aug 18, 2025",
       Location: "Houston",
       capacity: "10 Seats",
       organisedby: "Dr Aiyasawmy's A/C",
@@ -39,7 +39,7 @@ const UpcomingSessions = () => {
     },
     {
       id: 4,
-    Event: "FC (separate batches of 10)",
+      Event: "FC (separate batches of 10)",
       Date: "Aug 23, 2025",
       Location: "Austin",
       capacity: "10 Seats",
@@ -108,7 +108,7 @@ const UpcomingSessions = () => {
                     >
                       Organised by
                     </th> */}
-{/* 
+                    {/* 
                     <th
                       scope="col"
                       className="px-6 py-4 text-left text-base font-semibold text-white uppercase tracking-wider"
@@ -177,17 +177,17 @@ const UpcomingSessions = () => {
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-            style={{ position: 'fixed' }}
+          style={{ position: "fixed" }}
         >
           <motion.div
             initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: 20, opacity: 0 }}
             transition={{ type: "spring", damping: 25 }}
-           className="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden max-h-[90vh] flex flex-col"
+            className="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden max-h-[90vh] flex flex-col"
           >
             <FamilySessionForm
-               onClose={() => setShowModal(false)}
+              onClose={() => setShowModal(false)}
               selectedSession={selectedSession}
             />
           </motion.div>

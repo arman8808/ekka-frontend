@@ -588,7 +588,9 @@ const ICHLevels = () => {
       )}
 
       {/* Registration Form Modal */}
-      {isModalOpen && <RegistrationForm onClose={handleCloseModal} />}
+      {isModalOpen && (
+        <RegistrationForm onClose={handleCloseModal} level={level} />
+      )}
       <TestimonialCarousel />
       <Faq2 />
       <Footer />

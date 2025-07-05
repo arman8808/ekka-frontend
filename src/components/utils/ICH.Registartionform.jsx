@@ -45,15 +45,13 @@ const hearAboutOptions = [
 const cityOptions = [
   {
     value: "Houston | ICH L3 Training | 13th-17th Aug",
-    label: "Houston | ICH L3 Training | 13th-17th Aug",
+    label: "Houston | Advanced Course in Integrated Hypnotic Modalities for Health Resolutions | 13th-17th Aug",
+    level: 3,
   },
   {
     value: "Houston | ICH L1 Training | 20th-21th Aug",
-    label: "Houston | ICH L1 Training | 20th-21th Aug",
-  },
-  {
-    value: "Chicago | Training Room | 20:00 (GMT-5)",
-    label: "Chicago | Training Room | 20:00 (GMT-5)",
+    label: "Houston | Basic Course in Integrated Clinical Hypnotherapy Certification | 20th-21th Aug",
+    level: 1,
   },
 ];
 
@@ -669,7 +667,7 @@ const RegistrationForm = ({ onClose = () => {}, level }) => {
                   <FormRadioGroup
                     label="City"
                     name="city"
-                    options={cityOptions}
+                    options={cityOptions.filter(option => option.level.toString() === level)}
                     control={control}
                     error={errors.city}
                     required

@@ -12,6 +12,26 @@ import {
 import { useNavigate } from "react-router-dom";
 const courseData = [
   {
+    id: 5,
+    title: "DECODE THE CHILD",
+    subtitle:
+      "A Masterclass to the DECODE Series",
+    tag: "This Level covers",
+    points: [
+      "A Transformational Workshop for Parents, Teachers, and Caregivers",
+      "Chakra stretches",
+      "Inner Right – A deep trance process to release cell memory programs",
+    ],
+    duration: "9 am to 1 pm",
+    skill: "All levels",
+    buttonText: "Enroll Now",
+    videoSrc:
+      "https://d2nxi4iq5glqsu.cloudfront.net/8-Decode+for+parents+%26+teacher.mp4",
+    thumbnailSrc: "/home/Parents & Teachers.png",
+    overlayText: "DECODE YOUR BLUE PRINT",
+    overlaySubtext: "15 mins",
+  },
+  {
     id: 1,
     title: "LEVEL 1: Decode Your Mind",
     subtitle: "Level 1: Decode Your Mind",
@@ -82,25 +102,6 @@ const courseData = [
     buttonText: "Enroll Now",
     videoSrc:
       "https://d2nxi4iq5glqsu.cloudfront.net/7-Decode+your+Blueprint.mp4",
-    thumbnailSrc: "/level-4.jpeg",
-    overlayText: "DECODE YOUR BLUE PRINT",
-    overlaySubtext: "15 mins",
-  },
-  {
-    id: 5,
-    title: "DECODE THE CHILD",
-    subtitle: "A Transformational Workshop for Parents, Teachers, and Caregivers",
-    tag: "This Level covers",
-    points: [
-      "A Transformational Workshop for Parents, Teachers, and Caregivers",
-      "Chakra stretches",
-      "Inner Right – A deep trance process to release cell memory programs",
-    ],
-    duration: "9 am to 1 pm",
-    skill: "All levels",
-    buttonText: "Enroll Now",
-    videoSrc:
-      "https://d2nxi4iq5glqsu.cloudfront.net/8-Decode+for+parents+%26+teacher.mp4",
     thumbnailSrc: "/level-4.jpeg",
     overlayText: "DECODE YOUR BLUE PRINT",
     overlaySubtext: "15 mins",
@@ -343,7 +344,7 @@ const Card = () => {
                 <h2 className="font-['Poppins'] font-medium text-2xl sm:text-3xl md:text-4xl leading-[1.2] sm:leading-[1.3] md:leading-[72px] text-[#6E2D79]">
                   {course.title}
                 </h2>
-
+<p className="text-[#6E2D79] font-semibold text-[18px]">{course?.subtitle}</p>
                 <ul className="w-full pt-2 pb-2 space-y-3 sm:space-y-[14px]">
                   {course.points.map((point, pidx) => (
                     <li key={pidx} className="flex items-start gap-2 sm:gap-3">

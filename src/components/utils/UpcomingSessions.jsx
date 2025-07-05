@@ -1,15 +1,15 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import React from "react";
 import FamilySessionForm from "./FamilySessionForm";
 import { motion, AnimatePresence } from "framer-motion";
-const UpcomingSessions = () => {
+const UpcomingSessions = ({ id, modal }) => {
   const [showModal, setShowModal] = useState(false);
   const [selectedSession, setSelectedSession] = useState(null);
   const [selectedWorkshop, setSelectedWorkshop] = useState(null);
   const sessions = [
     {
       id: 1,
-      Event: "FC-10 People",
+      Event: "Family Constellation",
       Date: "Aug 12, 2025",
       Location: "Houston",
       capacity: "10 Seats",
@@ -19,7 +19,7 @@ const UpcomingSessions = () => {
     },
     {
       id: 2,
-      Event: "FC With PTI",
+      Event: "Family Constellation",
       Date: "Aug 18, 2025",
       Location: "Houston",
       capacity: "10 Seats",
@@ -29,7 +29,7 @@ const UpcomingSessions = () => {
     },
     {
       id: 3,
-      Event: "FC (batches of 10)",
+      Event: "Family Constellation",
       Date: "Aug 22, 2025",
       Location: "Austin",
       capacity: "10 Seats",
@@ -39,7 +39,7 @@ const UpcomingSessions = () => {
     },
     {
       id: 4,
-      Event: "FC (separate batches of 10)",
+      Event: "Family Constellation",
       Date: "Aug 23, 2025",
       Location: "Austin",
       capacity: "10 Seats",
@@ -49,7 +49,7 @@ const UpcomingSessions = () => {
     },
     {
       id: 5,
-      Event: "FC - limit 10 participants",
+      Event: "Family Constellation",
       Date: "Aug 28, 2025",
       Location: "Woodlands",
       capacity: "10 Seats",
@@ -57,8 +57,27 @@ const UpcomingSessions = () => {
       // price: "$ 375",
       status: "Open",
     },
+    {
+      id: 6,
+      Event: "Family Constellation",
+      Date: "Aug 29, 2025",
+      Location: "	Woodlands",
+      capacity: "10 Seats",
+      organisedby: "Dr Manoj's A/C",
+      // price: "$ 375",
+      status: "Open",
+    },
   ];
-
+ useEffect(() => {
+    if (id && modal) {
+      const matchingSession = sessions.find(session => session.id.toString() === id.toString());
+      if (matchingSession) {
+        setSelectedSession(matchingSession);
+        setSelectedWorkshop(matchingSession);
+        setShowModal(true);
+      }
+    }
+  }, [id, modal]);
   const handleEnroll = (session) => {
     setSelectedWorkshop(session);
     setSelectedSession(session);
@@ -171,28 +190,29 @@ const UpcomingSessions = () => {
 
       {/* Modal */}
 
-      {showModal && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-          style={{ position: "fixed" }}
-        >
-          <motion.div
-            initial={{ y: 20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            exit={{ y: 20, opacity: 0 }}
-            transition={{ type: "spring", damping: 25 }}
-            className="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden max-h-[90vh] flex flex-col"
-          >
-            <FamilySessionForm
-              onClose={() => setShowModal(false)}
-              selectedSession={selectedSession}
-            />
-          </motion.div>
-        </motion.div>
-      )}
+{showModal && (
+  <motion.div
+    initial={{ opacity: 0 }}
+    animate={{ opacity: 1 }}
+    exit={{ opacity: 0 }}
+    className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[9999] flex items-center justify-center p-4"
+    onClick={() => setShowModal(false)} // Close when clicking backdrop
+  >
+    <motion.div
+      initial={{ y: 20, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      exit={{ y: 20, opacity: 0 }}
+      transition={{ type: "spring", damping: 25 }}
+      className="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden max-h-[90vh] flex flex-col z-[10000]"
+      onClick={(e) => e.stopPropagation()} // Prevent click from reaching backdrop
+    >
+      <FamilySessionForm
+        onClose={() => setShowModal(false)}
+        selectedSession={selectedSession}
+      />
+    </motion.div>
+  </motion.div>
+)}
     </div>
   );
 };

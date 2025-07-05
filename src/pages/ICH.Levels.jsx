@@ -32,34 +32,36 @@ const ICHLevels = () => {
   const sessions = [
     {
       id: 1,
-      Event: "ICH L3 Training",
+      Event:
+        "Advanced Course in Integrated Hypnotic Modalities for Health Resolutions",
       Date: "Aug 13-17, 2025",
       Location: "Houston",
       capacity: "10 Seats",
       organisedby: "Dr Aiyasawmy's A/C",
       // price: "$ 375",
       status: "Open",
+      level: 3,
     },
     {
       id: 2,
-      Event: "ICH L1 Training",
+      Event: "Basic Course in Integrated Clinical Hypnotherapy Certification",
       Date: "Aug 20-21, 2025",
       Location: "Austin",
       capacity: "10 Seats",
       organisedby: "Dr Manoj's A/C",
       // price: "$ 375",
       status: "Open",
+      level: 1,
     },
-    {
-      id: 3,
-      Event: "ICH Level 1",
-      Date: "Aug 31, 2025",
-      Location: "San Diego",
-      capacity: "10 Seats",
-      organisedby: "Dr Sonia's A/C",
-      // price: "$ 375",
-      status: "Open",
-    },
+    // {
+    //   id: 3,
+    //   Event: "ICH Level 1",
+    //   Date: "Aug 31, 2025",
+    //   Location: "San Diego",
+    //   capacity: "10 Seats",
+    //   organisedby: "Dr Sonia's A/C",
+    //   status: "Open",
+    // },
   ];
   const scheduleData = [
     { city: "Dallas", venue: "Abc", date: "Jun 15, 2025", time: "10:00 AM" },
@@ -518,18 +520,6 @@ const ICHLevels = () => {
                       >
                         Location
                       </th>
-                      {/* <th
-                        scope="col"
-                        className="px-6 py-4 text-left text-base font-semibold text-white uppercase tracking-wider"
-                      >
-                        Capacity
-                      </th>
-                      <th
-                        scope="col"
-                        className="px-6 py-4 text-left text-base font-semibold text-white uppercase tracking-wider"
-                      >
-                        Organised by
-                      </th> */}
 
                       <th
                         scope="col"
@@ -538,40 +528,24 @@ const ICHLevels = () => {
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-[#C183B2]">
-                    {sessions.map((session) => (
-                      <tr
-                        key={session.id}
-                        className="hover:bg-purple-50 transition-colors"
-                      >
-                        <td className="px-6 py-4 whitespace-nowrap text-base font-medium text-[#6E2D79]">
-                          {session.Date}
-                        </td>
-
-                        <td className="px-6 py-4 whitespace-nowrap text-base text-[#6E2D79]">
-                          {session.Event}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-base text-[#6E2D79]">
-                          {session.Location}
-                        </td>
-                        {/* <td className="px-6 py-4 whitespace-nowrap text-base text-[#6E2D79]">
-                          {session.capacity}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-base font-semibold text-[#6E2D79]">
-                          {session.organisedby}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-base">
-                          <span
-                            className="px-3 py-1 rounded-full text-base font-medium"
-                            style={{
-                              backgroundColor: "#4ECDC41A",
-                              color: "#1E7D78",
-                            }}
-                          >
-                            {session.status}
-                          </span>
-                        </td> */}
-                      </tr>
-                    ))}
+                    {sessions
+                      .filter((session) => session.level.toString() === level)
+                      .map((session) => (
+                        <tr
+                          key={session.id}
+                          className="hover:bg-purple-50 transition-colors"
+                        >
+                          <td className="px-6 py-4 whitespace-nowrap text-base font-medium text-[#6E2D79]">
+                            {session.Date}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-base text-[#6E2D79]">
+                            {session.Event}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-base text-[#6E2D79]">
+                            {session.Location}
+                          </td>
+                        </tr>
+                      ))}
                   </tbody>
                 </table>
               </div>

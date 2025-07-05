@@ -6,7 +6,12 @@ import FAQ from "../components/home/FAQ";
 import ProfileCard from "../components/utils/ProfileCard";
 import UpcomingSessions from "../components/utils/UpcomingSessions";
 import HeroSection from "../components/utils/HeroSection";
+import { useLocation } from "react-router-dom";
 function FamilyConstellation() {
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const id = searchParams.get("id") || "1";
+  const modal = searchParams.get("modal");
   return (
     <div>
       {" "}
@@ -20,9 +25,7 @@ function FamilyConstellation() {
           </div>
         }
         contentPosition="above"
-        videoUrl={`${
-          import.meta.env.VITE_API_Cloud_Front_URL
-        }FC/FC.mp4`}
+        videoUrl={`${import.meta.env.VITE_API_Cloud_Front_URL}FC/FC.mp4`}
         thumbnailUrl="/Fc/FC_image.png"
       />
       <div
@@ -43,7 +46,7 @@ function FamilyConstellation() {
         </div>
       </div>
       <ProfileCard />
-      <UpcomingSessions />
+      <UpcomingSessions id={id} modal={modal}/>
       <FAQ />
       <Testimonials />
       <Footer />

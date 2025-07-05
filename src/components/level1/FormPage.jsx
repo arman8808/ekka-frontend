@@ -808,14 +808,6 @@ function FormPage({ onClose = () => {} }) {
       value: "Houston | Decode The Child | 10th Aug",
       label: "Houston | Decode The Child | 10th Aug",
     },
-    {
-      value: "Los Angeles | Conference Center | 19:00 (GMT-7)",
-      label: "Los Angeles | Conference Center | 19:00 (GMT-7)",
-    },
-    {
-      value: "Chicago | Training Room | 20:00 (GMT-5)",
-      label: "Chicago | Training Room | 20:00 (GMT-5)",
-    },
   ];
 
   // How did you hear about us options

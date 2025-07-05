@@ -7,23 +7,23 @@ import { useNavigate } from "react-router-dom";
 import { ChevronDown } from "lucide-react";
 const events = [
   {
-    id: 1,
-    name: "ICH1 Training",
-    seats: 10,
-    date: "20th–21st Aug",
-    location: "Austin, USA",
-    trainer: "Dr. Monoj's A/C",
-    type: "CH",
-    price: "USD 600",
+    id: 9,
+    name: "Master Class for Teachers",
+    seats: "Not Limited",
+    date: "10th Aug",
+    location: "Houston, USA",
+    trainer: "Dr. Alyasowmy's A/C",
+    type: "Family Constellations",
+    price: "USD 375",
     currency: "USD",
-    priceValue: 600,
+    priceValue: 15999,
     facilitator: "Yuvraj Kapadia",
-    link: "/ich/levels?level=1&modal=true",
-     participants:"10 Seats"
+    link: "/level/5?modal=true",
+    participants: "10 Seats",
   },
   {
     id: 2,
-    name: "Family Constellations",
+    name: "Family Constellation",
     seats: 10,
     date: "12th Aug",
     location: "Houston, USA",
@@ -33,13 +33,13 @@ const events = [
     currency: "USD",
     priceValue: 15999,
     facilitator: "Yuvraj Kapadia",
-    link: "/family-constellation",
-     participants:"10 Seats"
+    link: "/family-constellation?id=1&modal=true",
+    participants: "10 Seats",
   },
   {
     id: 3,
-    name: "ICH3 Training",
-    seats: 10,
+    name: "Advanced Course in Integrated Hypnotic Modalities for Health Resolutions",
+    seats: "Not Limited",
     date: "13th–17th Aug",
     location: "Houston, USA",
     trainer: "Dr. Alyasowmy's A/C",
@@ -49,11 +49,11 @@ const events = [
     priceValue: 12999,
     facilitator: "Yuvraj Kapadia",
     link: "/ich/levels?level=3&modal=true",
-     participants:"10 Seats"
+    participants: "10 Seats",
   },
   {
     id: 4,
-    name: "FC with PTI",
+    name: "Family Constellation",
     seats: 10,
     date: "18th Aug",
     location: "Houston, USA",
@@ -63,12 +63,27 @@ const events = [
     currency: "USD",
     priceValue: 12999,
     facilitator: "Yuvraj Kapadia",
-    link: "/family-constellation",
-     participants:"10 Seats"
+    link: "/family-constellation?id=2&modal=true",
+    participants: "10 Seats",
+  },
+  {
+    id: 1,
+    name: "Basic Course in Integrated Clinical Hypnotherapy Certification",
+    seats: "Not Limited",
+    date: "20th–21st Aug",
+    location: "Austin, USA",
+    trainer: "Dr. Monoj's A/C",
+    type: "CH",
+    price: "USD 600",
+    currency: "USD",
+    priceValue: 600,
+    facilitator: "Yuvraj Kapadia",
+    link: "/ich/levels?level=1&modal=true",
+    participants: "10 Seats",
   },
   {
     id: 5,
-    name: "FC (batches of 10)",
+    name: "Family Constellation",
     seats: 10,
     date: "22nd Aug",
     location: "Austin, USA",
@@ -78,12 +93,13 @@ const events = [
     currency: "USD",
     priceValue: 5999,
     facilitator: "Yuvraj Kapadia",
-    link: "/family-constellation",
-     participants:"10 Seats"
+    link: "/family-constellation?id=3&modal=true",
+    participants: "10 Seats",
   },
+
   {
     id: 6,
-    name: "FC (separate batches of 10)",
+    name: "Family Constellation",
     seats: 10,
     date: "23rd Aug",
     location: "Austin, USA",
@@ -93,12 +109,12 @@ const events = [
     currency: "USD",
     priceValue: 6500,
     facilitator: "Yuvraj Kapadia",
-    link: "/family-constellation",
-     participants:"10 Seats"
+    link: "/family-constellation?id=4&modal=true",
+    participants: "10 Seats",
   },
   {
     id: 7,
-    name: "FC – Limit 10 participants",
+    name: "Family Constellation",
     seats: 10,
     date: "28th Aug",
     location: "Woodlands, USA",
@@ -108,12 +124,12 @@ const events = [
     currency: "USD",
     priceValue: 349,
     facilitator: "Yuvraj Kapadia",
-    link: "/family-constellation",
-     participants:"10 Seats"
+    link: "/family-constellation?id=5&modal=true",
+    participants: "10 Seats",
   },
   {
     id: 8,
-    name: "FC Session",
+    name: "Family Constellation",
     seats: 10,
     date: "29th Aug",
     location: "Woodlands, USA",
@@ -123,8 +139,8 @@ const events = [
     currency: "USD",
     priceValue: 25999,
     facilitator: "Yuvraj Kapadia",
-    link: "/family-constellation",
-    participants:"10 Seats"
+    link: "/family-constellation?id=6&modal=true",
+    participants: "10 Seats",
   },
 ];
 function Schedule() {
@@ -287,10 +303,10 @@ function Schedule() {
                     Location
                   </th>
                   <th className="hidden md:table-cell px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider whitespace-nowrap">
-                    Trainer
+                    Facilitator
                   </th>
                   <th className="hidden lg:table-cell px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider whitespace-nowrap">
-                   Total Participants
+                    Total Participants
                   </th>
                   <th className="px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider whitespace-nowrap">
                     Price
@@ -313,10 +329,7 @@ function Schedule() {
                     <td className="px-4 py-4">
                       <div className="flex flex-col">
                         <span className="text-sm font-bold text-[#2D2D2D]">
-                          {event.name} <br />{" "}
-                          <p className="font-normal text-[#2D2D2D] text-[10px]">
-                            (10 Seats)
-                          </p>
+                          {event.name}
                         </span>
                         <span className="sm:hidden text-xs text-[#2D2D2D]">
                           {event.date} • {event.location}
@@ -346,10 +359,8 @@ function Schedule() {
                     </td>
                     <td className="px-4 py-4 hidden lg:table-cell">
                       <div className="text-sm">
-                        <span
-                          className={`px-2 py-1 rounded-full`}
-                        >
-                          {event.participants}
+                        <span className={`px-2 py-1 rounded-full`}>
+                          {event.seats}
                         </span>
                       </div>
                     </td>

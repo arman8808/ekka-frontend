@@ -1,19 +1,25 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import FormPage from "./FormPage";
 
-export default function DynamicDecodePage({ levelData }) {
+export default function DynamicDecodePage({ levelData, modal }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
   };
-
+  useEffect(() => {
+    if (modal) {
+      setIsModalOpen(true);
+    }
+  }, [modal]);
   const scheduleData = [
-    { city: "Dallas", venue: "Abc", date: "Jun 15, 2025", time: "10:00 AM" },
-    { city: "Texas", venue: "Xyz", date: "Jun 20, 2025", time: "2:00 PM" },
-    { city: "Houston", venue: "Rty", date: "Jul 1, 2025", time: "9:00 AM" },
-    { city: "Austin", venue: "Abcz", date: "Jun 25, 2025", time: "11:00 AM" },
+    {
+      city: "Houston",
+      date: "Aug 10th, 2025",
+      Facilitator: "Yuvraj Kapadia",
+      title: "Master Class For teachers",
+    },
   ];
 
   return (
@@ -191,6 +197,7 @@ export default function DynamicDecodePage({ levelData }) {
                   borderRadius: "30px",
                   background: "#C183B2",
                 }}
+                disabled={levelData.level !== 5 ? true : false}
               >
                 Enroll Now
               </button>
@@ -271,49 +278,51 @@ export default function DynamicDecodePage({ levelData }) {
         </div>
       </div>
 
-      <section className="">
-        <div className="max-w-5xl mx-auto">
-          <div className="mb-6">
-            <div className="flex items-center gap-2 mb-2">
-              <div className="w-[40px] h-[40px] sm:w-[50px] sm:h-[50px] bg-[#C183B2] rounded-full flex items-center justify-center">
-                <span className="text-white font-semibold text-sm sm:text-base">
-                  3
-                </span>
+      {levelData.level === 5 && (
+        <section className="">
+          <div className="max-w-5xl mx-auto">
+            <div className="mb-6">
+              <div className="flex items-center gap-2 mb-2">
+                <div className="w-[40px] h-[40px] sm:w-[50px] sm:h-[50px] bg-[#C183B2] rounded-full flex items-center justify-center">
+                  <span className="text-white font-semibold text-sm sm:text-base">
+                    3
+                  </span>
+                </div>
+                <h2 className="text-[20px] sm:text-[24px] text-[#6E2D79] font-semibold">
+                  Upcoming Workshop
+                </h2>
               </div>
-              <h2 className="text-[20px] sm:text-[24px] text-[#6E2D79] font-semibold">
-                Upcoming Workshop
-              </h2>
+              <hr className="mt-2 border-t border-purple-300" />
             </div>
-            <hr className="mt-2 border-t border-purple-300" />
-          </div>
 
-          <div className="overflow-x-auto">
-            <table className="min-w-full border border-purple-300 rounded-lg overflow-hidden shadow-sm">
-              <thead>
-                <tr className="bg-[#6E2D79] text-white text-left text-sm sm:text-base">
-                  <th className="px-4 py-3 font-medium">City</th>
-                  <th className="px-4 py-3 font-medium">Venue</th>
-                  <th className="px-4 py-3 font-medium">Date</th>
-                  <th className="px-4 py-3 font-medium">Time</th>
-                </tr>
-              </thead>
-              <tbody>
-                {scheduleData.map((item, idx) => (
-                  <tr
-                    key={idx}
-                    className=" border-t border-[#A35F93] text-sm sm:text-base"
-                  >
-                    <td className="px-4 py-3">{item.city}</td>
-                    <td className="px-4 py-3">{item.venue}</td>
-                    <td className="px-4 py-3">{item.date}</td>
-                    <td className="px-4 py-3">{item.time}</td>
+            <div className="overflow-x-auto">
+              <table className="min-w-full border border-purple-300 rounded-lg overflow-hidden shadow-sm">
+                <thead>
+                  <tr className="bg-[#6E2D79] text-white text-left text-sm sm:text-base">
+                    <th className="px-4 py-3 font-medium">Title</th>
+                    <th className="px-4 py-3 font-medium">City</th>
+                    <th className="px-4 py-3 font-medium">Date</th>
+                    <th className="px-4 py-3 font-medium">Facilitator</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {scheduleData.map((item, idx) => (
+                    <tr
+                      key={idx}
+                      className=" border-t border-[#A35F93] text-sm sm:text-base"
+                    >
+                      <td className="px-4 py-3">{item.title}</td>
+                      <td className="px-4 py-3">{item.city}</td>
+                      <td className="px-4 py-3">{item.date}</td>
+                      <td className="px-4 py-3">{item.Facilitator}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* Registration Form Modal */}
       {isModalOpen && <FormPage onClose={handleCloseModal} />}

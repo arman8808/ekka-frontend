@@ -7,7 +7,7 @@ export const courseData = {
         level: 1,
         title: "Decode Your Mind",
         subtitle:
-          "Transform your self-perception and unlock the power of your subconscious mind",
+          " Transform your self-perception and unlock the power of your subconscious mind",
         duration: "1 Day",
         certification: "Certification Included",
         price: "$300",
@@ -288,10 +288,12 @@ export const courseData = {
         title: "DECODE THE CHILD",
         subtitle:
           "A Transformational Workshop for Parents, Teachers, and Caregivers",
+        subtitle1:
+          "A Masterclass to the DECODE Series",
         duration: "9 am to 1 pm",
-        certification: "Certification Included",
+        // certification: "Certification Included",
         price: "$35 per person",
-        next_session: "September 30, 2024",
+        next_session: "Aug 10, 2025",
         description:
           "This advanced-level course helps you tap into the deepest layers of your subconscious and by directing your energetic blueprint. Learn to master advanced healing techniques and connect with your life's purpose through inner work and trance meditations.",
         what_youll_learn: [
@@ -320,7 +322,6 @@ export const courseData = {
           "Understand the psychosocial developmental stages",
           "Understand the difference between pull parenting (influence and love) vs push parenting (directive and punishment).",
         ],
- 
       },
     ],
   },

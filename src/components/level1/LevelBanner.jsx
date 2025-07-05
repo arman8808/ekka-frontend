@@ -12,8 +12,14 @@ const DynamicLevelBanner = ({ levelData }) => {
       }}
     >
       <h1 className=" text-[#6E2D79] font-[Poppins] text-[30px] sm:text-[35px] md:text-[60px] lg:text-[65px] font-semibold leading-[44px] sm:leading-[60px] md:leading-[72px] mb-2 sm:mb-4 -mt-8 sm:-mt-12">
-        Level {levelData.level}: {levelData.title}
+        {levelData.level !== 5 && `Level ${levelData.level}: `}
+        {levelData.title}
       </h1>
+      {levelData?.subtitle1 && (
+        <p className="text-[#5C2166] font-[Poppins] text-[16px] sm:text-[18px] lg:text-[18px] font-normal leading-[24px] px-4 mb-1">
+          {levelData?.subtitle1}
+        </p>
+      )}
       <p className="text-[#5C2166] font-[Poppins] text-[16px] sm:text-[18px] lg:text-[18px] font-normal leading-[24px] px-4 mb-6">
         {levelData.subtitle}
       </p>
@@ -22,9 +28,9 @@ const DynamicLevelBanner = ({ levelData }) => {
           <Clock size={16} /> Duration: {levelData.duration}
         </div>
 
-        <div className="flex items-center gap-2 px-4 py-2 bg-[#6E2D79] text-white rounded-full text-sm">
+    {levelData.certification &&    <div className="flex items-center gap-2 px-4 py-2 bg-[#6E2D79] text-white rounded-full text-sm">
           {levelData.certification} <GraduationCap size={16} />
-        </div>
+        </div>}
       </div>
     </div>
   );

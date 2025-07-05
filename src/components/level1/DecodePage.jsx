@@ -199,7 +199,9 @@ export default function DynamicDecodePage({ levelData, modal }) {
                 }}
                 disabled={levelData.level !== 5 ? true : false}
               >
-                Enroll Now
+                {levelData.level === 5
+                  ? "Enroll for Decode The Child"
+                  : " Enroll Now"}
               </button>
             </div>
 

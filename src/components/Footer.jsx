@@ -53,7 +53,7 @@ const Footer = () => {
         />
         {/* Email */}
         <motion.a
-          href="mailto:info@ekaatherapy.com"
+          href="mailto:contact@ekaausa.com"
           className="flex items-center gap-2 text-sm sm:text-base font-poppins"
           variants={itemVariants}
         >

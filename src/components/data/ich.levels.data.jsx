@@ -186,7 +186,7 @@ export const levelsData = {
     title: "Clinical Hypnotherapy – Level III",
     subtitle:
       "Master Practitioner Certification in Advanced Hypnotherapy & Regression Techniques",
-    duration: "7 Days",
+    duration: "5 Days",
     certification: "EKAA Integrated Clinical Hypnotherapy Foundation",
     price: "$1,500",
     next_session: "",

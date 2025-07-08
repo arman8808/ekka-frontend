@@ -1,27 +1,3 @@
-// import React from 'react'
-// import Header from '../components/Header'
-// import Footer from '../components/Footer'
-// // import LevelBanner from '../components/level1/Levelbanner'
-// import LevelBanner from '../components/level1/LevelBanner'
-// import TestimonialCarousel from '../components/home/Testimonials'
-// import FAQ from '../components/home/FAQ'
-// import DecodePage from '../components/level1/DecodePage'
-
-// function Level1() {
-//   return (
-//     <>
-//     <Header/>
-//     <LevelBanner/>
-//     <DecodePage/>
-//     <TestimonialCarousel/>
-//     <FAQ/>
-//     <Footer/>
-//     </>
-//   )
-// }
-
-// export default Level1
-
 import React from "react";
 import { useParams } from "react-router-dom";
 import Header from "../components/Header";
@@ -62,7 +38,7 @@ function DynamicLevelPage() {
     <>
       <Header />
       <DynamicLevelBanner levelData={levelData} />
-      <DynamicDecodePage levelData={levelData} modal={modal}/>
+      <DynamicDecodePage levelData={levelData} modal={modal} />
       <TestimonialCarousel />
       <Faq2 />
       <Footer />

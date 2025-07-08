@@ -62,7 +62,7 @@ const Footer = () => {
         </motion.a>
         <motion.span className="flex items-center gap-2">
           <img src="/footer/googletrust.svg" alt="footer" loading="lazy" />
-          <img src="/footer/trustpilot.svg" alt="footer" loading="lazy" />
+          {/* <img src="/footer/trustpilot.svg" alt="footer" loading="lazy" /> */}
         </motion.span>{" "}
         <motion.div className="flex items-center gap-2">
           <span className="bg-white rounded-[50%] p-2 cursor-pointer hover:bg-[#f0f0f0] transition-colors">
@@ -86,7 +86,7 @@ const Footer = () => {
           </span>
 
           <span className="bg-white rounded-[50%] p-2 cursor-pointer hover:bg-[#f0f0f0] transition-colors">
-            <a href="#" target="_blank" rel="noopener noreferrer">
+            <a href="https://www.linkedin.com/in/yuvraj-kapadia-ekaa?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app" target="_blank" rel="noopener noreferrer">
               {" "}
               <IoLogoLinkedin className="text-[#6E2D79] text-xl cursor-pointer" />
             </a>{" "}

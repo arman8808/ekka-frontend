@@ -329,7 +329,7 @@ const HowEkaaHelps = () => {
 
   const data = [
     {
-      title: "Corporates",
+      title: "Executives",
       img: "/home/corparte.png",
       videoUrl: "https://d2nxi4iq5glqsu.cloudfront.net/9-Decode+for+Corporate.mp4",
       icon: (
@@ -361,7 +361,7 @@ const HowEkaaHelps = () => {
       ),
     },
     {
-      title: "Health Practitioners",
+      title: "Healthcare Practitioners",
       img: "/home/doctor.png",
       videoUrl: "https://d2nxi4iq5glqsu.cloudfront.net/10-Decode+for+medical+prof..mp4",
       icon: (

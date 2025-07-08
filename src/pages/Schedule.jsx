@@ -147,7 +147,7 @@ const events = [
   {
     id: 7,
     name: "Family Constellation",
-    seats: 10,
+     seats: "Not Limited",
     date: "28th Aug",
     location: "Woodlands, USA",
     trainer: "Dr. Monoj's A/C",
@@ -157,6 +157,21 @@ const events = [
     priceValue: 349,
     facilitator: "Yuvraj Kapadia",
     link: "/family-constellation?id=5&modal=true",
+    participants: "10 Seats",
+  },
+  {
+    id: 8,
+    name: "Decode Your Mind",
+    seats: 10,
+    date: "31th Aug-1st sept",
+    location: "San Diego, USA",
+    trainer: "Dr. Sonia Gupte's A/C",
+    type: "decode",
+    price: "USD 600",
+    currency: "USD",
+    priceValue: 349,
+    facilitator: "Yuvraj Kapadia",
+       link: "/level/1?modal=true",
     participants: "10 Seats",
   },
 ];
@@ -300,115 +315,115 @@ function Schedule() {
         ))}
       </motion.section>
       <div className="px-4 py-8">
-     <motion.div
-  initial={{ opacity: 0 }}
-  animate={{ opacity: 1 }}
-  transition={{ duration: 0.5 }}
-  className="bg-white rounded-lg shadow-md overflow-hidden"
->
-  <div className="overflow-x-auto">
-    <table className="min-w-full divide-y divide-gray-200">
-      <thead className="bg-[#6E2D79]">
-        <tr>
-          <th className="px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider whitespace-nowrap">
-            Event
-          </th>
-          <th className="px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider whitespace-nowrap">
-            Date
-          </th>
-          <th className="px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider whitespace-nowrap">
-            Location
-          </th>
-          <th className="px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider whitespace-nowrap">
-            Facilitator
-          </th>
-          <th className="px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider whitespace-nowrap">
-            Total Participants
-          </th>
-          <th className="px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider whitespace-nowrap">
-            Price
-          </th>
-          <th className="px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider whitespace-nowrap">
-            Action
-          </th>
-        </tr>
-      </thead>
-      <tbody className="bg-white divide-y divide-gray-200">
-        {events.map((event, index) => (
-          <motion.tr
-            key={event.id}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3, delay: index * 0.05 }}
-            whileHover={{ backgroundColor: "rgba(249, 250, 251, 1)" }}
-            className="group"
-          >
-            <td className="px-4 py-4">
-              <div className="flex flex-col">
-                <span className="text-sm font-bold text-[#2D2D2D]">
-                  {event.name}
-                </span>
-              </div>
-            </td>
-            <td className="px-4 py-4">
-              <div className="text-sm text-[#2D2D2D] whitespace-nowrap">
-                {event.date}
-              </div>
-            </td>
-            <td className="px-4 py-4">
-              <div className="text-sm text-[#2D2D2D]">
-                {event.location}
-              </div>
-            </td>
-            <td className="px-4 py-4">
-              <div className="text-sm text-[#2D2D2D]">
-                {event.facilitator || "-"}
-              </div>
-            </td>
-            <td className="px-4 py-4">
-              <div className="text-sm">
-                <span className={`px-2 py-1 rounded-full`}>
-                  {event.seats}
-                </span>
-              </div>
-            </td>
-            <td className="px-4 py-4">
-              {event.noenroll ? (
-                <span className="text-sm text-[#2D2D2D]">-</span>
-              ) : (
-                <span
-                  className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                    event.currency === "AED"
-                      ? "bg-blue-100 text-blue-800"
-                      : event.currency === "USD"
-                      ? "bg-green-100 text-green-800"
-                      : "bg-yellow-100 text-yellow-800"
-                  }`}
-                >
-                  {event.price}
-                </span>
-              )}
-            </td>
-            <td className="px-4 py-4">
-              {event.noenroll ? (
-                <span className="text-sm text-[#2D2D2D]">-</span>
-              ) : (
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={() => handleRegister(event.link)}
-                  className="px-3 py-2 bg-[#6E2D79] text-white text-xs rounded-md hover:bg-[#5a2465] transition-colors cursor-pointer"
-                >
-                  Enroll Now
-                </motion.button>
-              )}
-            </td>
-          </motion.tr>
-        ))}
-      </tbody>
-    </table>
-  </div>
-</motion.div>
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5 }}
+          className="bg-white rounded-lg shadow-md overflow-hidden"
+        >
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-[#6E2D79]">
+                <tr>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider whitespace-nowrap">
+                    Event
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider whitespace-nowrap">
+                    Date
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider whitespace-nowrap">
+                    Location
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider whitespace-nowrap">
+                    Facilitator
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider whitespace-nowrap">
+                    Total Participants
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider whitespace-nowrap">
+                    Program Fees
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider whitespace-nowrap">
+                    Action
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {events.map((event, index) => (
+                  <motion.tr
+                    key={event.id}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.3, delay: index * 0.05 }}
+                    whileHover={{ backgroundColor: "rgba(249, 250, 251, 1)" }}
+                    className="group"
+                  >
+                    <td className="px-4 py-4">
+                      <div className="flex flex-col">
+                        <span className="text-sm font-bold text-[#2D2D2D]">
+                          {event.name}
+                        </span>
+                      </div>
+                    </td>
+                    <td className="px-4 py-4">
+                      <div className="text-sm text-[#2D2D2D] whitespace-nowrap">
+                        {event.date}
+                      </div>
+                    </td>
+                    <td className="px-4 py-4">
+                      <div className="text-sm text-[#2D2D2D]">
+                        {event.location}
+                      </div>
+                    </td>
+                    <td className="px-4 py-4">
+                      <div className="text-sm text-[#2D2D2D]">
+                        {event.facilitator || "-"}
+                      </div>
+                    </td>
+                    <td className="px-4 py-4">
+                      <div className="text-sm">
+                        <span className={`px-2 py-1 rounded-full`}>
+                          {event.seats}
+                        </span>
+                      </div>
+                    </td>
+                    <td className="px-4 py-4">
+                      {event.noenroll ? (
+                        <span className="text-sm text-[#2D2D2D]">-</span>
+                      ) : (
+                        <span
+                          className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                            event.currency === "AED"
+                              ? "bg-blue-100 text-blue-800"
+                              : event.currency === "USD"
+                              ? "bg-green-100 text-green-800"
+                              : "bg-yellow-100 text-yellow-800"
+                          }`}
+                        >
+                          {event.price}
+                        </span>
+                      )}
+                    </td>
+                    <td className="px-4 py-4">
+                      {event.noenroll ? (
+                        <span className="text-sm text-[#2D2D2D]">-</span>
+                      ) : (
+                        <motion.button
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                          onClick={() => handleRegister(event.link)}
+                          className="px-3 py-2 bg-[#6E2D79] text-white text-xs rounded-md hover:bg-[#5a2465] transition-colors cursor-pointer"
+                        >
+                          Enroll Now
+                        </motion.button>
+                      )}
+                    </td>
+                  </motion.tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </motion.div>
       </div>
       <TestimonialCarousel />
       <Footer />

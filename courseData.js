@@ -11,7 +11,7 @@ export const courseData = {
         duration: "1 Day",
         certification: "Certification Included",
         price: "$300",
-        next_session: "June 15, 2024",
+        next_session: "31st Aug - 1st Sept",
         description:
           "This foundational level course introduces you to the core concepts of mind transformation through clinical hypnotherapy techniques. You'll learn how to reprogram your subconscious mind for positive change, better sleep, and systematic meditation.",
         what_youll_learn: [
@@ -287,9 +287,7 @@ export const courseData = {
         level: 5,
         title: "DECODE THE CHILD",
         subtitle:
-          "A Transformational Workshop for Parents, Teachers, and Caregivers",
-        subtitle1:
-          "A Masterclass to the DECODE Series",
+          "A Masterclass to the DECODE Series — A Transformational Workshop for Parents, Teachers, and Caregivers",
         duration: "9 am to 1 pm",
         // certification: "Certification Included",
         price: "$35 per person",
@@ -298,29 +296,47 @@ export const courseData = {
           "This advanced-level course helps you tap into the deepest layers of your subconscious and by directing your energetic blueprint. Learn to master advanced healing techniques and connect with your life's purpose through inner work and trance meditations.",
         what_youll_learn: [
           {
-            heading: "",
+            heading: "Unlock the Power of Conscious & Subconscious Mind",
             description:
-              "Discuss practical tips for self-regulating as a caregiver and child.",
+              "Gain clarity on how thought‑patterns form, and learn to harness both conscious awareness and subconscious programming to support healthier interactions.",
           },
           {
-            heading: "",
+            heading: "Break Free from Victimhood",
             description:
-              "Provide tools to create physically, emotionally, and spiritually healthy adults.",
+              "Identify the root causes of “victim” mindsets in both caregivers and children. Acquire practical strategies to shift into empowered, solution‑focused roles.",
           },
           {
-            heading: "",
+            heading: "Guided Breathing & Self‑Regulation Tools",
             description:
-              "Learn techniques that create improved relationships with children and promote overall health and well-being.",
+              "Use simple, science‑backed breathing exercises to manage stress, regulate emotions, and foster calm in yourself and the young ones in your care.",
+          },
+          {
+            heading: "Mind‑Brain Connection for Healthy Development",
+            description:
+              "Explore how early experiences shape neural pathways, and discover techniques to promote balanced cognitive and emotional growth.",
+          },
+          {
+            heading: "From Habitual to Conscious Parenting",
+            description:
+              "Pinpoint inherited or automated parenting habits, then learn how to replace them with intentional, love‑based approaches.",
+          },
+          {
+            heading: "Psychosocial Stages Demystified",
+            description:
+              "Get a clear roadmap of childhood developmental milestones so you can meet your child exactly where they are.",
+          },
+          {
+            heading: "Pull vs. Push Parenting",
+            description:
+              "Understand the difference between “pull” (influence + love) and “push” (directive + punishment) styles—and when to use each for optimal results.",
           },
         ],
         immediate_benefits: [
-          "Learn about the conscious and subconscious mind.",
-          "Understand how one gets into victimhood and how to break free. ",
-          "Learn tools for self-help using guided breathing to manage emotions and stress.",
-          "Understand the connection between mind and brain development.",
-          "Learn how to break inherited, habitual, automated parenting and align with conscious parenting.",
-          "Understand the psychosocial developmental stages",
-          "Understand the difference between pull parenting (influence and love) vs push parenting (directive and punishment).",
+          "Immediate Practical Applications — Use exercises at home or in the classroom starting tomorrow",
+          "Stronger, Healthier Relationships — Build deeper bonds through better communication and emotional attunement",
+          "Reduced Stress & Greater Resilience — Equip yourself and your child with tools to navigate life’s challenges confidently",
+          "Lifelong Self‑Help Skills — Master breathing and mindfulness techniques for lasting physical, emotional, and spiritual well‑being",
+          "Clarity & Peace of Mind — Gain insight into behavior patterns to guide yourself and your child toward healthier interactions",
         ],
       },
     ],

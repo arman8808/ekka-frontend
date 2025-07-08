@@ -3,9 +3,9 @@ import { Camera, Upload, AlertCircle, CheckCircle, User } from "lucide-react";
 
 // API Service Layer - Functional approach with centralized configuration
 const API_CONFIG = {
-  baseURL: import.meta.env.VITE_API_URL,
+  baseURL: import.meta.env.VITE_API_BASE_URL,
   endpoints: {
-    registration: "/registration",
+    registration: "registration",
   },
 };
 
@@ -519,7 +519,7 @@ const useFormData = (initialData) => {
 };
 
 // Main Form Component
-function FormPage({ onClose = () => {} }) {
+function FormPage({ onClose = () => {}, level }) {
   const { formData, updateField, updateMultipleFields } = useFormData({
     firstName: "",
     middleName: "",
@@ -807,6 +807,12 @@ function FormPage({ onClose = () => {} }) {
     {
       value: "Houston | Decode The Child | 10th Aug",
       label: "Houston | Decode The Child | 10th Aug",
+      id: 5,
+    },
+    {
+      value: "San Diego |  L1 | 31st Aug - 1st Sept",
+      label: "San Diego |  L1 | 31st Aug - 1st Sept",
+      id: 1,
     },
   ];
 
@@ -988,48 +994,15 @@ function FormPage({ onClose = () => {} }) {
                 />
 
                 <div className="grid grid-cols-1 md:grid-cols-1 gap-4">
-                  {/* <FormSelect
-                    label="City"
-                    name="city"
-                    value={formData.city}
-                    onChange={handleInputChange}
-                    error={formErrors.city}
-                    options={cityOptions}
-                    placeholder="Select City"
-                    required
-                  /> */}
                   <FormRadioGroup
                     label="City"
                     name="city"
                     value={formData.city}
                     onChange={handleInputChange}
                     error={formErrors.city}
-                    options={cityOptions}
+                    options={ cityOptions.filter(option => option.id.toString() == level)}
                     required
                   />
-
-                  {/* <FormInput
-                    label="Venue"
-                    name="courseDetailVenue"
-                    value={formData.courseDetailVenue}
-                    onChange={handleInputChange}
-                    error={formErrors.courseDetailVenue}
-                    placeholder="Auto-selected based on city"
-                    readOnly
-                    required
-                  />
-
-                  <FormInput
-                    label="Time Slot"
-                    name="timeslot"
-                    value={formData.timeslot}
-                    onChange={handleInputChange}
-                    error={formErrors.timeslot}
-                    placeholder="Auto-selected based on city"
-                    readOnly
-                    required
-                    className="capitalize"
-                  /> */}
                 </div>
               </div>
             </div>

@@ -4,8 +4,6 @@ import { LuMenu } from "react-icons/lu";
 import { IoClose } from "react-icons/io5";
 import { Link, useNavigate } from "react-router-dom";
 
-
-
 const Header = () => {
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
@@ -140,6 +138,13 @@ const Header = () => {
             onClick={() => setIsOpen(false)}
           >
             About
+          </Link>{" "}
+          <Link
+            to="/schedule"
+            className="text-lg font-medium hover:text-[#6E2D79] transition-colors"
+            onClick={() => setIsOpen(false)}
+          >
+            Event Calender
           </Link>
           <Link
             to="/decode"
@@ -155,7 +160,6 @@ const Header = () => {
           >
             Hypnotherapy
           </Link>
-
           {/* Workshop Dropdown */}
           <div className="relative">
             <button
@@ -196,7 +200,6 @@ const Header = () => {
               </div>
             )}
           </div>
-
           <Link
             to="/contact-us"
             className="text-lg font-medium hover:text-[#6E2D79] transition-colors"
@@ -241,7 +244,5 @@ const Header = () => {
     </header>
   );
 };
-
-
 
 export default Header;

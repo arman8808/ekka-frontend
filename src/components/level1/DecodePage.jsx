@@ -172,10 +172,14 @@ export default function DynamicDecodePage({ levelData, modal }) {
             >
               <div className="mb-6">
                 <div className="flex flex-col justify-center mb-2 text-[18px] sm:text-[22.225px] opacity-90">
-                  Enroll in Level {levelData.level}
+                  <p className="text-[16px]">
+                    {levelData.level === 5
+                      ? "Register for Decode The Child A masterclass to the DECODE Series "
+                      : ` Enroll in Level ${levelData.level}`}
+                  </p>
                 </div>
 
-                <div className="font-bold mb-2 text-[20px] sm:text-[22.225px]">
+                <div className="font-normal mb-2 text-[20px] sm:text-[22.225px]">
                   {levelData.price}
                 </div>
                 <div className="text-sm opacity-90 mt-4 sm:mt-6">
@@ -197,10 +201,10 @@ export default function DynamicDecodePage({ levelData, modal }) {
                   borderRadius: "30px",
                   background: "#C183B2",
                 }}
-                disabled={levelData.level !== 5 ? true : false}
+                disabled={!(levelData.level === 5 || levelData.level === 1)}
               >
-                {levelData.level === 5
-                  ? "Enroll for Decode The Child"
+                {levelData.level === 5 || levelData.level === 1
+                  ? "Register Now"
                   : " Enroll Now"}
               </button>
             </div>
@@ -327,7 +331,9 @@ export default function DynamicDecodePage({ levelData, modal }) {
       )}
 
       {/* Registration Form Modal */}
-      {isModalOpen && <FormPage onClose={handleCloseModal} />}
+      {isModalOpen && (
+        <FormPage onClose={handleCloseModal} level={levelData.level} />
+      )}
     </div>
   );
 }

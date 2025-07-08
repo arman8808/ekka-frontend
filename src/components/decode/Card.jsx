@@ -27,7 +27,7 @@ const courseData = [
     buttonText: "Enroll Now",
     videoSrc:
       "https://d2nxi4iq5glqsu.cloudfront.net/8-Decode+for+parents+%26+teacher.mp4",
-    thumbnailSrc: "/home/Parents & Teachers.png",
+    thumbnailSrc: "/decode/decodethechild.jpeg",
     overlayText: "DECODE YOUR BLUE PRINT",
     overlaySubtext: "15 mins",
   },

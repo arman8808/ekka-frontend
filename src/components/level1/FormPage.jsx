@@ -805,13 +805,13 @@ function FormPage({ onClose = () => {}, level }) {
   // City options for select dropdown
   const cityOptions = [
     {
-      value: "Houston | Decode The Child | 10th Aug",
-      label: "Houston | Decode The Child | 10th Aug",
+      value: "Houston | Decode The Child | 10th Aug 2025",
+      label: "Houston | Decode The Child | 10th Aug 2025",
       id: 5,
     },
     {
-      value: "San Diego |  L1 | 31st Aug - 1st Sept",
-      label: "San Diego |  L1 | 31st Aug - 1st Sept",
+      value: "San Diego |  L1 | 31st Aug - 1st Sept 2025",
+      label: "San Diego |  L1 | 31st Aug - 1st Sept 2025",
       id: 1,
     },
   ];

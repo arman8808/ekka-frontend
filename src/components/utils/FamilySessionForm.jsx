@@ -148,14 +148,14 @@ const FamilySessionForm = ({ onClose, selectedSession }) => {
                   {selectedSession?.Location}
                 </p>
               </div>
-              <div>
+              {/* <div>
                 <p className="text-sm text-[#6E2D79] opacity-80">
                   Organized By
                 </p>
                 <p className="font-medium text-[#6E2D79]">
                   {selectedSession?.organisedby}
                 </p>
-              </div>
+              </div> */}
               <div>
                 <p className="text-sm text-[#6E2D79] opacity-80">Capacity</p>
                 <p className="font-medium text-[#6E2D79]">

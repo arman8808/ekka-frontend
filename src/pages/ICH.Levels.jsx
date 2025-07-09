@@ -381,7 +381,7 @@ const ICHLevels = () => {
                   Have Questions?
                 </h3>
                 <Link
-                  to="mailto:someone@example.com"
+                  to="mailto:contact@ekaausa.com"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-white text-sm transition-colors inline-flex items-center justify-center gap-2 px-6 sm:px-8 py-2 sm:py-3 rounded-[30px] bg-[#6E2D79] cursor-pointer"

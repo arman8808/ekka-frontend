@@ -25,7 +25,7 @@ const events = [
     id: 8,
     name: "Masterclass for Corporates",
     seats: "Not Limited",
-    date: "1tth Aug",
+    date: "11th Aug",
     location: "Houston, USA",
     trainer: "",
     type: "Family Constellations",

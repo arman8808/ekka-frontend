@@ -638,7 +638,7 @@ const AllRegistration = () => {
                   </td>
                   <td className="px-4 py-4 text-sm text-gray-900 hidden lg:table-cell">
                     <span className=" bg-opacity-10 text-gray-900  px-2 py-1 rounded-full text-xs font-medium">
-                      {registration.levelName}
+                      {registration.levelName||registration.levelName}
                     </span>
                   </td>
                   <td className="px-4 py-4 text-sm text-gray-900 hidden sm:table-cell">

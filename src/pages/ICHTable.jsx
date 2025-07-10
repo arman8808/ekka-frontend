@@ -1,13 +1,22 @@
 // src/pages/IchRegistration.jsx
-import React, { useState, useEffect } from 'react';
-import { Eye, Download, RefreshCw, AlertCircle, Search, Filter, X, ZoomIn } from 'lucide-react';
-import Layout from '../components/layout/Layout';
+import React, { useState, useEffect } from "react";
+import {
+  Eye,
+  Download,
+  RefreshCw,
+  AlertCircle,
+  Search,
+  Filter,
+  X,
+  ZoomIn,
+} from "lucide-react";
+import Layout from "../components/layout/Layout";
 
 const IchRegistration = () => {
   const [registrations, setRegistrations] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedRegistration, setSelectedRegistration] = useState(null);
   const [showModal, setShowModal] = useState(false);
@@ -16,29 +25,31 @@ const IchRegistration = () => {
   const itemsPerPage = 10;
 
   // Base URL for images
-  const BASE_IMAGE_URL = 'https://api.ekaausa.com/';
+  const BASE_IMAGE_URL = "https://api.ekaausa.com/";
 
   // Fetch registration data
   const fetchRegistrations = async () => {
     setLoading(true);
     setError(null);
-    
+
     try {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 100000);
-      
+
       const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}ich`, {
-        method: 'GET',
+        method: "GET",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
-        signal: controller.signal
+        signal: controller.signal,
       });
 
       clearTimeout(timeoutId);
 
       if (!response.ok) {
-        throw new Error(`Server Error: ${response.status} - ${response.statusText}`);
+        throw new Error(
+          `Server Error: ${response.status} - ${response.statusText}`
+        );
       }
 
       const data = await response.json();
@@ -46,13 +57,15 @@ const IchRegistration = () => {
       if (data.success) {
         setRegistrations(data.data);
       } else {
-        throw new Error(data.message || 'Failed to fetch registrations');
+        throw new Error(data.message || "Failed to fetch registrations");
       }
     } catch (err) {
-      if (err.name === 'AbortError') {
-        setError('Request timeout. Please check your connection and try again.');
-      } else if (err.message.includes('Failed to fetch')) {
-        setError('Network error. Please check if the server is running.');
+      if (err.name === "AbortError") {
+        setError(
+          "Request timeout. Please check your connection and try again."
+        );
+      } else if (err.message.includes("Failed to fetch")) {
+        setError("Network error. Please check if the server is running.");
       } else {
         setError(`Error: ${err.message}`);
       }
@@ -66,15 +79,15 @@ const IchRegistration = () => {
   }, []);
 
   // Filter registrations based on search term
-  const filteredRegistrations = registrations.filter(reg => {
-    const name = reg.nameAsCertificate || '';
-    const email = reg.email || '';
-    const city = reg.city || '';
-    const level = reg.levelName || '';
-    const mobile = reg.mobileNo || '';
-    
+  const filteredRegistrations = registrations.filter((reg) => {
+    const name = reg.nameAsCertificate || "";
+    const email = reg.email || "";
+    const city = reg.city || "";
+    const level = reg.levelName || "";
+    const mobile = reg.mobileNo || "";
+
     const searchLower = searchTerm.toLowerCase();
-    
+
     return (
       name.toLowerCase().includes(searchLower) ||
       email.toLowerCase().includes(searchLower) ||
@@ -88,16 +101,19 @@ const IchRegistration = () => {
   const totalPages = Math.ceil(filteredRegistrations.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
-  const currentRegistrations = filteredRegistrations.slice(startIndex, endIndex);
+  const currentRegistrations = filteredRegistrations.slice(
+    startIndex,
+    endIndex
+  );
 
   // Format date with time
   const formatDateTime = (dateString) => {
-    return new Date(dateString).toLocaleString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
+    return new Date(dateString).toLocaleString("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
     });
   };
 
@@ -117,7 +133,7 @@ const IchRegistration = () => {
   const getImageUrl = (imagePath) => {
     if (!imagePath) return null;
     // Handle both forward and backward slashes
-    const cleanPath = imagePath.replace(/\\/g, '/');
+    const cleanPath = imagePath.replace(/\\/g, "/");
     return `${BASE_IMAGE_URL}${cleanPath}`;
   };
 
@@ -126,7 +142,9 @@ const IchRegistration = () => {
       <div className="flex items-center justify-center min-h-64">
         <div className="flex items-center space-x-2">
           <RefreshCw className="w-6 h-6 animate-spin text-[#6E2D79]" />
-          <span className="text-[#6E2D79] font-medium">Loading registrations...</span>
+          <span className="text-[#6E2D79] font-medium">
+            Loading registrations...
+          </span>
         </div>
       </div>
     );
@@ -159,17 +177,23 @@ const IchRegistration = () => {
           <div className="bg-white rounded-lg shadow-lg p-6">
             <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
               <div>
-                <h1 className="text-2xl lg:text-3xl font-bold text-[#6E2D79]">ICH Registration Management</h1>
-                <p className="text-gray-600 mt-1">Total Registrations: {registrations.length}</p>
+                <h1 className="text-2xl lg:text-3xl font-bold text-[#6E2D79]">
+                  ICH Registration Management
+                </h1>
+                <p className="text-gray-600 mt-1">
+                  Total Registrations: {registrations.length}
+                </p>
               </div>
-              
+
               <div className="flex flex-col sm:flex-row gap-3">
                 <button
                   onClick={fetchRegistrations}
                   disabled={loading}
                   className="bg-[#6E2D79] text-white px-4 py-2 rounded-lg hover:bg-[#5C2166] transition-colors flex items-center justify-center space-x-2 disabled:opacity-50"
                 >
-                  <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+                  <RefreshCw
+                    className={`w-4 h-4 ${loading ? "animate-spin" : ""}`}
+                  />
                   <span>Refresh</span>
                 </button>
               </div>
@@ -192,10 +216,12 @@ const IchRegistration = () => {
                   className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#6E2D79] focus:border-transparent outline-none"
                 />
               </div>
-              
+
               <div className="flex items-center space-x-2 text-gray-600">
                 <Filter className="w-5 h-5" />
-                <span className="text-sm">Found: {filteredRegistrations.length} results</span>
+                <span className="text-sm">
+                  Found: {filteredRegistrations.length} results
+                </span>
               </div>
             </div>
           </div>
@@ -206,18 +232,37 @@ const IchRegistration = () => {
               <table className="w-full">
                 <thead className="bg-[#6E2D79] text-white">
                   <tr>
-                    <th className="px-4 py-4 text-left text-sm font-semibold">Name</th>
-                    <th className="px-4 py-4 text-left text-sm font-semibold hidden md:table-cell">Email</th>
-                    <th className="px-4 py-4 text-left text-sm font-semibold hidden lg:table-cell">Location</th>
-                    <th className="px-4 py-4 text-left text-sm font-semibold">Level</th>
-                    <th className="px-4 py-4 text-left text-sm font-semibold hidden sm:table-cell">Mobile</th>
-                    <th className="px-4 py-4 text-left text-sm font-semibold hidden xl:table-cell">Registration Date</th>
-                    <th className="px-4 py-4 text-center text-sm font-semibold">Actions</th>
+                    <th className="px-4 py-4 text-left text-sm font-semibold">
+                      Name
+                    </th>
+                    <th className="px-4 py-4 text-left text-sm font-semibold hidden md:table-cell">
+                      Email
+                    </th>
+                    <th className="px-4 py-4 text-left text-sm font-semibold hidden lg:table-cell">
+                      Location
+                    </th>
+                    <th className="px-4 py-4 text-left text-sm font-semibold">
+                      Level
+                    </th>
+                    <th className="px-4 py-4 text-left text-sm font-semibold hidden sm:table-cell">
+                      Mobile
+                    </th>
+                    <th className="px-4 py-4 text-left text-sm font-semibold hidden xl:table-cell">
+                      Registration Date
+                    </th>
+                    <th className="px-4 py-4 text-center text-sm font-semibold">
+                      Actions
+                    </th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200">
                   {currentRegistrations.map((registration, index) => (
-                    <tr key={registration._id} className={`hover:bg-gray-50 ${index % 2 === 0 ? 'bg-white' : 'bg-gray-25'}`}>
+                    <tr
+                      key={registration._id}
+                      className={`hover:bg-gray-50 ${
+                        index % 2 === 0 ? "bg-white" : "bg-gray-25"
+                      }`}
+                    >
                       <td className="px-4 py-4">
                         <div className="text-sm font-medium text-[#5C2166]">
                           {registration.nameAsCertificate}
@@ -230,11 +275,12 @@ const IchRegistration = () => {
                         {registration.email}
                       </td>
                       <td className="px-4 py-4 text-sm text-gray-900 hidden lg:table-cell">
-                        {registration.city.split('|')[0].trim()}
+                        {registration.city.split("|")[0].trim()}
                       </td>
                       <td className="px-4 py-4 text-sm text-gray-900">
                         <span className="bg-[#f0e6f2] text-[#6E2D79] px-2 py-1 rounded-full text-xs font-medium">
-                          {registration.levelName.split('.')[0]}
+                          {registration.levelName.split(".")[0] ||
+                            registration.level}
                         </span>
                       </td>
                       <td className="px-4 py-4 text-sm text-gray-900 hidden sm:table-cell">
@@ -260,8 +306,12 @@ const IchRegistration = () => {
 
             {filteredRegistrations.length === 0 && !loading && (
               <div className="text-center py-12">
-                <div className="text-gray-500 text-lg">No registrations found</div>
-                <p className="text-gray-400 mt-2">Try adjusting your search criteria</p>
+                <div className="text-gray-500 text-lg">
+                  No registrations found
+                </div>
+                <p className="text-gray-400 mt-2">
+                  Try adjusting your search criteria
+                </p>
               </div>
             )}
           </div>
@@ -271,9 +321,11 @@ const IchRegistration = () => {
             <div className="bg-white rounded-lg shadow-lg p-4">
               <div className="flex flex-col sm:flex-row items-center justify-between space-y-3 sm:space-y-0">
                 <div className="text-sm text-gray-700">
-                  Showing {startIndex + 1} to {Math.min(endIndex, filteredRegistrations.length)} of {filteredRegistrations.length} results
+                  Showing {startIndex + 1} to{" "}
+                  {Math.min(endIndex, filteredRegistrations.length)} of{" "}
+                  {filteredRegistrations.length} results
                 </div>
-                
+
                 <div className="flex items-center space-x-2">
                   <button
                     onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
@@ -282,7 +334,7 @@ const IchRegistration = () => {
                   >
                     Previous
                   </button>
-                  
+
                   <div className="flex items-center space-x-1">
                     {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
                       const pageNum = i + 1;
@@ -292,8 +344,8 @@ const IchRegistration = () => {
                           onClick={() => setCurrentPage(pageNum)}
                           className={`px-3 py-2 rounded-lg ${
                             currentPage === pageNum
-                              ? 'bg-[#6E2D79] text-white'
-                              : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                              ? "bg-[#6E2D79] text-white"
+                              : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                           }`}
                         >
                           {pageNum}
@@ -301,9 +353,11 @@ const IchRegistration = () => {
                       );
                     })}
                   </div>
-                  
+
                   <button
-                    onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+                    onClick={() =>
+                      setCurrentPage(Math.min(totalPages, currentPage + 1))
+                    }
                     disabled={currentPage === totalPages}
                     className="px-3 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
@@ -320,7 +374,9 @@ const IchRegistration = () => {
               <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
                 <div className="sticky top-0 bg-[#6E2D79] text-white p-6 rounded-t-lg">
                   <div className="flex items-center justify-between">
-                    <h2 className="text-xl font-bold">ICH Registration Details</h2>
+                    <h2 className="text-xl font-bold">
+                      ICH Registration Details
+                    </h2>
                     <button
                       onClick={() => setShowModal(false)}
                       className="text-white hover:text-gray-200 text-2xl"
@@ -329,54 +385,129 @@ const IchRegistration = () => {
                     </button>
                   </div>
                 </div>
-                
+
                 <div className="p-6 space-y-6">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-4">
-                      <h3 className="text-lg font-semibold text-[#5C2166] border-b pb-2">Personal Information</h3>
+                      <h3 className="text-lg font-semibold text-[#5C2166] border-b pb-2">
+                        Personal Information
+                      </h3>
                       <div className="space-y-2">
-                        <p><span className="font-medium">Name:</span> {selectedRegistration.nameAsCertificate}</p>
-                        <p><span className="font-medium">Email:</span> {selectedRegistration.email}</p>
-                        <p><span className="font-medium">Mobile:</span> {selectedRegistration.mobileNo}</p>
-                        <p><span className="font-medium">Date of Birth:</span> {formatDateTime(selectedRegistration.dob)}</p>
-                        <p><span className="font-medium">Occupation:</span> {selectedRegistration.occupation}</p>
+                        <p>
+                          <span className="font-medium">Name:</span>{" "}
+                          {selectedRegistration.nameAsCertificate}
+                        </p>
+                        <p>
+                          <span className="font-medium">Email:</span>{" "}
+                          {selectedRegistration.email}
+                        </p>
+                        <p>
+                          <span className="font-medium">Mobile:</span>{" "}
+                          {selectedRegistration.mobileNo}
+                        </p>
+                        <p>
+                          <span className="font-medium">Date of Birth:</span>{" "}
+                          {formatDateTime(selectedRegistration.dob)}
+                        </p>
+                        <p>
+                          <span className="font-medium">Occupation:</span>{" "}
+                          {selectedRegistration.occupation}
+                        </p>
                       </div>
                     </div>
-                    
+
                     <div className="space-y-4">
-                      <h3 className="text-lg font-semibold text-[#5C2166] border-b pb-2">Address Information</h3>
+                      <h3 className="text-lg font-semibold text-[#5C2166] border-b pb-2">
+                        Address Information
+                      </h3>
                       <div className="space-y-2">
-                        <p><span className="font-medium">Current Address:</span> {selectedRegistration.currentAddress}</p>
-                        <p><span className="font-medium">Permanent Address:</span> {selectedRegistration.permanenetAddress}</p>
-                        <p><span className="font-medium">City:</span> {selectedRegistration.city.split('|')[0].trim()}</p>
+                        <p>
+                          <span className="font-medium">Current Address:</span>{" "}
+                          {selectedRegistration.currentAddress}
+                        </p>
+                        <p>
+                          <span className="font-medium">
+                            Permanent Address:
+                          </span>{" "}
+                          {selectedRegistration.permanenetAddress}
+                        </p>
+                        <p>
+                          <span className="font-medium">City:</span>{" "}
+                          {selectedRegistration.city.split("|")[0].trim()}
+                        </p>
                       </div>
                     </div>
-                    
+
                     <div className="space-y-4">
-                      <h3 className="text-lg font-semibold text-[#5C2166] border-b pb-2">Course Information</h3>
+                      <h3 className="text-lg font-semibold text-[#5C2166] border-b pb-2">
+                        Course Information
+                      </h3>
                       <div className="space-y-2">
-                        <p><span className="font-medium">Level:</span> {selectedRegistration.levelName}</p>
-                        <p><span className="font-medium">Venue:</span> {selectedRegistration.city.split('|')[1]?.trim() || selectedRegistration.city}</p>
-                        <p><span className="font-medium">Time:</span> {selectedRegistration.city.split('|')[2]?.trim() || 'Not specified'}</p>
-                        <p><span className="font-medium">Time Slot:</span> {selectedRegistration.timeslot}</p>
-                        <p><span className="font-medium">Venue Detail:</span> {selectedRegistration.courseDetailVenue}</p>
+                        <p>
+                          <span className="font-medium">Level:</span>{" "}
+                          {selectedRegistration.levelName}
+                        </p>
+                        <p>
+                          <span className="font-medium">Venue:</span>{" "}
+                          {selectedRegistration.city.split("|")[1]?.trim() ||
+                            selectedRegistration.city}
+                        </p>
+                        <p>
+                          <span className="font-medium">Time:</span>{" "}
+                          {selectedRegistration.city.split("|")[2]?.trim() ||
+                            "Not specified"}
+                        </p>
+                        <p>
+                          <span className="font-medium">Time Slot:</span>{" "}
+                          {selectedRegistration.timeslot}
+                        </p>
+                        <p>
+                          <span className="font-medium">Venue Detail:</span>{" "}
+                          {selectedRegistration.courseDetailVenue}
+                        </p>
                       </div>
                     </div>
-                    
+
                     <div className="space-y-4">
-                      <h3 className="text-lg font-semibold text-[#5C2166] border-b pb-2">Additional Information</h3>
+                      <h3 className="text-lg font-semibold text-[#5C2166] border-b pb-2">
+                        Additional Information
+                      </h3>
                       <div className="space-y-2">
-                        <p><span className="font-medium">How did you hear about us:</span> {selectedRegistration.hearAbout}</p>
-                        <p><span className="font-medium">Communication Preferences:</span> {selectedRegistration.communicationPreferences ? 'Yes' : 'No'}</p>
-                        <p><span className="font-medium">Terms Accepted:</span> {selectedRegistration.termsandcondition ? 'Yes' : 'No'}</p>
-                        <p><span className="font-medium">Registration Date:</span> {formatDateTime(selectedRegistration.createdAt)}</p>
+                        <p>
+                          <span className="font-medium">
+                            How did you hear about us:
+                          </span>{" "}
+                          {selectedRegistration.hearAbout}
+                        </p>
+                        <p>
+                          <span className="font-medium">
+                            Communication Preferences:
+                          </span>{" "}
+                          {selectedRegistration.communicationPreferences
+                            ? "Yes"
+                            : "No"}
+                        </p>
+                        <p>
+                          <span className="font-medium">Terms Accepted:</span>{" "}
+                          {selectedRegistration.termsandcondition
+                            ? "Yes"
+                            : "No"}
+                        </p>
+                        <p>
+                          <span className="font-medium">
+                            Registration Date:
+                          </span>{" "}
+                          {formatDateTime(selectedRegistration.createdAt)}
+                        </p>
                       </div>
                     </div>
                   </div>
-                  
+
                   {/* ID Photos Section */}
                   <div className="space-y-4">
-                    <h3 className="text-lg font-semibold text-[#5C2166] border-b pb-2">ID Photos</h3>
+                    <h3 className="text-lg font-semibold text-[#5C2166] border-b pb-2">
+                      ID Photos
+                    </h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       {/* Profile Image */}
                       {selectedRegistration.profileImage && (
@@ -384,12 +515,20 @@ const IchRegistration = () => {
                           <p className="font-medium text-sm">Profile Image:</p>
                           <div className="relative group">
                             <img
-                              src={getImageUrl(selectedRegistration.profileImage)}
+                              src={getImageUrl(
+                                selectedRegistration.profileImage
+                              )}
                               alt="Profile Image"
                               className="w-full h-48 object-cover rounded-lg border-2 border-gray-200 cursor-pointer hover:border-[#6E2D79] transition-colors"
-                              onClick={() => viewImage(selectedRegistration.profileImage, 'Profile Image')}
+                              onClick={() =>
+                                viewImage(
+                                  selectedRegistration.profileImage,
+                                  "Profile Image"
+                                )
+                              }
                               onError={(e) => {
-                                e.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZjNmNGY2Ii8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzk5YTNhZiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zNWVtIj5JbWFnZSBub3QgZm91bmQ8L3RleHQ+PC9zdmc+';
+                                e.target.src =
+                                  "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZjNmNGY2Ii8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzk5YTNhZiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zNWVtIj5JbWFnZSBub3QgZm91bmQ8L3RleHQ+PC9zdmc+";
                               }}
                             />
                             <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all rounded-lg">
@@ -398,19 +537,29 @@ const IchRegistration = () => {
                           </div>
                         </div>
                       )}
-                      
+
                       {/* ID Photo Front */}
                       {selectedRegistration.idPhotofront && (
                         <div className="space-y-2">
-                          <p className="font-medium text-sm">ID Photo (Front):</p>
+                          <p className="font-medium text-sm">
+                            ID Photo (Front):
+                          </p>
                           <div className="relative group">
                             <img
-                              src={getImageUrl(selectedRegistration.idPhotofront)}
+                              src={getImageUrl(
+                                selectedRegistration.idPhotofront
+                              )}
                               alt="ID Photo Front"
                               className="w-full h-48 object-cover rounded-lg border-2 border-gray-200 cursor-pointer hover:border-[#6E2D79] transition-colors"
-                              onClick={() => viewImage(selectedRegistration.idPhotofront, 'ID Photo (Front)')}
+                              onClick={() =>
+                                viewImage(
+                                  selectedRegistration.idPhotofront,
+                                  "ID Photo (Front)"
+                                )
+                              }
                               onError={(e) => {
-                                e.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZjNmNGY2Ii8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzk5YTNhZiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zNWVtIj5JbWFnZSBub3QgZm91bmQ8L3RleHQ+PC9zdmc+';
+                                e.target.src =
+                                  "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZjNmNGY2Ii8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzk5YTNhZiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zNWVtIj5JbWFnZSBub3QgZm91bmQ8L3RleHQ+PC9zdmc+";
                               }}
                             />
                             <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all rounded-lg">
@@ -419,12 +568,13 @@ const IchRegistration = () => {
                           </div>
                         </div>
                       )}
-                      
-                      {!selectedRegistration.profileImage && !selectedRegistration.idPhotofront && (
-                        <div className="text-center py-8 text-gray-500 md:col-span-2">
-                          <p>No images available</p>
-                        </div>
-                      )}
+
+                      {!selectedRegistration.profileImage &&
+                        !selectedRegistration.idPhotofront && (
+                          <div className="text-center py-8 text-gray-500 md:col-span-2">
+                            <p>No images available</p>
+                          </div>
+                        )}
                     </div>
                   </div>
                 </div>
@@ -443,13 +593,17 @@ const IchRegistration = () => {
                   <X className="w-6 h-6" />
                 </button>
                 <div className="bg-white rounded-lg p-4">
-                  <h3 className="text-lg font-semibold mb-4 text-center">{selectedImage.title}</h3>
+                  <h3 className="text-lg font-semibold mb-4 text-center">
+                    {selectedImage.title}
+                  </h3>
                   <img
                     src={getImageUrl(selectedImage.path)}
                     alt={selectedImage.title}
                     className="max-w-full max-h-[70vh] object-contain rounded-lg mx-auto"
                     onError={(e) => {
-                      e.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAw' + 'IiBoZWlnaHQ9IjQwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZjNmNGY2Ii8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIyMCIgZmlsbD0iIzk5YTNhZiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zNWVtIj5JbWFnZSBub3QgZm91bmQ8L3RleHQ+PC9zdmc+';
+                      e.target.src =
+                        "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAw" +
+                        "IiBoZWlnaHQ9IjQwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZjNmNGY2Ii8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIyMCIgZmlsbD0iIzk5YTNhZiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zNWVtIj5JbWFnZSBub3QgZm91bmQ8L3RleHQ+PC9zdmc+";
                     }}
                   />
                 </div>

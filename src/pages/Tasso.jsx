@@ -15,12 +15,16 @@ function Tasso() {
       description:
         "Explore the core principles and historical context of transpersonal regression therapy.",
       duration: "2 hours",
-      videoSrc: "/videos/module1.mp4",
+      videoSrc: `${import.meta.env.VITE_API_Cloud_Front_URL}tasso/2.mp4`,
       thumbnailSrc: "/thumbnails/module1.jpg",
       learningPoints: [
-        "Understand the theoretical framework",
-        "Learn assessment techniques",
-        "Practice basic induction methods",
+        "Master basic hypnosis skills and techniques",
+        "Conduct effective client intake and induction processes",
+        "Develop proficiency in reliving and regression methods",
+        "Practice personification techniques for deeper exploration",
+        "Learn aura-exploration methodologies",
+        "Understand how to build therapeutic bridges",
+        "Create comprehensive macrostructure for sessions",
       ],
       resources: [
         { name: "Study Guide PDF", url: "/resources/module1-guide.pdf" },
@@ -29,16 +33,20 @@ function Tasso() {
     },
     {
       id: 2,
-      title: "Module 2: Advanced Regression Techniques",
+      title: "Module 2: Trauma Resolution Techniques",
       description:
-        "Dive deeper into specialized techniques for different client needs.",
+        "Specialized methods for addressing different types of trauma.",
       duration: "3 hours",
-      videoSrc: "/videos/module2.mp4",
+      videoSrc: `${import.meta.env.VITE_API_Cloud_Front_URL}tasso/5.mp4`,
       thumbnailSrc: "/thumbnails/module2.jpg",
       learningPoints: [
-        "Master age regression protocols",
-        "Develop trauma-sensitive approaches",
-        "Explore past life regression cases",
+        "Master techniques for accident trauma release",
+        "Develop skills to address childhood trauma patterns",
+        "Understand and resolve emotional hangovers and postulates",
+        "Practice effective inner child healing methods",
+        "Learn specialized approaches for birth trauma resolution",
+        "Acquire techniques to work with pre-natal trauma",
+        "Integrate trauma release methods into clinical practice",
       ],
       resources: [
         { name: "Case Studies", url: "/resources/module2-cases.pdf" },
@@ -48,7 +56,116 @@ function Tasso() {
         },
       ],
     },
-    // Add more modules as needed
+    {
+      id: 3,
+      title: "Module 3: Life Plans and Attachments",
+      description: "Working with life choices and interpersonal connections.",
+      duration: "3 hours",
+      videoSrc: `${import.meta.env.VITE_API_Cloud_Front_URL}tasso/6.mp4`,
+      thumbnailSrc: "/thumbnails/module3.jpg",
+      learningPoints: [
+        "Explore and analyze personal life plans and choices",
+        "Develop techniques to modify limiting life patterns",
+        "Master methods for releasing attachments to living persons",
+        "Learn ancestral attachment release protocols",
+        "Understand karmic and transgenerational influences",
+        "Apply detachment techniques in therapeutic settings",
+        "Integrate life plan awareness into client sessions",
+      ],
+      resources: [
+        {
+          name: "Attachment Case Studies",
+          url: "/resources/module3-cases.pdf",
+        },
+        {
+          name: "Life Plan Workbook",
+          url: "/resources/life-plan-workbook.pdf",
+        },
+      ],
+    },
+    {
+      id: 4,
+      title: "Module 4: Past Life Exploration",
+      description:
+        "Techniques for accessing and healing past life experiences.",
+      duration: "3 hours",
+      videoSrc: `${import.meta.env.VITE_API_Cloud_Front_URL}tasso/7.mp4`,
+      thumbnailSrc: "/thumbnails/module4.jpg",
+      learningPoints: [
+        "Process traumatic lifetimes and emotional hangovers between incarnations",
+        "Resolve painful death experiences from past lives",
+        "Address confused and disoriented soul memories",
+        "Heal unnoticed or suppressed past life trauma",
+        "Work with overwhelming death experiences from previous lifetimes",
+        "Explore positive soul memories and beneficial past lives",
+        "Understand shy or hesitant soul manifestations across lifetimes",
+        "Develop skills to guide clients through past life recall",
+        "Integrate past life insights into present healing work",
+      ],
+      resources: [
+        { name: "Past Life Case Studies", url: "/resources/module4-cases.pdf" },
+        {
+          name: "Past Life Assessment Tools",
+          url: "/resources/past-life-tools.pdf",
+        },
+      ],
+    },
+    {
+      id: 5,
+      title: "Module 5: Karmic Patterns and Higher Self Work",
+      description:
+        "Advanced techniques for karmic resolution and spiritual guidance.",
+      duration: "3 hours",
+      videoSrc: `${import.meta.env.VITE_API_Cloud_Front_URL}tasso/8.mp4`,
+      thumbnailSrc: "/thumbnails/module5.jpg",
+      learningPoints: [
+        "Navigate complicated karmic lifetimes and soul contracts",
+        "Facilitate Higher Self interventions during sessions",
+        "Identify and resolve deep karmic patterns across lifetimes",
+        "Conduct integrative sessions bridging past and present awareness",
+        "Develop protocols for complex multi-lifetime cases",
+        "Master techniques for karmic debt resolution",
+        "Utilize Higher Self guidance for therapeutic breakthroughs",
+        "Create customized integration plans for clients",
+        "Balance karmic lessons with present-life growth",
+      ],
+      resources: [
+        { name: "Karmic Patterns Guide", url: "/resources/karmic-guide.pdf" },
+        {
+          name: "Higher Self Meditation Audio",
+          url: "/resources/higher-self-meditation.mp3",
+        },
+      ],
+    },
+    {
+      id: 6,
+      title: "Module 6: Integration and Core Transformation",
+      description: "Master techniques for complete healing integration.",
+      duration: "3 hours",
+      videoSrc: `${import.meta.env.VITE_API_Cloud_Front_URL}tasso/9.mp4`,
+      thumbnailSrc: "/thumbnails/module6.jpg",
+      learningPoints: [
+        "Master techniques for Great Integrations across consciousness levels",
+        "Conduct deep Core Issue Exploration and Transformation sessions",
+        "Facilitate powerful Homing Sessions for soul realignment",
+        "Develop protocols for multi-dimensional healing integration",
+        "Identify and transform root core issues at their origin",
+        "Create customized homing sequences for client needs",
+        "Bridge spiritual insights with psychological transformation",
+        "Apply integrative techniques for whole-being healing",
+        "Measure and track integration progress effectively",
+      ],
+      resources: [
+        {
+          name: "Integration Handbook",
+          url: "/resources/integration-guide.pdf",
+        },
+        {
+          name: "Core Transformation Worksheets",
+          url: "/resources/core-transformation.pdf",
+        },
+      ],
+    },
   ];
   const courseInfo = {
     price: "USD 1,500",
@@ -88,6 +205,7 @@ function Tasso() {
           </div>
         }
         contentPosition="above"
+        videoUrl={`${import.meta.env.VITE_API_Cloud_Front_URL}tasso/1.mp4`}
       />
 
       <div className="w-full mx-auto px-4 sm:px-6 py-16 px-4">
@@ -126,7 +244,7 @@ function Tasso() {
                   {/* Video Section */}
                   <div className="mb-8 rounded-lg overflow-hidden">
                     <VideoPlayer
-                      videoSrc={module.videoSrc}
+                      src={module.videoSrc}
                       thumbnailSrc={module.thumbnailSrc}
                       overlayText={`Module ${index + 1}`}
                       overlaySubtext={module.title}

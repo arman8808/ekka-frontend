@@ -2,10 +2,13 @@ import { useEffect, useState } from "react";
 import React from "react";
 import FamilySessionForm from "./FamilySessionForm";
 import { motion, AnimatePresence } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 const UpcomingSessions = ({ id, modal }) => {
   const [showModal, setShowModal] = useState(false);
   const [selectedSession, setSelectedSession] = useState(null);
   const [selectedWorkshop, setSelectedWorkshop] = useState(null);
+  const navigate = useNavigate();
+
   const sessions = [
     {
       id: 1,
@@ -88,8 +91,9 @@ const UpcomingSessions = ({ id, modal }) => {
     //   status: "Open",
     // },
   ];
+
   useEffect(() => {
-    if (id && modal) {
+    if (id && modal === "true") {
       const matchingSession = sessions.find(
         (session) => session.id.toString() === id.toString()
       );
@@ -100,10 +104,21 @@ const UpcomingSessions = ({ id, modal }) => {
       }
     }
   }, [id, modal]);
+
   const handleEnroll = (session) => {
     setSelectedWorkshop(session);
     setSelectedSession(session);
     setShowModal(true);
+    // Update URL when opening modal
+    navigate(`?id=${session.id}&modal=true`, { replace: true });
+  };
+
+  const handleCloseModal = () => {
+    setShowModal(false);
+
+    if (modal === "true") {
+      navigate("/schedule");
+    }
   };
 
   return (
@@ -218,14 +233,13 @@ const UpcomingSessions = ({ id, modal }) => {
       </div>
 
       {/* Modal */}
-
       {showModal && (
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[9999] flex items-center justify-center p-4"
-          onClick={() => setShowModal(false)} // Close when clicking backdrop
+          onClick={handleCloseModal} // Close when clicking backdrop
           style={{ zIndex: "9999999" }}
         >
           <motion.div
@@ -234,10 +248,10 @@ const UpcomingSessions = ({ id, modal }) => {
             exit={{ y: 20, opacity: 0 }}
             transition={{ type: "spring", damping: 25 }}
             className="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden max-h-[90vh] flex flex-col z-[10000]"
-            onClick={(e) => e.stopPropagation()} // Prevent click from reaching backdrop
+            onClick={(e) => e.stopPropagation()}
           >
             <FamilySessionForm
-              onClose={() => setShowModal(false)}
+              onClose={handleCloseModal}
               selectedSession={selectedSession}
             />
           </motion.div>

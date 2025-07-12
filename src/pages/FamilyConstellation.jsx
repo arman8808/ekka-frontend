@@ -6,9 +6,10 @@ import FAQ from "../components/home/FAQ";
 import ProfileCard from "../components/utils/ProfileCard";
 import UpcomingSessions from "../components/utils/UpcomingSessions";
 import HeroSection from "../components/utils/HeroSection";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 function FamilyConstellation() {
   const location = useLocation();
+
   const searchParams = new URLSearchParams(location.search);
   const id = searchParams.get("id") || "1";
   const modal = searchParams.get("modal");
@@ -46,8 +47,8 @@ function FamilyConstellation() {
         </div>
       </div>
       <ProfileCard />
-      <UpcomingSessions id={id} modal={modal}/>
-      {/* <FAQ /> */}
+      <UpcomingSessions id={id} modal={modal} />
+      <FAQ />
       <Testimonials />
       <Footer />
     </div>

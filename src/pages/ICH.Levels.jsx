@@ -566,7 +566,7 @@ const ICHLevels = () => {
         <RegistrationForm onClose={handleCloseModal} level={level} />
       )}
       <TestimonialCarousel />
-      <Faq2 />
+      {/* <Faq2 /> */}
       <Footer />
     </div>
   );

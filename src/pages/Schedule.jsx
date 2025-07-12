@@ -4,7 +4,7 @@ import Header from "../components/Header";
 import Footer from "../components/Footer";
 import TestimonialCarousel from "../components/home/Testimonials";
 import { useNavigate } from "react-router-dom";
-import { ChevronDown } from "lucide-react";
+
 const events = [
   {
     id: 9,
@@ -23,7 +23,7 @@ const events = [
   },
   {
     id: 8,
-    name: "Masterclass for Corporates",
+    name: "Masterclass for Executives",
     seats: "Not Limited",
     date: "11th Aug",
     location: "Houston, USA",
@@ -130,7 +130,7 @@ const events = [
   },
   {
     id: 10,
-    name: "Masterclass for doctors",
+    name: "Masterclass for HealthCare Practitioner",
     seats: "Not Limited",
     date: "27th Aug",
     location: "Houston, USA",
@@ -140,14 +140,14 @@ const events = [
     currency: "USD",
     priceValue: 25999,
     facilitator: "Yuvraj Kapadia",
-    link: "/family-constellation?id=6&modal=true",
+    link: "/family-constellation?id=5&modal=true",
     participants: "10 Seats",
     noenroll: true,
   },
   {
     id: 7,
     name: "Family Constellation",
-     seats: "Not Limited",
+    seats: "Not Limited",
     date: "28th Aug",
     location: "Woodlands, USA",
     trainer: "Dr. Monoj's A/C",
@@ -156,13 +156,13 @@ const events = [
     currency: "USD",
     priceValue: 349,
     facilitator: "Yuvraj Kapadia",
-    link: "/family-constellation?id=5&modal=true",
+    link: "/family-constellation?id=6&modal=true",
     participants: "10 Seats",
   },
   {
     id: 8,
-    name: "Decode Your Mind",
-    seats: 10,
+    name: "Level 1 of Hypnotherapy Training, Basic Course in Integrated Clinical Hypnotherapy Certification",
+    seats: "Not Limited",
     date: "31th Aug-1st sept",
     location: "San Diego, USA",
     trainer: "Dr. Sonia Gupte's A/C",
@@ -171,7 +171,22 @@ const events = [
     currency: "USD",
     priceValue: 349,
     facilitator: "Yuvraj Kapadia",
-       link: "/level/1?modal=true",
+    link: "/ich/levels?level=1&modal=true",
+    participants: "10 Seats",
+  },
+  {
+    id: 10,
+    name: "Family Constellation",
+    seats: 10,
+    date: "7th Sept",
+    location: "San Diego, USA",
+    trainer: "Dr. Sonia Gupte's A/C",
+    type: "Family Constellations",
+    price: "USD 375",
+    currency: "USD",
+    priceValue: 6500,
+    facilitator: "Yuvraj Kapadia",
+    link: "/family-constellation?id=7&modal=true",
     participants: "10 Seats",
   },
 ];
@@ -359,12 +374,23 @@ function Schedule() {
                     className="group"
                   >
                     <td className="px-4 py-4">
-                      <div className="flex flex-col">
-                        <span className="text-sm font-bold text-[#2D2D2D]">
-                          {event.name}
+                      <div className="flex flex-col max-w-[250px]">
+                        <span className="text-sm font-bold text-[#2D2D2D] break-words">
+                          {event.name.includes("Training,") ? (
+                            <>
+                              {event.name.split("Training,")[0]}Training,
+                              <br />
+                              <span className="text-sm font-bold text-[#2D2D2D] break-words">
+                                {event.name.split("Training,")[1]}
+                              </span>
+                            </>
+                          ) : (
+                            event.name
+                          )}
                         </span>
                       </div>
                     </td>
+
                     <td className="px-4 py-4">
                       <div className="text-sm text-[#2D2D2D] whitespace-nowrap">
                         {event.date}

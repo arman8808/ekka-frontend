@@ -21,7 +21,7 @@ function ICH() {
         contentPosition="above"
       />
       <Card />
-      <FAQ />
+      {/* <FAQ /> */}
       <Testimonials />
       <Footer />
     </div>

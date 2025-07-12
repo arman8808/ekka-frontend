@@ -50,10 +50,30 @@ const UpcomingSessions = ({ id, modal }) => {
     {
       id: 5,
       Event: "Family Constellation",
+      Date: "Aug 27, 2025",
+      Location: "Houston",
+      capacity: "10 Seats",
+      organisedby: "Dr Aiyasawmy's A/C",
+      // price: "$ 375",
+      status: "Open",
+    },
+    {
+      id: 6,
+      Event: "Family Constellation",
       Date: "Aug 28, 2025",
       Location: "Woodlands",
       capacity: "10 Seats",
       organisedby: "Dr Manoj's A/C",
+      // price: "$ 375",
+      status: "Open",
+    },
+    {
+      id: 7,
+      Event: "Family Constellation",
+      Date: "Sept 7, 2025",
+      Location: "San Diego",
+      capacity: "6 Seats",
+      organisedby: "Dr Sonia Gupte's A/C",
       // price: "$ 375",
       status: "Open",
     },
@@ -68,9 +88,11 @@ const UpcomingSessions = ({ id, modal }) => {
     //   status: "Open",
     // },
   ];
- useEffect(() => {
+  useEffect(() => {
     if (id && modal) {
-      const matchingSession = sessions.find(session => session.id.toString() === id.toString());
+      const matchingSession = sessions.find(
+        (session) => session.id.toString() === id.toString()
+      );
       if (matchingSession) {
         setSelectedSession(matchingSession);
         setSelectedWorkshop(matchingSession);
@@ -115,12 +137,12 @@ const UpcomingSessions = ({ id, modal }) => {
                     >
                       Location
                     </th>
-                    {/* <th
+                    <th
                       scope="col"
                       className="px-6 py-4 text-left text-base font-semibold text-white uppercase tracking-wider"
                     >
-                      Capacity
-                    </th> */}
+                      No of Seats
+                    </th>
                     {/* <th
                       scope="col"
                       className="px-6 py-4 text-left text-base font-semibold text-white uppercase tracking-wider"
@@ -154,9 +176,11 @@ const UpcomingSessions = ({ id, modal }) => {
                       <td className="px-6 py-4 whitespace-nowrap text-base text-[#6E2D79]">
                         {session.Location}
                       </td>
-                      {/* <td className="px-6 py-4 whitespace-nowrap text-base text-[#6E2D79]">
+                      <td className="px-6 py-4 whitespace-nowrap text-base text-[#6E2D79]">
                         {session.capacity}
                       </td>
+                      {/* 
+                    
                       <td className="px-6 py-4 whitespace-nowrap text-base font-semibold text-[#6E2D79]">
                         {session.organisedby}
                       </td>
@@ -183,6 +207,11 @@ const UpcomingSessions = ({ id, modal }) => {
                   ))}
                 </tbody>
               </table>
+              <div className="mt-4 text-center">
+                <p className="text-sm text-[#6E2D79] italic">
+                  * Seats are allocated on a first come first serve basis
+                </p>
+              </div>
             </div>
           </div>
         </div>
@@ -190,30 +219,30 @@ const UpcomingSessions = ({ id, modal }) => {
 
       {/* Modal */}
 
-{showModal && (
-  <motion.div
-    initial={{ opacity: 0 }}
-    animate={{ opacity: 1 }}
-    exit={{ opacity: 0 }}
-    className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[9999] flex items-center justify-center p-4"
-    onClick={() => setShowModal(false)} // Close when clicking backdrop
-    style={{zIndex:"9999999"}}
-  >
-    <motion.div
-      initial={{ y: 20, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
-      exit={{ y: 20, opacity: 0 }}
-      transition={{ type: "spring", damping: 25 }}
-      className="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden max-h-[90vh] flex flex-col z-[10000]"
-      onClick={(e) => e.stopPropagation()} // Prevent click from reaching backdrop
-    >
-      <FamilySessionForm
-        onClose={() => setShowModal(false)}
-        selectedSession={selectedSession}
-      />
-    </motion.div>
-  </motion.div>
-)}
+      {showModal && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[9999] flex items-center justify-center p-4"
+          onClick={() => setShowModal(false)} // Close when clicking backdrop
+          style={{ zIndex: "9999999" }}
+        >
+          <motion.div
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: 20, opacity: 0 }}
+            transition={{ type: "spring", damping: 25 }}
+            className="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden max-h-[90vh] flex flex-col z-[10000]"
+            onClick={(e) => e.stopPropagation()} // Prevent click from reaching backdrop
+          >
+            <FamilySessionForm
+              onClose={() => setShowModal(false)}
+              selectedSession={selectedSession}
+            />
+          </motion.div>
+        </motion.div>
+      )}
     </div>
   );
 };

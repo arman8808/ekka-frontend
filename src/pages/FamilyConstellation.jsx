@@ -47,7 +47,7 @@ function FamilyConstellation() {
       </div>
       <ProfileCard />
       <UpcomingSessions id={id} modal={modal}/>
-      <FAQ />
+      {/* <FAQ /> */}
       <Testimonials />
       <Footer />
     </div>

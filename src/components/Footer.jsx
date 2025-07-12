@@ -60,10 +60,10 @@ const Footer = () => {
           <MdEmail size={20} className="text-white" />
           <span className="text-[16px]">contact@ekaausa.com</span>
         </motion.a>
-        <motion.span className="flex items-center gap-2">
-          <img src="/footer/googletrust.svg" alt="footer" loading="lazy" />
+        {/* <motion.span className="flex items-center gap-2"> */}
+          {/* <img src="/footer/googletrust.svg" alt="footer" loading="lazy" /> */}
           {/* <img src="/footer/trustpilot.svg" alt="footer" loading="lazy" /> */}
-        </motion.span>{" "}
+        {/* </motion.span>{" "} */}
         <motion.div className="flex items-center gap-2">
           <span className="bg-white rounded-[50%] p-2 cursor-pointer hover:bg-[#f0f0f0] transition-colors">
             <a

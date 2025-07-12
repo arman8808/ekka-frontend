@@ -1,66 +1,50 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { ChevronLeft, ChevronRight, Play } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Play } from "lucide-react";
 
 const testimonials = [
   {
     id: 1,
-    name: 'Albert Flores',
-    role: 'Product Manager at Jomanar',
-    video: 'https://www.w3schools.com/html/mov_bbb.mp4',
-    thumbnail: '/peoplesay/image 6.svg',
+    // name: "Albert Flores",
+    // role: "Product Manager at Jomanar",
+    video: "testimonial/testimonial1.mp4",
+    thumbnail: "/testimonial/testimonial1.png",
   },
-  {
-    id: 2,
-    name: 'Albert Flores',
-    role: 'Product Manager at Jomanar',
-    video: 'https://www.w3schools.com/html/mov_bbb.mp4',
-    thumbnail: '/peoplesay/image 7.svg',
-  },
-  {
-    id: 3,
-    name: 'Albert Flores',
-    role: 'Product Manager at Jomanar',
-    video: 'https://www.w3schools.com/html/mov_bbb.mp4',
-    thumbnail: '/peoplesay/image 6.svg',
-  },
-  {
-    id: 4,
-    name: 'Albert Flores',
-    role: 'Product Manager at Jomanar',
-    video: 'https://www.w3schools.com/html/mov_bbb.mp4',
-    thumbnail: '/peoplesay/image 7.svg',
-  },
-  {
-    id: 5,
-    name: 'Albert Flores',
-    role: 'Product Manager at Jomanar',
-    video: 'https://www.w3schools.com/html/mov_bbb.mp4',
-    thumbnail: '/peoplesay/image 8.svg',
-  }
-];
+
+].map(item => ({
+  ...item,
+  video: import.meta.env.VITE_API_Cloud_Front_URL + item.video,
+  thumbnail:item.thumbnail
+}));
 
 const TestimonialCarousel = () => {
-  const [activeIndex, setActiveIndex] = useState(1);
+  const [activeIndex, setActiveIndex] = useState(0);
   const [playing, setPlaying] = useState(null);
+  const [isMobile, setIsMobile] = useState(false);
 
-  const getVisibleTestimonials = () => {
-    const totalItems = testimonials.length;
-    const prev = (activeIndex - 1 + totalItems) % totalItems;
-    const next = (activeIndex + 1) % totalItems;
-    return [prev, activeIndex, next];
-  };
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 640);
+    };
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const handlePrev = () => {
     setPlaying(null);
-    setActiveIndex((prevIndex) =>
-      prevIndex === 0 ? testimonials.length - 1 : prevIndex - 1
-    );
+    if (testimonials.length > 1) {
+      setActiveIndex((prevIndex) =>
+        prevIndex === 0 ? testimonials.length - 1 : prevIndex - 1
+      );
+    }
   };
 
   const handleNext = () => {
     setPlaying(null);
-    setActiveIndex((prevIndex) => (prevIndex + 1) % testimonials.length);
+    if (testimonials.length > 1) {
+      setActiveIndex((prevIndex) => (prevIndex + 1) % testimonials.length);
+    }
   };
 
   const handleVideoClick = (id) => {
@@ -71,7 +55,18 @@ const TestimonialCarousel = () => {
     setPlaying(null);
   }, [activeIndex]);
 
+  const getVisibleTestimonials = () => {
+    if (testimonials.length === 1) return [0];
+    if (isMobile) return [activeIndex];
+    
+    const totalItems = testimonials.length;
+    const prev = (activeIndex - 1 + totalItems) % totalItems;
+    const next = (activeIndex + 1) % totalItems;
+    return [prev, activeIndex, next];
+  };
+
   const visibleIndexes = getVisibleTestimonials();
+  const hasMultipleTestimonials = testimonials.length > 1;
 
   return (
     <div
@@ -97,60 +92,19 @@ const TestimonialCarousel = () => {
         </motion.div>
 
         <div className="relative w-full">
-          {/* Mobile View */}
-          <div className="sm:hidden flex justify-center">
-            <div className="w-full max-w-xs relative">
-              <div
-                className="transition-all duration-300 ease-in-out rounded-2xl overflow-hidden shadow-lg w-full"
-                style={{ aspectRatio: '3 / 4' }}
-              >
-                {(() => {
-                  const item = testimonials[activeIndex];
-                  return playing === item.id ? (
-                    <video
-                      src={item.video}
-                      controls
-                      autoPlay
-                      className="w-full h-full object-cover rounded-2xl"
-                    />
-                  ) : (
-                    <div
-                      onClick={() => handleVideoClick(item.id)}
-                      className="cursor-pointer relative w-full h-full"
-                    >
-                      <img
-                        src={item.thumbnail}
-                        alt={`${item.name} testimonial`}
-                        className="w-full h-full object-cover rounded-2xl"
-                      />
-                      <div className="absolute inset-0 bg-black/30 flex items-center justify-center rounded-2xl">
-                        <div className="bg-white/30 p-3 rounded-full">
-                          <Play className="text-white" size={24} />
-                        </div>
-                      </div>
-                      <div className="absolute bottom-0 left-0 w-full bg-gradient-to-t from-black via-black/50 to-transparent p-4 text-white rounded-b-2xl">
-                        <p className="font-medium text-base">{item.name}</p>
-                        <p className="text-sm text-gray-300">{item.role}</p>
-                      </div>
-                    </div>
-                  );
-                })()}
-              </div>
-            </div>
-          </div>
-
-          {/* Desktop View */}
-          <div className="hidden sm:flex justify-center items-start gap-4 md:gap-6 min-h-[450px] md:min-h-[500px] relative">
+          <div className={`flex ${isMobile || !hasMultipleTestimonials ? 'justify-center' : 'justify-center items-start gap-4 md:gap-6'} min-h-[450px] md:min-h-[500px] relative`}>
             {visibleIndexes.map((index) => {
               const item = testimonials[index];
               return (
-                <div
+                <motion.div
                   key={`${item.id}-${activeIndex}`}
-                  className="rounded-2xl overflow-hidden shadow-lg w-56 md:w-72 lg:w-80 cursor-pointer transition-all duration-300 ease-in-out"
-                  style={{ aspectRatio: '3 / 4' }}
-                  onClick={() => handleVideoClick(item.id)}
+                  className={`rounded-2xl overflow-hidden shadow-lg ${isMobile || !hasMultipleTestimonials ? 'w-full max-w-xs' : 'w-56 md:w-72 lg:w-80'} cursor-pointer transition-all duration-300 ease-in-out`}
+                  style={{ aspectRatio: "3 / 4" }}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.3 }}
                 >
-                  {playing === item.id ? (
+                  {playing === item?.id ? (
                     <video
                       src={item.video}
                       controls
@@ -158,7 +112,10 @@ const TestimonialCarousel = () => {
                       className="w-full h-full object-cover rounded-2xl"
                     />
                   ) : (
-                    <div className="relative w-full h-full">
+                    <div 
+                      className="relative w-full h-full"
+                      onClick={() => handleVideoClick(item.id)}
+                    >
                       <img
                         src={item.thumbnail}
                         alt={`${item.name} testimonial`}
@@ -174,37 +131,43 @@ const TestimonialCarousel = () => {
                         </motion.div>
                       </div>
                       <div className="absolute bottom-0 left-0 w-full bg-gradient-to-t from-black via-black/50 to-transparent p-4 text-white rounded-b-2xl">
-                        <p className="font-medium text-sm md:text-base">{item.name}</p>
-                        <p className="text-xs md:text-sm text-gray-300">{item.role}</p>
+                        <p className="font-medium text-sm md:text-base">
+                          {item.name}
+                        </p>
+                        <p className="text-xs md:text-sm text-gray-300">
+                          {item.role}
+                        </p>
                       </div>
                     </div>
                   )}
-                </div>
+                </motion.div>
               );
             })}
           </div>
 
-          {/* Navigation Buttons */}
-          <div className="flex justify-center gap-4 mt-8 sm:mt-12 ">
-            <motion.button
-              onClick={handlePrev}
-              className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-[#C183B2] text-white  flex items-center justify-center  transition-colors duration-300 cursor-pointer"
-              aria-label="Previous testimonial"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <ChevronLeft size={20} />
-            </motion.button>
-            <motion.button
-              onClick={handleNext}
-              className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-[#6E2D79] text-white flex items-center justify-center  transition-colors duration-300 cursor-pointer"
-              aria-label="Next testimonial"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <ChevronRight size={20} />
-            </motion.button>
-          </div>
+          {/* Navigation Buttons - Only show if multiple testimonials */}
+          {hasMultipleTestimonials && (
+            <div className="flex justify-center gap-4 mt-8 sm:mt-12">
+              <motion.button
+                onClick={handlePrev}
+                className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-[#C183B2] text-white flex items-center justify-center transition-colors duration-300 cursor-pointer"
+                aria-label="Previous testimonial"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <ChevronLeft size={20} />
+              </motion.button>
+              <motion.button
+                onClick={handleNext}
+                className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-[#6E2D79] text-white flex items-center justify-center transition-colors duration-300 cursor-pointer"
+                aria-label="Next testimonial"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <ChevronRight size={20} />
+              </motion.button>
+            </div>
+          )}
         </div>
       </div>
     </div>

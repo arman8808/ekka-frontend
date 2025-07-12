@@ -25,7 +25,7 @@ function DecodePage() {
           <img src="/2.2.svg" alt="Leaf" />
         </div>
         
-        <FAQ/>
+        {/* <FAQ/> */}
       </div>
       <Footer />
     </>

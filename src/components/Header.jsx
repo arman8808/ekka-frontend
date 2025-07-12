@@ -151,7 +151,7 @@ const Header = () => {
             className="text-lg font-medium hover:text-[#6E2D79] transition-colors"
             onClick={() => setIsOpen(false)}
           >
-            Decode
+            DECODE
           </Link>
           <Link
             to="/ich"
@@ -159,6 +159,13 @@ const Header = () => {
             onClick={() => setIsOpen(false)}
           >
             Hypnotherapy
+          </Link>{" "}
+          <Link
+            to="/tasso"
+            className="text-lg font-medium hover:text-[#6E2D79] transition-colors"
+            onClick={() => setIsOpen(false)}
+          >
+            TASSO
           </Link>
           {/* Workshop Dropdown */}
           <div className="relative">

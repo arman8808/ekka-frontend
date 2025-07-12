@@ -177,7 +177,7 @@ const events = [
   {
     id: 10,
     name: "Family Constellation",
-    seats: 10,
+    seats: 6,
     date: "7th Sept",
     location: "San Diego, USA",
     trainer: "Dr. Sonia Gupte's A/C",

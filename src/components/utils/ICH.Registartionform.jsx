@@ -45,13 +45,37 @@ const hearAboutOptions = [
 const cityOptions = [
   {
     value: "Houston | ICH L3 Training | 13th-17th Aug",
-    label: "Houston | Advanced Course in Integrated Hypnotic Modalities for Health Resolutions | 13th-17th Aug",
+    label:
+      "Houston | Advanced Course in Integrated Hypnotic Modalities for Health Resolutions | 13th-17th Aug",
     level: 3,
+    levelName:
+      "Advanced Course in Integrated Hypnotic Modalities for Health Resolutions",
+    date: "13th–17th Aug",
+  },
+  {
+    value: "Houston | ICH L2 Training | 13th–17th Aug",
+    label:
+      "Houston | Course in Integrated Hypnotic Modalities for Behavioral Resolutions. | 13th–17th Aug",
+    level: 2,
+    levelName:
+      "Course in Integrated Hypnotic Modalities for Behavioral Resolutions.",
+    date: "13th–17th Aug",
   },
   {
     value: "Houston | ICH L1 Training | 20th-21th Aug",
-    label: "Houston | Basic Course in Integrated Clinical Hypnotherapy Certification | 20th-21th Aug",
+    label:
+      "Houston | Basic Course in Integrated Clinical Hypnotherapy Certification | 20th-21th Aug",
     level: 1,
+    levelName: "Basic Course in Integrated Clinical Hypnotherapy Certification",
+    date: "20th–21st Aug",
+  },
+  {
+    value: "Houston | ICH L1 Training | 11th Aug-12th Aug",
+    label:
+      "Houston | Basic Course in Integrated Clinical Hypnotherapy Certification | 11th Aug-12th Aug",
+    level: 1,
+    levelName: "Basic Course in Integrated Clinical Hypnotherapy Certification",
+    date: "11th Aug-12th Aug",
   },
 ];
 
@@ -375,7 +399,7 @@ const FormCheckbox = ({ label, name, register, error, className = "" }) => (
   </div>
 );
 
-const RegistrationForm = ({ onClose = () => {}, level }) => {
+const RegistrationForm = ({ onClose = () => {}, level, date }) => {
   const [showThankYou, setShowThankYou] = useState(false);
   const [apiError, setApiError] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -395,6 +419,8 @@ const RegistrationForm = ({ onClose = () => {}, level }) => {
       isSameAddress: false,
     },
   });
+  console.log(date,'date');
+  
 
   // Watched values
   const firstName = watch("firstName");
@@ -444,7 +470,6 @@ const RegistrationForm = ({ onClose = () => {}, level }) => {
     try {
       const formData = new FormData();
 
-      // Append all form data
       Object.entries(data).forEach(([key, value]) => {
         // Handle image fields separately
         if (["profileImage", "frontImage", "backImage"].includes(key)) {
@@ -460,6 +485,7 @@ const RegistrationForm = ({ onClose = () => {}, level }) => {
 
       if (level) {
         formData.append("level", level);
+        // formData.append("levelName", data.city);
       }
 
       // Show loading toast
@@ -667,7 +693,11 @@ const RegistrationForm = ({ onClose = () => {}, level }) => {
                   <FormRadioGroup
                     label="City"
                     name="city"
-                    options={cityOptions.filter(option => option.level.toString() === level)}
+                    options={cityOptions.filter(
+                      (option) =>
+                        option.level.toString() === level &&
+                        option.date.toString()==date
+                    )}
                     control={control}
                     error={errors.city}
                     required

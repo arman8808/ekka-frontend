@@ -14,17 +14,18 @@ const ICHLevels = () => {
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const level = searchParams.get("level") || "1";
-  const modal = searchParams.get("modal"); // "true"
+  const modal = searchParams.get("modal");
+  const date = searchParams.get("date");
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
   };
   const handleEnrollClick = () => {
-    if (level === "1" || level === "3") {
+    if (level === "1" || level === "3" || level === "2") {
       setIsModalOpen(true);
     } else {
       setComingSoonAlert(true);
-      setTimeout(() => setComingSoonAlert(false), 3000); // Hide after 3 seconds
+      setTimeout(() => setComingSoonAlert(false), 3000);
     }
   };
 
@@ -34,25 +35,58 @@ const ICHLevels = () => {
       id: 1,
       Event:
         "Advanced Course in Integrated Hypnotic Modalities for Health Resolutions",
-      Date: "Aug 13-17, 2025",
+      Date: "13th–17th Aug",
       Location: "Houston",
       capacity: "10 Seats",
       organisedby: "Dr Aiyasawmy's A/C",
       // price: "$ 375",
       status: "Open",
       level: 3,
+      levelName:
+        "Advanced Course in Integrated Hypnotic Modalities for Health Resolutions",
+    },
+
+    {
+      id: 4,
+      Event: "Basic Course in Integrated Clinical Hypnotherapy Certification",
+      Date: "11th Aug-12th Aug",
+      Location: "Houston TX",
+      capacity: "10 Seats",
+      organisedby: "Dr.Aiyasawmy",
+      // price: "$ 375",
+      status: "Open",
+      level: 1,
+      levelName:
+        "Basic Course in Integrated Clinical Hypnotherapy Certification",
     },
     {
       id: 2,
       Event: "Basic Course in Integrated Clinical Hypnotherapy Certification",
-      Date: "Aug 20-21, 2025",
+      Date: "20th–21st Aug",
       Location: "Austin",
       capacity: "10 Seats",
-      organisedby: "Dr Manoj's A/C",
+      organisedby: "Dr Manoj's",
       // price: "$ 375",
       status: "Open",
       level: 1,
+      levelName:
+        "Basic Course in Integrated Clinical Hypnotherapy Certification",
     },
+    {
+      id: 3,
+      Event:
+        "Course in Integrated Hypnotic Modalities for Behavioral Resolutions.",
+      Date: "13th–17th Aug",
+      Location: "Houston TX",
+      capacity: "10 Seats",
+      organisedby: "Dr.Sonia Gupte",
+      // price: "$ 375",
+      status: "Open",
+      level: 2,
+      levelName:
+        "Course in Integrated Hypnotic Modalities for Behavioral Resolutions.",
+    },
+
     // {
     //   id: 3,
     //   Event: "ICH Level 1",
@@ -62,12 +96,6 @@ const ICHLevels = () => {
     //   organisedby: "Dr Sonia's A/C",
     //   status: "Open",
     // },
-  ];
-  const scheduleData = [
-    { city: "Dallas", venue: "Abc", date: "Jun 15, 2025", time: "10:00 AM" },
-    { city: "Texas", venue: "Xyz", date: "Jun 20, 2025", time: "2:00 PM" },
-    { city: "Houston", venue: "Rty", date: "Jul 1, 2025", time: "9:00 AM" },
-    { city: "Austin", venue: "Abcz", date: "Jun 25, 2025", time: "11:00 AM" },
   ];
 
   const levelData = levelsData[level] || levelsData[1];
@@ -563,7 +591,11 @@ const ICHLevels = () => {
 
       {/* Registration Form Modal */}
       {isModalOpen && (
-        <RegistrationForm onClose={handleCloseModal} level={level} />
+        <RegistrationForm
+          onClose={handleCloseModal}
+          level={level}
+          date={date}
+        />
       )}
       <TestimonialCarousel />
       {/* <Faq2 /> */}

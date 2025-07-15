@@ -52,7 +52,7 @@ const ICHLevels = () => {
       Date: "11th Aug-12th Aug",
       Location: "Houston TX",
       capacity: "10 Seats",
-      organisedby: "Dr.Aiyasawmy",
+      organisedby: "Dr Manoj's",
       // price: "$ 375",
       status: "Open",
       level: 1,
@@ -86,16 +86,6 @@ const ICHLevels = () => {
       levelName:
         "Course in Integrated Hypnotic Modalities for Behavioral Resolutions.",
     },
-
-    // {
-    //   id: 3,
-    //   Event: "ICH Level 1",
-    //   Date: "Aug 31, 2025",
-    //   Location: "San Diego",
-    //   capacity: "10 Seats",
-    //   organisedby: "Dr Sonia's A/C",
-    //   status: "Open",
-    // },
   ];
 
   const levelData = levelsData[level] || levelsData[1];

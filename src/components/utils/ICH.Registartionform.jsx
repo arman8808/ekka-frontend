@@ -44,7 +44,7 @@ const hearAboutOptions = [
 // City options for select dropdown
 const cityOptions = [
   {
-    value: "Houston | ICH L3 Training | 13th-17th Aug",
+    value: "Houston | Hypnotherapy L3 Training | 13th-17th Aug",
     label:
       "Houston | Advanced Course in Integrated Hypnotic Modalities for Health Resolutions | 13th-17th Aug",
     level: 3,
@@ -53,7 +53,7 @@ const cityOptions = [
     date: "13th–17th Aug",
   },
   {
-    value: "Houston | ICH L2 Training | 13th–17th Aug",
+    value: "Houston | Hypnotherapy L2 Training | 13th–17th Aug",
     label:
       "Houston | Course in Integrated Hypnotic Modalities for Behavioral Resolutions. | 13th–17th Aug",
     level: 2,
@@ -62,7 +62,7 @@ const cityOptions = [
     date: "13th–17th Aug",
   },
   {
-    value: "Houston | ICH L1 Training | 20th-21th Aug",
+    value: "Houston | Hypnotherapy L1 Training | 20th-21th Aug",
     label:
       "Houston | Basic Course in Integrated Clinical Hypnotherapy Certification | 20th-21th Aug",
     level: 1,
@@ -70,7 +70,7 @@ const cityOptions = [
     date: "20th–21st Aug",
   },
   {
-    value: "Houston | ICH L1 Training | 11th Aug-12th Aug",
+    value: "Houston | Hypnotherapy L1 Training | 11th Aug-12th Aug",
     label:
       "Houston | Basic Course in Integrated Clinical Hypnotherapy Certification | 11th Aug-12th Aug",
     level: 1,
@@ -94,7 +94,7 @@ const schema = yup.object().shape({
   city: yup.string().required("City is required"),
   dob: yup.date().required("Date of birth is required"),
   occupation: yup.string().required("Occupation is required"),
-  profileImage: yup.mixed().required("Profile photo is required"),
+  profileImage: yup.mixed().optional("Profile photo is required"),
   frontImage: yup.mixed().required("Front ID photo is required"),
   termsandcondition: yup
     .boolean()
@@ -119,69 +119,69 @@ const ErrorAlert = ({ error, onClose }) => (
 );
 
 // Profile Image Upload Component
-const ProfileImageUpload = ({ image, onUpload, error }) => {
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
+// const ProfileImageUpload = ({ image, onUpload, error }) => {
+//   const handleFileChange = (e) => {
+//     const file = e.target.files[0];
+//     if (!file) return;
 
-    // Create preview URL
-    // const preview = URL.createObjectURL(file);
-    // onUpload({ file, preview });
-  };
+//     // Create preview URL
+//     // const preview = URL.createObjectURL(file);
+//     // onUpload({ file, preview });
+//   };
 
-  return (
-    <div className="flex flex-col items-center space-y-4">
-      <div className="relative">
-        <input
-          type="file"
-          accept="image/*"
-          onChange={handleFileChange}
-          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-          id="upload-profile"
-        />
-        <label
-          htmlFor="upload-profile"
-          className={`flex flex-col items-center justify-center w-32 h-32 border-2 border-dashed rounded-full cursor-pointer transition-colors duration-200 overflow-hidden ${
-            error
-              ? "border-red-300 hover:border-red-400 hover:bg-red-50"
-              : "border-gray-300 hover:border-[#9D4EDD] hover:bg-gray-50"
-          }`}
-        >
-          {image ? (
-            <img
-              src={image}
-              alt="Profile"
-              className="w-full h-full object-cover rounded-full"
-            />
-          ) : (
-            <>
-              <User
-                size={32}
-                className={error ? "text-red-400" : "text-gray-400"}
-              />
-              <Upload
-                size={16}
-                className={error ? "text-red-400 mt-1" : "text-gray-400 mt-1"}
-              />
-            </>
-          )}
-        </label>
-      </div>
+//   return (
+//     <div className="flex flex-col items-center space-y-4">
+//       <div className="relative">
+//         <input
+//           type="file"
+//           accept="image/*"
+//           onChange={handleFileChange}
+//           className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+//           id="upload-profile"
+//         />
+//         <label
+//           htmlFor="upload-profile"
+//           className={`flex flex-col items-center justify-center w-32 h-32 border-2 border-dashed rounded-full cursor-pointer transition-colors duration-200 overflow-hidden ${
+//             error
+//               ? "border-red-300 hover:border-red-400 hover:bg-red-50"
+//               : "border-gray-300 hover:border-[#9D4EDD] hover:bg-gray-50"
+//           }`}
+//         >
+//           {image ? (
+//             <img
+//               src={image}
+//               alt="Profile"
+//               className="w-full h-full object-cover rounded-full"
+//             />
+//           ) : (
+//             <>
+//               <User
+//                 size={32}
+//                 className={error ? "text-red-400" : "text-gray-400"}
+//               />
+//               <Upload
+//                 size={16}
+//                 className={error ? "text-red-400 mt-1" : "text-gray-400 mt-1"}
+//               />
+//             </>
+//           )}
+//         </label>
+//       </div>
 
-      <div className="text-center">
-        <p
-          className={`text-sm font-medium mb-1 ${
-            error ? "text-red-600" : "text-gray-700"
-          }`}
-        >
-          Upload Profile Photo
-        </p>
-        <p className="text-xs text-gray-500">Click to select image</p>
-        {error && <p className="text-xs text-red-500 mt-1">{error}</p>}
-      </div>
-    </div>
-  );
-};
+//       <div className="text-center">
+//         <p
+//           className={`text-sm font-medium mb-1 ${
+//             error ? "text-red-600" : "text-gray-700"
+//           }`}
+//         >
+//           Upload Profile Photo
+//         </p>
+//         <p className="text-xs text-gray-500">Click to select image</p>
+//         {error && <p className="text-xs text-red-500 mt-1">{error}</p>}
+//       </div>
+//     </div>
+//   );
+// };
 
 // Upload Box Component
 const UploadBox = ({ side, image, onUpload, error }) => {
@@ -481,12 +481,10 @@ const RegistrationForm = ({ onClose = () => {}, level, date }) => {
       });
 
       // Add dummy profile image
-      formData.append("profileImage", dummyImage);
+      // formData.append("profileImage", dummyImage);
 
       // Process other fields
       Object.entries(data).forEach(([key, value]) => {
-        if (key === "profileImage") return;
-
         if (["frontImage", "backImage"].includes(key)) {
           if (value?.file) {
             formData.append(key, value.file);
@@ -544,7 +542,7 @@ const RegistrationForm = ({ onClose = () => {}, level, date }) => {
   useEffect(() => {
     return () => {
       // Cleanup preview URLs when component unmounts
-      const fields = ["profileImage", "frontImage", "backImage"];
+      const fields = [ "frontImage", "backImage"];
       fields.forEach((field) => {
         const value = watch(field);
         if (value?.preview) {

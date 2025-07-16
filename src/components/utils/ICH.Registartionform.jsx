@@ -419,8 +419,7 @@ const RegistrationForm = ({ onClose = () => {}, level, date }) => {
       isSameAddress: false,
     },
   });
-  console.log(date,'date');
-  
+  console.log(date, "date");
 
   // Watched values
   const firstName = watch("firstName");
@@ -472,7 +471,7 @@ const RegistrationForm = ({ onClose = () => {}, level, date }) => {
 
       Object.entries(data).forEach(([key, value]) => {
         // Handle image fields separately
-        if (["profileImage", "frontImage", "backImage"].includes(key)) {
+        if (["frontImage", "backImage"].includes(key)) {
           if (value && value.file) {
             formData.append(key, value.file);
           }
@@ -486,6 +485,12 @@ const RegistrationForm = ({ onClose = () => {}, level, date }) => {
       if (level) {
         formData.append("level", level);
         // formData.append("levelName", data.city);
+        const dummyImage = new File(
+          [""], // empty content
+          "/profilepic.png", // filename
+          { type: "image/png" } // file type
+        );
+        formData.append("profileImage", dummyImage);
       }
 
       // Show loading toast
@@ -573,7 +578,7 @@ const RegistrationForm = ({ onClose = () => {}, level, date }) => {
             )}
 
             {/* Profile Image Section */}
-            <div>
+            {/* <div>
               <div className="bg-[#F8F1FF] h-[2px] mb-6"></div>
               <div className="flex justify-center">
                 <Controller
@@ -590,7 +595,7 @@ const RegistrationForm = ({ onClose = () => {}, level, date }) => {
                   )}
                 />
               </div>
-            </div>
+            </div> */}
 
             {/* Personal Information */}
             <div>
@@ -696,7 +701,7 @@ const RegistrationForm = ({ onClose = () => {}, level, date }) => {
                     options={cityOptions.filter(
                       (option) =>
                         option.level.toString() === level &&
-                        option.date.toString()==date
+                        option.date.toString() == date
                     )}
                     control={control}
                     error={errors.city}

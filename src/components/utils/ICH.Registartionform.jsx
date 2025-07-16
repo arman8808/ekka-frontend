@@ -125,8 +125,8 @@ const ProfileImageUpload = ({ image, onUpload, error }) => {
     if (!file) return;
 
     // Create preview URL
-    const preview = URL.createObjectURL(file);
-    onUpload({ file, preview }); // Pass both file and preview
+    // const preview = URL.createObjectURL(file);
+    // onUpload({ file, preview });
   };
 
   return (
@@ -417,10 +417,10 @@ const RegistrationForm = ({ onClose = () => {}, level, date }) => {
       levelName: localStorage.getItem("level") || "",
       communicationPreferences: false,
       isSameAddress: false,
+      profileImage:
+        "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=",
     },
   });
-  console.log(date,'date');
-  
 
   // Watched values
   const firstName = watch("firstName");
@@ -470,43 +470,54 @@ const RegistrationForm = ({ onClose = () => {}, level, date }) => {
     try {
       const formData = new FormData();
 
+      const dummyImageData = new Blob(
+        [
+          "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=",
+        ],
+        { type: "image/png" }
+      );
+      const dummyImage = new File([dummyImageData], "/default-profile.png", {
+        type: "image/png",
+      });
+
+      // Add dummy profile image
+      formData.append("profileImage", dummyImage);
+
+      // Process other fields
       Object.entries(data).forEach(([key, value]) => {
-        // Handle image fields separately
-        if (["profileImage", "frontImage", "backImage"].includes(key)) {
-          if (value && value.file) {
+        if (key === "profileImage") return;
+
+        if (["frontImage", "backImage"].includes(key)) {
+          if (value?.file) {
             formData.append(key, value.file);
           }
-        }
-        // Handle non-image fields
-        else if (value !== null && value !== undefined) {
+        } else if (value !== null && value !== undefined) {
           formData.append(key, value);
         }
       });
 
       if (level) {
         formData.append("level", level);
-        // formData.append("levelName", data.city);
       }
 
-      // Show loading toast
       const loadingToast = toast.loading("Submitting registration...");
-
-      // Submit to API
       const response = await registrationService.submitRegistration(formData);
 
-      // Success handling
       toast.dismiss(loadingToast);
       toast.success("Registration submitted successfully!");
       setShowThankYou(true);
-
-      // Auto-close after 5 seconds
-      setTimeout(() => {
-        onClose();
-      }, 5000);
+      setTimeout(() => onClose(), 5000);
     } catch (error) {
       console.error("Registration error:", error);
-      setApiError(error.message || "An unexpected error occurred");
-      toast.error(error.message || "Failed to submit registration");
+
+      // Properly extract error message
+      const errorMessage =
+        error.response?.data?.message ||
+        error.message ||
+        "An unexpected error occurred";
+
+      setApiError(errorMessage);
+      toast.error(errorMessage);
     } finally {
       setIsSubmitting(false);
     }
@@ -573,7 +584,7 @@ const RegistrationForm = ({ onClose = () => {}, level, date }) => {
             )}
 
             {/* Profile Image Section */}
-            <div>
+            {/* <div>
               <div className="bg-[#F8F1FF] h-[2px] mb-6"></div>
               <div className="flex justify-center">
                 <Controller
@@ -590,7 +601,7 @@ const RegistrationForm = ({ onClose = () => {}, level, date }) => {
                   )}
                 />
               </div>
-            </div>
+            </div> */}
 
             {/* Personal Information */}
             <div>
@@ -696,7 +707,7 @@ const RegistrationForm = ({ onClose = () => {}, level, date }) => {
                     options={cityOptions.filter(
                       (option) =>
                         option.level.toString() === level &&
-                        option.date.toString()==date
+                        option.date.toString() == date
                     )}
                     control={control}
                     error={errors.city}

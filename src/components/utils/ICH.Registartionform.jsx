@@ -465,7 +465,11 @@ const RegistrationForm = ({ onClose = () => {}, level, date }) => {
   const onSubmit = async (data) => {
     setIsSubmitting(true);
     setApiError(null);
-
+    const dummyImage = new File(
+      [""], // empty content
+      "profilepic.png", // filename (no leading slash)
+      { type: "image/png" }
+    );
     try {
       const formData = new FormData();
 
@@ -485,11 +489,6 @@ const RegistrationForm = ({ onClose = () => {}, level, date }) => {
       if (level) {
         formData.append("level", level);
         // formData.append("levelName", data.city);
-        const dummyImage = new File(
-          [""], // empty content
-          "/profilepic.png", // filename
-          { type: "image/png" } // file type
-        );
         formData.append("profileImage", dummyImage);
       }
 

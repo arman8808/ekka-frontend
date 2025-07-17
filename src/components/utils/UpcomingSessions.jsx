@@ -17,6 +17,7 @@ const UpcomingSessions = ({ id, modal }) => {
       Location: "Cold Spring, TX",
       capacity: "10 Seats",
       organisedby: "Dr Aiyasawmy",
+      organiserEmail: "Aiyasawmy@gmail.com",
       // price: "$ 375",
       status: "Open",
     },
@@ -27,7 +28,7 @@ const UpcomingSessions = ({ id, modal }) => {
       Location: "Houston",
       capacity: "10 Seats",
       organisedby: "Dr Aiyasawmy",
-      // price: "$ 375",
+      organiserEmail: "Aiyasawmy@gmail.com",
       status: "Open",
     },
     {
@@ -37,7 +38,7 @@ const UpcomingSessions = ({ id, modal }) => {
       Location: "Houston",
       capacity: "10 Seats",
       organisedby: "Dr Aiyasawmy",
-      // price: "$ 375",
+      organiserEmail: "Aiyasawmy@gmail.com",
       status: "Open",
     },
     {
@@ -47,7 +48,7 @@ const UpcomingSessions = ({ id, modal }) => {
       Location: "Austin",
       capacity: "10 Seats",
       organisedby: "Dr Manoj",
-      // price: "$ 375",
+      organiserEmail: "docbhardwaj@gmail.com",
       status: "Open",
     },
     {
@@ -57,19 +58,10 @@ const UpcomingSessions = ({ id, modal }) => {
       Location: "Austin",
       capacity: "10 Seats",
       organisedby: "Dr Manoj",
-      // price: "$ 375",
+      organiserEmail: "docbhardwaj@gmail.com",
       status: "Open",
     },
-    // {
-    //   id: 5,
-    //   Event: "Family Constellation",
-    //   Date: "Aug 27, 2025",
-    //   Location: "Houston",
-    //   capacity: "10 Seats",
-    //   organisedby: "Dr Aiyasawmy",
-    //   // price: "$ 375",
-    //   status: "Open",
-    // },
+
     {
       id: 6,
       Event: "Family Constellation",
@@ -77,7 +69,7 @@ const UpcomingSessions = ({ id, modal }) => {
       Location: "Woodlands",
       capacity: "10 Seats",
       organisedby: "Dr Manoj",
-      // price: "$ 375",
+      organiserEmail: "docbhardwaj@gmail.com",
       status: "Open",
     },
     {
@@ -87,7 +79,7 @@ const UpcomingSessions = ({ id, modal }) => {
       Location: "Woodlands",
       capacity: "10 Seats",
       organisedby: "Dr Manoj's",
-      // price: "$ 375",
+      organiserEmail: "docbhardwaj@gmail.com",
       status: "Open",
     },
     {
@@ -97,7 +89,7 @@ const UpcomingSessions = ({ id, modal }) => {
       Location: "San Diego",
       capacity: "6 Seats",
       organisedby: "Dr Sonia Gupte's",
-      // price: "$ 375",
+      organiserEmail: "Sonia@enso-nia.com",
       status: "Open",
     },
   ];

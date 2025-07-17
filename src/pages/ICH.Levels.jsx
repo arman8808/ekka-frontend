@@ -59,19 +59,19 @@ const ICHLevels = () => {
       levelName:
         "Basic Course in Integrated Clinical Hypnotherapy Certification",
     },
-    {
-      id: 2,
-      Event: "Basic Course in Integrated Clinical Hypnotherapy Certification",
-      Date: "20th–21st Aug",
-      Location: "Austin",
-      capacity: "10 Seats",
-      organisedby: "Dr Manoj's",
-      // price: "$ 375",
-      status: "Open",
-      level: 1,
-      levelName:
-        "Basic Course in Integrated Clinical Hypnotherapy Certification",
-    },
+    // {
+    //   id: 2,
+    //   Event: "Basic Course in Integrated Clinical Hypnotherapy Certification",
+    //   Date: "20th–21st Aug",
+    //   Location: "Austin",
+    //   capacity: "10 Seats",
+    //   organisedby: "Dr Manoj's",
+    //   // price: "$ 375",
+    //   status: "Open",
+    //   level: 1,
+    //   levelName:
+    //     "Basic Course in Integrated Clinical Hypnotherapy Certification",
+    // },
     {
       id: 3,
       Event:

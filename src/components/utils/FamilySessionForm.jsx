@@ -12,7 +12,6 @@ const FamilySessionForm = ({ onClose, selectedSession }) => {
     formState: { errors, isSubmitting },
     reset,
   } = useForm();
-
   const onSubmit = async (data) => {
     setIsSubmitting(true);
     const loadingToast = toast.loading("Processing your registration...");
@@ -25,6 +24,7 @@ const FamilySessionForm = ({ onClose, selectedSession }) => {
           Date: selectedSession.Date,
           Location: selectedSession.Location,
           organisedby: selectedSession.organisedby,
+          organiserEmail: selectedSession.organiserEmail,
           capacity: selectedSession.capacity,
           status: selectedSession.status,
         },

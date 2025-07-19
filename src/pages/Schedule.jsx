@@ -20,6 +20,7 @@ const events = [
     facilitator: "Yuvraj Kapadia",
     link: "/family-constellation?id=8&modal=true",
     participants: "10 Seats",
+    pagelink: "/family-constellation",
   },
   {
     id: 9,
@@ -35,6 +36,7 @@ const events = [
     facilitator: "Yuvraj Kapadia",
     link: "/level/5?modal=true",
     participants: "10 Seats",
+    pagelink: "/decode",
   },
   {
     id: 10,
@@ -51,6 +53,7 @@ const events = [
     link: "/family-constellation?id=5&modal=true",
     participants: "10 Seats",
     noenroll: true,
+    pagelink: "/family-constellation",
   },
   {
     id: 11,
@@ -67,7 +70,9 @@ const events = [
     link: "/ich/levels?level=1&modal=true&date=11th Aug-12th Aug",
     participants: "10 Seats",
     noenroll: false,
+    pagelink: "/ich",
   },
+
   {
     id: 2,
     name: "Family Constellation",
@@ -82,6 +87,7 @@ const events = [
     facilitator: "Yuvraj Kapadia",
     link: "/family-constellation?id=1&modal=true",
     participants: "10 Seats",
+    pagelink: "/family-constellation",
   },
   {
     id: 12,
@@ -97,6 +103,7 @@ const events = [
     facilitator: "Dr Sonia Gupte",
     link: "/ich/levels?level=2&modal=true&date=13th–17th Aug",
     participants: "10 Seats",
+    pagelink: "/ich",
   },
   {
     id: 3,
@@ -112,6 +119,7 @@ const events = [
     facilitator: "Yuvraj Kapadia",
     link: "/ich/levels?level=3&modal=true&date=13th–17th Aug",
     participants: "10 Seats",
+    pagelink: "/ich",
   },
   {
     id: 4,
@@ -127,6 +135,7 @@ const events = [
     facilitator: "Yuvraj Kapadia",
     link: "/family-constellation?id=2&modal=true",
     participants: "10 Seats",
+    pagelink: "/family-constellation",
   },
   // {
   //   id: 1,
@@ -157,6 +166,7 @@ const events = [
     facilitator: "Yuvraj Kapadia",
     link: "/family-constellation?id=3&modal=true",
     participants: "10 Seats",
+    pagelink: "/family-constellation",
   },
 
   {
@@ -173,6 +183,7 @@ const events = [
     facilitator: "Yuvraj Kapadia",
     link: "/family-constellation?id=4&modal=true",
     participants: "10 Seats",
+    pagelink: "/family-constellation",
   },
   {
     id: 8,
@@ -189,6 +200,7 @@ const events = [
     link: "/family-constellation?id=6&modal=true",
     participants: "10 Seats",
     noenroll: true,
+    pagelink: "/family-constellation",
   },
   {
     id: 7,
@@ -204,6 +216,7 @@ const events = [
     facilitator: "Yuvraj Kapadia",
     link: "/family-constellation?id=6&modal=true",
     participants: "10 Seats",
+    pagelink: "/family-constellation",
   },
   {
     id: 13,
@@ -219,6 +232,7 @@ const events = [
     facilitator: "Yuvraj Kapadia",
     link: "/family-constellation?id=9&modal=true",
     participants: "10 Seats",
+    pagelink: "/family-constellation",
   },
   {
     id: 8,
@@ -234,6 +248,7 @@ const events = [
     facilitator: "Yuvraj Kapadia",
     link: "/ich/levels?level=1&modal=true&date=31th Aug-1st sept",
     participants: "10 Seats",
+    pagelink: "/ich",
   },
   {
     id: 10,
@@ -249,6 +264,7 @@ const events = [
     facilitator: "Yuvraj Kapadia",
     link: "/family-constellation?id=7&modal=true",
     participants: "10 Seats",
+    pagelink: "/family-constellation",
   },
 ];
 function Schedule() {
@@ -435,7 +451,10 @@ function Schedule() {
                     className="group"
                   >
                     <td className="px-4 py-4">
-                      <div className="flex flex-col max-w-[250px]">
+                      <div
+                        className="flex flex-col max-w-[250px] cursor-pointer"
+                        onClick={() => navigate(event.pagelink)}
+                      >
                         <span className="text-sm font-bold text-[#2D2D2D] break-words">
                           {event.name.includes("Training,") ? (
                             <>

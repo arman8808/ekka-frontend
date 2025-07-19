@@ -791,7 +791,7 @@ const RegistrationForm = ({ onClose = () => {}, level, date }) => {
               </h2>
               <div className="bg-[#F8F1FF] h-[2px] my-4"></div>
               <FormCheckbox
-                label="Yes, I am interested in receiving mailers/SMS from EKAA Integrated Clinical Hypnotherapy Foundation about future courses"
+                label="Yes, I am interested in receiving mailers/SMS from EKAA about future courses"
                 name="communicationPreferences"
                 register={register}
               />

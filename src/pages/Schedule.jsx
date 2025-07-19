@@ -214,7 +214,7 @@ const events = [
     currency: "USD",
     priceValue: 349,
     facilitator: "Yuvraj Kapadia",
-    link: "/family-constellation?id=6&modal=true",
+    link: "https://constellations.chakrablisscenter.com/family-constellation-optin-page",
     participants: "10 Seats",
     pagelink: "/family-constellation",
   },
@@ -230,7 +230,7 @@ const events = [
     currency: "USD",
     priceValue: 15999,
     facilitator: "Yuvraj Kapadia",
-    link: "/family-constellation?id=9&modal=true",
+    link: "https://constellations.chakrablisscenter.com/family-constellation-optin-page",
     participants: "10 Seats",
     pagelink: "/family-constellation",
   },
@@ -517,7 +517,13 @@ function Schedule() {
                         <motion.button
                           whileHover={{ scale: 1.05 }}
                           whileTap={{ scale: 0.95 }}
-                          onClick={() => handleRegister(event.link)}
+                          onClick={() => {
+                            if (event.link.startsWith("/")) {
+                              handleRegister(event.link);
+                            } else {
+                              window.location.href = event.link;
+                            }
+                          }}
                           className="px-3 py-2 bg-[#6E2D79] text-white text-xs rounded-md hover:bg-[#5a2465] transition-colors cursor-pointer"
                         >
                           Enroll Now

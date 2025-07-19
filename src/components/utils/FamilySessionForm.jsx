@@ -2,7 +2,22 @@ import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import familyService from "../services/familyConsitalation";
 import toast from "react-hot-toast";
-
+const FormCheckbox = ({ label, name, register, error, className = "" }) => (
+  <div className={`flex items-start space-x-3 mt-4 ${className}`}>
+    <input
+      type="checkbox"
+      id={name}
+      {...register(name)}
+      className={`w-4 h-4 text-[#6E2D79] focus:ring-[#C183B2] mt-1 ${
+        error ? "border-red-500" : ""
+      }`}
+    />
+    <label htmlFor={name} className="text-sm text-[#6E2D79]">
+      {label}
+    </label>
+    {error && <p className="text-red-500 text-xs mt-1 ml-7">{error}</p>}
+  </div>
+);
 const FamilySessionForm = ({ onClose, selectedSession }) => {
   const [IsSubmitting, setIsSubmitting] = useState(false);
   const [showThankYou, setShowThankYou] = useState(false);
@@ -11,7 +26,11 @@ const FamilySessionForm = ({ onClose, selectedSession }) => {
     handleSubmit,
     formState: { errors, isSubmitting },
     reset,
-  } = useForm();
+  } = useForm({
+    defaultValues: {
+      termsandcondition: false,
+    },
+  });
   const onSubmit = async (data) => {
     setIsSubmitting(true);
     const loadingToast = toast.loading("Processing your registration...");
@@ -31,6 +50,8 @@ const FamilySessionForm = ({ onClose, selectedSession }) => {
         fullName: data.fullName,
         email: data.email,
         phone: data.phone,
+        communicationPreferences: data.communicationPreferences || false,
+        termsAccepted: data.termsandcondition || false,
       };
 
       const response = await familyService.registerSession(formData);
@@ -52,11 +73,9 @@ const FamilySessionForm = ({ onClose, selectedSession }) => {
         },
       });
 
-      // Show thank you popup
       setShowThankYou(true);
       reset();
 
-      // Close form after delay
       setTimeout(() => {
         setShowThankYou(false);
         onClose();
@@ -105,8 +124,8 @@ const FamilySessionForm = ({ onClose, selectedSession }) => {
           />
         </svg>
         <p className="text-lg text-gray-600 leading-relaxed">
-          Thank you for Registration. Payment link has been sent to your
-          registered Mail ID
+          You will shortly receive an email from contact@ekaausa.com with
+          further details
         </p>
       </div>
     </div>
@@ -291,6 +310,60 @@ const FamilySessionForm = ({ onClose, selectedSession }) => {
                   {errors.phone && (
                     <p className="mt-2 text-red-500 text-sm">
                       {errors.phone.message}
+                    </p>
+                  )}
+                </div>
+                <div className="mt-6">
+                  <h2 className="text-xl font-semibold text-[#4A2C82]">
+                    Communication Preferences
+                  </h2>
+                  <div className="bg-[#F8F1FF] h-[2px] my-4"></div>
+                  <FormCheckbox
+                    label="Yes, I am interested in receiving mailers/SMS from EKAA Integrated Clinical Hypnotherapy Foundation about future courses"
+                    name="communicationPreferences"
+                    register={register}
+                  />
+                </div>
+
+                {/* Terms and Conditions */}
+                <div className="mt-6">
+                  <h2 className="text-xl font-semibold text-[#4A2C82]">
+                    Terms and Conditions
+                  </h2>
+                  <div className="bg-[#F8F1FF] h-[2px] my-4"></div>
+                  <div className="border p-4 rounded-lg text-sm text-[#C183B2] space-y-2">
+                    <p>
+                      I confirm that I am over 18 years of age and choose to
+                      attend this workshop / course of my own free will.
+                    </p>
+                    <p>
+                      I confirm that I have no mental / psychological ailment /
+                      disorder and am not on any psychiatric / psychological
+                      treatment/s and/or drug/s.
+                    </p>
+                    <p>
+                      I also discharge the organization from any obligation
+                      whatsoever that may arise during the workshop/course.
+                    </p>
+                    <p>
+                      I have read and understood the aims and objectives of the
+                      course curriculum.
+                    </p>
+                  </div>
+                  <FormCheckbox
+                    label="I agree to the terms and conditions mentioned above. *"
+                    name="termsandcondition"
+                    register={register}
+                    error={errors.termsandcondition?.message}
+                    className="mt-3"
+                    {...register("termsandcondition", {
+                      required:
+                        "You must accept the terms and conditions to proceed",
+                    })}
+                  />
+                  {errors.termsandcondition && (
+                    <p className="text-red-500 text-xs mt-1">
+                      {errors.termsandcondition.message}
                     </p>
                   )}
                 </div>

@@ -542,7 +542,7 @@ const RegistrationForm = ({ onClose = () => {}, level, date }) => {
   useEffect(() => {
     return () => {
       // Cleanup preview URLs when component unmounts
-      const fields = [ "frontImage", "backImage"];
+      const fields = ["frontImage", "backImage"];
       fields.forEach((field) => {
         const value = watch(field);
         if (value?.preview) {
@@ -864,8 +864,8 @@ const ThankYouMessage = () => (
     <div className="mb-6">
       <CheckCircle className="mx-auto h-16 w-16 text-green-500 mb-4" />
       <p className="text-lg text-gray-600 leading-relaxed">
-        Thank you for Registration. Your registration has been successfully
-        submitted. We'll contact you shortly with further details.
+        You will shortly receive an email from contact@ekaausa.com with further
+        details
       </p>
     </div>
   </div>

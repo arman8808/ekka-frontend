@@ -379,8 +379,8 @@ const ThankYouMessage = () => (
       <CheckCircle className="mx-auto h-16 w-16 text-green-500 mb-4" />
       {/* <h2 className="text-3xl font-bold text-[#6E2D79] mb-4">THANK YOU</h2> */}
       <p className="text-lg text-gray-600 leading-relaxed">
-        Thank you for Registration. Payment link has ben sent on your registered
-        Mail ID
+        You will shortly receive an email from contact@ekaausa.com with further
+        details
       </p>
     </div>
   </div>
@@ -1000,7 +1000,9 @@ function FormPage({ onClose = () => {}, level }) {
                     value={formData.city}
                     onChange={handleInputChange}
                     error={formErrors.city}
-                    options={ cityOptions.filter(option => option.id.toString() == level)}
+                    options={cityOptions.filter(
+                      (option) => option.id.toString() == level
+                    )}
                     required
                   />
                 </div>

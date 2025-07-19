@@ -208,7 +208,6 @@ export default function DynamicDecodePage({ levelData, modal }) {
                   : " Enroll Now"}
               </button>
             </div>
-
             <div className="bg-white rounded-xl p-4 sm:p-6 mt-6 shadow-sm">
               <div
                 className="flex flex-col items-start h-full"
@@ -232,19 +231,29 @@ export default function DynamicDecodePage({ levelData, modal }) {
                 </Link>
               </div>
             </div>
-
             {/* Instructor Card */}
-
             <div className="bg-white rounded-xl shadow-md overflow-hidden text-center mt-6">
               <img
-                src="/EK-2.jpg" // ← Full-width image
+                src="/EK-2.jpg"
                 alt="Lead Instructor"
-                className="w-full h-auto object-cover"
+                className="w-full h-48 object-cover"
               />
               <p className="font-semibold text-[#6E2D79] text-base sm:text-base py-3">
-                Lead Instructor
+                Yuvraj Kapadia
               </p>
             </div>
+            {levelData.level === 5 && (
+              <div className="bg-white rounded-xl shadow-md overflow-hidden text-center mt-6 ">
+                <img
+                  src="/Mirani Smith.jpeg"
+                  alt="Lead Instructor"
+                  className="w-full h-48 object-cover"
+                />
+                <p className="font-semibold text-[#6E2D79] text-base sm:text-base py-3">
+                  Mirani Smith
+                </p>
+              </div>
+            )}
             {/* <div className="bg-white rounded-xl p-4 sm:p-6 mt-6 shadow-sm">
               <div className="flex items-start gap-4">
                 
@@ -271,7 +280,6 @@ export default function DynamicDecodePage({ levelData, modal }) {
 
 
             </div> */}
-
             {/* Brand Logo */}
             {/* <div className="flex mt-8 sm:mt-16 justify-center space-x-2">
               <img

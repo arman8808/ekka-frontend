@@ -5,7 +5,7 @@ export const levelsData = {
     subtitle:
       "Begin your journey into clinical hypnotherapy with fundamental techniques for subconscious reprogramming",
     duration: "2 Days",
-    certification: "EKAA Integrated Clinical Hypnotherapy Foundation",
+    certification: "EKAA",
     price: "$600",
     next_session: "",
     enrollment_features: [
@@ -90,7 +90,7 @@ export const levelsData = {
     subtitle:
       "Certification Course in Integrated Hypnotic Modalities for Behavioral Resolutions",
     duration: "5 Days",
-    certification: "EKAA Integrated Clinical Hypnotherapy Foundation",
+    certification: "EKAA",
     price: "$1,500",
     next_session: "",
     enrollment_features: [
@@ -187,7 +187,7 @@ export const levelsData = {
     subtitle:
       "Master Practitioner Certification in Advanced Hypnotherapy & Regression Techniques",
     duration: "5 Days",
-    certification: "EKAA Integrated Clinical Hypnotherapy Foundation",
+    certification: "EKAA",
     price: "$1,500",
     next_session: "",
     enrollment_features: [
@@ -283,7 +283,7 @@ export const levelsData = {
     title: "Clinical Hypnotherapy – Level IV",
     subtitle: "Certificate Course in Integrated Spiritual Hypnosis",
     duration: "6 Days",
-    certification: "EKAA Integrated Clinical Hypnotherapy Foundation",
+    certification: "EKAA",
     price: "$1800",
     next_session: "",
     enrollment_features: [
@@ -383,7 +383,7 @@ export const levelsData = {
     title: "Clinical Hypnotherapy – Level V",
     subtitle: "Certificate Course in Integrated Clinical Hypnotherapy",
     duration: "8 Days",
-    certification: "EKAA Integrated Clinical Hypnotherapy Foundation",
+    certification: "EKAA",
     price: "$2400",
     next_session: "",
     enrollment_features: [
@@ -505,7 +505,7 @@ export const levelsData = {
     title: "Born Again",
     subtitle: "Advanced Certificate Course for Inner Child Healing",
     duration: "6 Days",
-    certification: "EKAA Integrated Clinical Hypnotherapy Foundation",
+    certification: "EKAA",
     price: "$900",
     next_session: "25th – 30th November, 2025",
     enrollment_features: [

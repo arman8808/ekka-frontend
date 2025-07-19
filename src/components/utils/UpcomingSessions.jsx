@@ -70,6 +70,7 @@ const UpcomingSessions = ({ id, modal }) => {
       capacity: "10 Seats",
       organisedby: "Dr Manoj",
       organiserEmail: "docbhardwaj@gmail.com",
+      link: "https://constellations.chakrablisscenter.com/family-constellation-optin-page",
       status: "Open",
     },
     {
@@ -80,6 +81,7 @@ const UpcomingSessions = ({ id, modal }) => {
       capacity: "10 Seats",
       organisedby: "Dr Manoj's",
       organiserEmail: "docbhardwaj@gmail.com",
+      link: "https://constellations.chakrablisscenter.com/family-constellation-optin-page",
       status: "Open",
     },
     {
@@ -214,7 +216,13 @@ const UpcomingSessions = ({ id, modal }) => {
                       </td> */}
                       <td className="px-6 py-4 whitespace-nowrap text-base">
                         <button
-                          onClick={() => handleEnroll(session)}
+                          onClick={() => {
+                            if (!session.link) {
+                              handleEnroll(session);
+                            } else {
+                              window.location.href = session.link;
+                            }
+                          }}
                           className="px-4 py-2 bg-[#6E2D79] text-white rounded-lg hover:bg-[#8a3c97] transition-colors shadow-sm text-base cursor-pointer"
                         >
                           Enroll Now

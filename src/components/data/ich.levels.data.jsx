@@ -79,7 +79,7 @@ export const levelsData = {
     instructor: {
       name: "EKAA Certified Faculty",
       qualification: "Trained in the art and science of subconscious healing",
-      certification: "Qualified by the EKAA Foundation",
+      certification: "Qualified by the EKAA",
       experience:
         "Global experience in facilitating transformative journeys through hypnotherapy and regression techniques",
     },
@@ -167,7 +167,7 @@ export const levelsData = {
     instructor: {
       name: "EKAA Certified Faculty",
       qualification: "Trained across international standards",
-      certification: "Qualified by the EKAA Foundation",
+      certification: "Qualified by the EKAA",
       experience:
         "Specialize in advanced therapeutic protocols including regression, emotional trauma release, and NLP frameworks",
     },

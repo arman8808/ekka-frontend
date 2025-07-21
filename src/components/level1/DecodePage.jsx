@@ -241,6 +241,38 @@ export default function DynamicDecodePage({ levelData, modal }) {
               <p className="font-semibold text-[#6E2D79] text-base sm:text-base py-3">
                 Yuvraj Kapadia
               </p>
+              <p className="text-[#6E2D79] text-sm sm:text-base px-4 pb-4 leading-relaxed">
+                World-renowned master healer Yuvraj Kapadia is a leading expert
+                in the science of the subconscious mind. As the founder of EKAA
+                Global Institute, he trains practitioners in{" "}
+                <span className="font-medium">
+                  Integrated Clinical Hypnotherapy
+                </span>{" "}
+                across all continents.
+                <br />
+                <br />
+                Specializing in:
+                <ul className="list-disc list-inside text-left mt-2 mb-3 pl-4 space-y-1">
+                  <li>Regression Therapy</li>
+                  <li>Inner Child Work</li>
+                  <li>Past Life Regression</li>
+                  <li>Transpersonal Regression</li>
+                  <li>Family & Systemic Constellations</li>
+                </ul>
+                Yuvraj conducts{" "}
+                <span className="italic">sold-out retreats</span>, workshops,
+                and trainings worldwide. This workshop offers a rare opportunity
+                to experience his transformative energy as he guides
+                participants through an experiential journey of conscious
+                parenting - healing subconscious wounds and unlocking profound
+                personal growth.
+                <br />
+                <br />
+                <span className="font-semibold text-[#6E2D79]">
+                  A once-in-a-lifetime experience
+                </span>{" "}
+                with one of the world's most sought-after healers.
+              </p>
             </div>
             {levelData.level === 5 && (
               <div className="bg-white rounded-xl shadow-md overflow-hidden text-center mt-6 ">
@@ -251,6 +283,26 @@ export default function DynamicDecodePage({ levelData, modal }) {
                 />
                 <p className="font-semibold text-[#6E2D79] text-base sm:text-base py-3">
                   Mirani Smith
+                </p>
+                <p className="text-[#6E2D79] text-sm sm:text-base px-4 pb-4 leading-relaxed">
+                  With over 40 years as a Montessori guide, trainer, and
+                  administrator, Mirani has dedicated her career to
+                  personalizing education for neurodiverse children. Her
+                  extensive experience includes serving as:
+                  <ul className="list-disc list-inside text-left mt-2 mb-3 pl-4 space-y-1">
+                    <li>
+                      Executive Director and AMI Primary Trainer at Houston
+                      Montessori Institute (10 years)
+                    </li>
+                    <li>
+                      Early Childhood Director at The Post Oak School (10 years)
+                    </li>
+                  </ul>
+                  Mirani holds an AMI Diploma from Sri Lanka, an M.Ed. from
+                  Loyola University Maryland, and earned her AMI Primary Trainer
+                  certification in 2012. Her practice is rooted in careful
+                  observation and adaptation to each child's unique learning
+                  needs.
                 </p>
               </div>
             )}

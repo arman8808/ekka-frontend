@@ -15,7 +15,7 @@ import {
 const navigation = [
   // { name: "Dashboard", path: "/dashboard", icon: <FaTachometerAlt /> },
   {
-    name: "All Registration",
+    name: "All Decode",
     path: "/all-registration-ekaausa.com.usa",
     icon: <FaWpforms />,
   },
@@ -31,7 +31,7 @@ const navigation = [
     icon: <FaWpforms />,
   },
   {
-    name: "All ICH Registration",
+    name: "All Hypnotherapy Registration",
     path: "/all-ICTable.usa",
     icon: <FaWpforms />,
   },

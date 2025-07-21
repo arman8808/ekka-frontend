@@ -1,4 +1,3 @@
-// src/pages/IchRegistration.jsx
 import React, { useState, useEffect } from "react";
 import {
   Eye,
@@ -9,6 +8,7 @@ import {
   Filter,
   X,
   ZoomIn,
+  Calendar,
 } from "lucide-react";
 import Layout from "../components/layout/Layout";
 
@@ -22,6 +22,12 @@ const IchRegistration = () => {
   const [showModal, setShowModal] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
   const [showImageModal, setShowImageModal] = useState(false);
+  const [showDownloadModal, setShowDownloadModal] = useState(false);
+  const [downloadDateRange, setDownloadDateRange] = useState({
+    startDate: "",
+    endDate: "",
+  });
+  const [isDownloading, setIsDownloading] = useState(false);
   const itemsPerPage = 10;
 
   // Base URL for images
@@ -137,6 +143,57 @@ const IchRegistration = () => {
     return `${BASE_IMAGE_URL}${cleanPath}`;
   };
 
+  // Handle CSV download
+  const handleDownloadCSV = async () => {
+    setIsDownloading(true);
+    try {
+      // Create query parameters
+      const params = new URLSearchParams();
+      if (searchTerm) params.append("search", searchTerm);
+      if (downloadDateRange.startDate)
+        params.append("startDate", downloadDateRange.startDate);
+      if (downloadDateRange.endDate)
+        params.append("endDate", downloadDateRange.endDate);
+
+      // Make the request
+      const response = await fetch(
+        `${
+          import.meta.env.VITE_API_BASE_URL
+        }ich/download-csv?${params.toString()}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to download CSV");
+      }
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", "ich_registrations.csv");
+      document.body.appendChild(link);
+      link.click();
+
+      // Clean up
+      link.parentNode.removeChild(link);
+      window.URL.revokeObjectURL(url);
+
+      // Close modal after download
+      setShowDownloadModal(false);
+    } catch (error) {
+      console.error("Download failed:", error);
+      alert("Download failed. Please try again.");
+    } finally {
+      setIsDownloading(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-64">
@@ -217,16 +274,25 @@ const IchRegistration = () => {
                 />
               </div>
 
-              <div className="flex items-center space-x-2 text-gray-600">
-                <Filter className="w-5 h-5" />
-                <span className="text-sm">
-                  Found: {filteredRegistrations.length} results
-                </span>
+              <div className="flex items-center space-x-2">
+                <button
+                  onClick={() => setShowDownloadModal(true)}
+                  className="bg-[#6E2D79] text-white px-4 py-2 rounded-lg hover:bg-[#5C2166] transition-colors flex items-center space-x-2"
+                >
+                  <Download className="w-4 h-4" />
+                  <span>Download CSV</span>
+                </button>
+
+                <div className="flex items-center space-x-2 text-gray-600">
+                  <Filter className="w-5 h-5" />
+                  <span className="text-sm">
+                    Found: {filteredRegistrations.length} results
+                  </span>
+                </div>
               </div>
             </div>
           </div>
 
-          {/* Table */}
           <div className="bg-white rounded-lg shadow-lg overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full">
@@ -368,6 +434,132 @@ const IchRegistration = () => {
             </div>
           )}
 
+          {/* Download CSV Modal */}
+          {showDownloadModal && (
+            <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+              <div className="bg-white rounded-lg max-w-md w-full">
+                <div className="sticky top-0 bg-[#6E2D79] text-white p-6 rounded-t-lg">
+                  <div className="flex items-center justify-between">
+                    <h2 className="text-xl font-bold">
+                      Download Registrations
+                    </h2>
+                    <button
+                      onClick={() => setShowDownloadModal(false)}
+                      className="text-white hover:text-gray-200 text-2xl"
+                    >
+                      ×
+                    </button>
+                  </div>
+                </div>
+
+                <div className="p-6 space-y-6">
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-semibold text-[#5C2166]">
+                      Select Date Range
+                    </h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Start Date
+                        </label>
+                        <div className="relative">
+                          <input
+                            type="date"
+                            value={downloadDateRange.startDate}
+                            onChange={(e) =>
+                              setDownloadDateRange({
+                                ...downloadDateRange,
+                                startDate: e.target.value,
+                              })
+                            }
+                            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#6E2D79] focus:border-transparent outline-none"
+                          />
+                          <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                        </div>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          End Date
+                        </label>
+                        <div className="relative">
+                          <input
+                            type="date"
+                            value={downloadDateRange.endDate}
+                            onChange={(e) =>
+                              setDownloadDateRange({
+                                ...downloadDateRange,
+                                endDate: e.target.value,
+                              })
+                            }
+                            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#6E2D79] focus:border-transparent outline-none"
+                          />
+                          <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                        </div>
+                      </div>
+                    </div>
+                    <p className="text-sm text-gray-500">
+                      Leave dates empty to download all records
+                    </p>
+                  </div>
+
+                  <div className="flex justify-end space-x-3">
+                    <button
+                      onClick={() => setShowDownloadModal(false)}
+                      className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      onClick={handleDownloadCSV}
+                      disabled={isDownloading}
+                      className="bg-[#6E2D79] text-white px-4 py-2 rounded-lg hover:bg-[#5C2166] transition-colors flex items-center space-x-2 disabled:opacity-50"
+                    >
+                      {isDownloading ? (
+                        <>
+                          <RefreshCw className="w-4 h-4 animate-spin" />
+                          <span>Downloading...</span>
+                        </>
+                      ) : (
+                        <>
+                          <Download className="w-4 h-4" />
+                          <span>Download</span>
+                        </>
+                      )}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Image Modal for Full Screen View */}
+          {showImageModal && selectedImage && (
+            <div className="fixed inset-0 bg-black bg-opacity-90 z-60 flex items-center justify-center p-4">
+              <div className="relative max-w-4xl max-h-full">
+                <button
+                  onClick={() => setShowImageModal(false)}
+                  className="absolute -top-12 right-0 text-white hover:text-gray-300 text-xl bg-black bg-opacity-50 rounded-full p-2"
+                >
+                  <X className="w-6 h-6" />
+                </button>
+                <div className="bg-white rounded-lg p-4">
+                  <h3 className="text-lg font-semibold mb-4 text-center">
+                    {selectedImage.title}
+                  </h3>
+                  <img
+                    src={getImageUrl(selectedImage.path)}
+                    alt={selectedImage.title}
+                    className="max-w-full max-h-[70vh] object-contain rounded-lg mx-auto"
+                    onError={(e) => {
+                      e.target.src =
+                        "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAw" +
+                        "IiBoZWlnaHQ9IjQwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZjNmNGY2Ii8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIyMCIgZmlsbD0iIzk5YTNhZiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zNWVtIj5JbWFnZSBub3QgZm91bmQ8L3RleHQ+PC9zdmc+";
+                    }}
+                  />
+                </div>
+              </div>
+            </div>
+          )}
           {/* Modal for Registration Details */}
           {showModal && selectedRegistration && (
             <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
@@ -581,7 +773,6 @@ const IchRegistration = () => {
               </div>
             </div>
           )}
-
           {/* Image Modal for Full Screen View */}
           {showImageModal && selectedImage && (
             <div className="fixed inset-0 bg-black bg-opacity-90 z-60 flex items-center justify-center p-4">

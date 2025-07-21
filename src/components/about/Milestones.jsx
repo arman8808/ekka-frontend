@@ -21,7 +21,7 @@ const Milestones = () => {
                         2008
                     </h2>
                     <p className="text-[22px] font-medium leading-[33px] text-[var(--color---2,#6E2D79)] font-[Poppins] text-center">
-                        EKAA Foundation established
+                        EKAA established
                     </p>
                 </div>
 

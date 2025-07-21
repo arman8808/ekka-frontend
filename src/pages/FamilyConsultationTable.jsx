@@ -1,38 +1,57 @@
-import React, { useState, useEffect } from 'react';
-import { Eye, Download, RefreshCw, AlertCircle, Search, Filter, X } from 'lucide-react';
-import Layout from '../components/layout/Layout';
+import React, { useState, useEffect } from "react";
+import {
+  Eye,
+  Download,
+  RefreshCw,
+  AlertCircle,
+  Search,
+  Filter,
+  X,
+} from "lucide-react";
+import Layout from "../components/layout/Layout";
 
 const FamilyConsultationTable = () => {
   const [consultations, setConsultations] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedConsultation, setSelectedConsultation] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const itemsPerPage = 10;
+  const [showDateFilter, setShowDateFilter] = useState(false);
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const [showDownloadModal, setShowDownloadModal] = useState(false);
+  const [downloadStartDate, setDownloadStartDate] = useState("");
+  const [downloadEndDate, setDownloadEndDate] = useState("");
 
   // Fetch consultation data
   const fetchConsultations = async () => {
     setLoading(true);
     setError(null);
-    
+
     try {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 100000);
-      
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}familyConsitalation`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        signal: controller.signal
-      });
+
+      const response = await fetch(
+        `${import.meta.env.VITE_API_BASE_URL}familyConsitalation`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          signal: controller.signal,
+        }
+      );
 
       clearTimeout(timeoutId);
 
       if (!response.ok) {
-        throw new Error(`Server Error: ${response.status} - ${response.statusText}`);
+        throw new Error(
+          `Server Error: ${response.status} - ${response.statusText}`
+        );
       }
 
       const data = await response.json();
@@ -40,13 +59,15 @@ const FamilyConsultationTable = () => {
       if (data.success) {
         setConsultations(data.data);
       } else {
-        throw new Error(data.message || 'Failed to fetch consultations');
+        throw new Error(data.message || "Failed to fetch consultations");
       }
     } catch (err) {
-      if (err.name === 'AbortError') {
-        setError('Request timeout. Please check your connection and try again.');
-      } else if (err.message.includes('Failed to fetch')) {
-        setError('Network error. Please check if the server is running.');
+      if (err.name === "AbortError") {
+        setError(
+          "Request timeout. Please check your connection and try again."
+        );
+      } else if (err.message.includes("Failed to fetch")) {
+        setError("Network error. Please check if the server is running.");
       } else {
         setError(`Error: ${err.message}`);
       }
@@ -60,15 +81,15 @@ const FamilyConsultationTable = () => {
   }, []);
 
   // Filter consultations based on search term - FIXED TO MATCH ACTUAL DATA STRUCTURE
-  const filteredConsultations = consultations.filter(consultation => {
-    const fullName = consultation.fullName || '';
-    const email = consultation.email || '';
-    const location = consultation.location || '';
-    const event = consultation.event || '';
-    const phone = consultation.phone || '';
-    
+  const filteredConsultations = consultations.filter((consultation) => {
+    const fullName = consultation.fullName || "";
+    const email = consultation.email || "";
+    const location = consultation.location || "";
+    const event = consultation.event || "";
+    const phone = consultation.phone || "";
+
     const searchLower = searchTerm.toLowerCase();
-    
+
     return (
       fullName.toLowerCase().includes(searchLower) ||
       email.toLowerCase().includes(searchLower) ||
@@ -82,25 +103,28 @@ const FamilyConsultationTable = () => {
   const totalPages = Math.ceil(filteredConsultations.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
-  const currentConsultations = filteredConsultations.slice(startIndex, endIndex);
+  const currentConsultations = filteredConsultations.slice(
+    startIndex,
+    endIndex
+  );
 
   // Format date with time
   const formatDateTime = (dateString) => {
-    return new Date(dateString).toLocaleString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
+    return new Date(dateString).toLocaleString("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
     });
   };
 
   // Format event date
   const formatEventDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
+    return new Date(dateString).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
     });
   };
 
@@ -110,12 +134,61 @@ const FamilyConsultationTable = () => {
     setShowModal(true);
   };
 
+  // Handle download initiation
+  const handleDownloadInitiate = () => {
+    setShowDownloadModal(true);
+  };
+
+  // Handle actual download
+  const handleDownloadCSV = async () => {
+    try {
+      // Construct query parameters
+      const params = new URLSearchParams();
+      if (downloadStartDate) params.append("startDate", downloadStartDate);
+      if (downloadEndDate) params.append("endDate", downloadEndDate);
+      if (searchTerm) params.append("search", searchTerm);
+
+      const url = `${
+        import.meta.env.VITE_API_BASE_URL
+      }familyConsitalation/download-csv?${params.toString()}`;
+
+      // Create a hidden link to trigger download
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "family_consultation_registrations.csv";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+
+      // Close the modal after download
+      setShowDownloadModal(false);
+    } catch (error) {
+      console.error("Download error:", error);
+      setError(`Download failed: ${error.message}`);
+    }
+  };
+
+  // New: Clear date filters
+  const clearDateFilters = () => {
+    setStartDate("");
+    setEndDate("");
+    setShowDateFilter(false);
+  };
+
+  // Clear download date filters
+  const clearDownloadDateFilters = () => {
+    setDownloadStartDate("");
+    setDownloadEndDate("");
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-64">
         <div className="flex items-center space-x-2">
           <RefreshCw className="w-6 h-6 animate-spin text-[#6E2D79]" />
-          <span className="text-[#6E2D79] font-medium">Loading consultations...</span>
+          <span className="text-[#6E2D79] font-medium">
+            Loading consultations...
+          </span>
         </div>
       </div>
     );
@@ -148,25 +221,53 @@ const FamilyConsultationTable = () => {
           <div className="bg-white rounded-lg shadow-lg p-6">
             <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
               <div>
-                <h1 className="text-2xl lg:text-3xl font-bold text-[#6E2D79]">Family Consultation Management</h1>
-                <p className="text-gray-600 mt-1">Total Consultations: {consultations.length}</p>
+                <h1 className="text-2xl lg:text-3xl font-bold text-[#6E2D79]">
+                  Family Consultation Management
+                </h1>
+                <p className="text-gray-600 mt-1">
+                  Total Consultations: {consultations.length}
+                </p>
               </div>
-              
+
               <div className="flex flex-col sm:flex-row gap-3">
+                {/* Download CSV Button */}
+                <button
+                  onClick={handleDownloadInitiate}
+                  disabled={consultations.length === 0}
+                  className="bg-[#6E2D79] text-white px-4 py-2 rounded-lg hover:bg-[#5C2166] transition-colors flex items-center justify-center space-x-2 disabled:opacity-50"
+                >
+                  <Download className="w-4 h-4" />
+                  <span>Download CSV</span>
+                </button>
+
+                {/* Date Filter Toggle */}
+                <button
+                  onClick={() => setShowDateFilter(!showDateFilter)}
+                  className={`px-4 py-2 rounded-lg flex items-center space-x-2 ${
+                    showDateFilter || startDate || endDate
+                      ? "bg-[#5C2166] text-white"
+                      : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                  }`}
+                >
+                  <Filter className="w-4 h-4" />
+                  <span>Date Filter</span>
+                </button>
+
                 <button
                   onClick={fetchConsultations}
                   disabled={loading}
                   className="bg-[#6E2D79] text-white px-4 py-2 rounded-lg hover:bg-[#5C2166] transition-colors flex items-center justify-center space-x-2 disabled:opacity-50"
                 >
-                  <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+                  <RefreshCw
+                    className={`w-4 h-4 ${loading ? "animate-spin" : ""}`}
+                  />
                   <span>Refresh</span>
                 </button>
               </div>
             </div>
           </div>
 
-          {/* Search and Filters */}
-          <div className="bg-white rounded-lg shadow-lg p-6">
+           <div className="bg-white rounded-lg shadow-lg p-6">
             <div className="flex flex-col sm:flex-row gap-4">
               <div className="flex-1 relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
@@ -303,7 +404,76 @@ const FamilyConsultationTable = () => {
             </div>
           )}
 
-          {/* Modal for Consultation Details */}
+          {/* Download CSV Modal */}
+          {showDownloadModal && (
+            <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+              <div className="bg-white rounded-lg max-w-md w-full">
+                <div className="bg-[#6E2D79] text-white p-6 rounded-t-lg">
+                  <div className="flex items-center justify-between">
+                    <h2 className="text-xl font-bold">Select Date Range</h2>
+                    <button
+                      onClick={() => setShowDownloadModal(false)}
+                      className="text-white hover:text-gray-200 text-2xl"
+                    >
+                      ×
+                    </button>
+                  </div>
+                </div>
+
+                <div className="p-6 space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Start Date
+                      </label>
+                      <input
+                        type="date"
+                        value={downloadStartDate}
+                        onChange={(e) => setDownloadStartDate(e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#6E2D79] focus:border-transparent"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        End Date
+                      </label>
+                      <input
+                        type="date"
+                        value={downloadEndDate}
+                        onChange={(e) => setDownloadEndDate(e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#6E2D79] focus:border-transparent"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="flex justify-between">
+                    <button
+                      onClick={clearDownloadDateFilters}
+                      className="px-4 py-2 text-sm text-gray-600 hover:text-gray-800 flex items-center space-x-1"
+                    >
+                      <X className="w-4 h-4" />
+                      <span>Clear Dates</span>
+                    </button>
+                    <div className="flex space-x-3">
+                      <button
+                        onClick={() => setShowDownloadModal(false)}
+                        className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        onClick={handleDownloadCSV}
+                        className="px-4 py-2 bg-[#6E2D79] text-white rounded-lg hover:bg-[#5C2166]"
+                      >
+                        Download CSV
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+           {/* Modal for Consultation Details */}
           {showModal && selectedConsultation && (
             <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
               <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">

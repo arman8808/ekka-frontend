@@ -49,6 +49,7 @@ const UpcomingSessions = ({ id, modal }) => {
       capacity: "10 Seats",
       organisedby: "Dr Manoj",
       organiserEmail: "docbhardwaj@gmail.com",
+      link: "https://brooke-schwab.as.me/schedule/3ceac482/?appointmentTypeIds[]=60696639",
       status: "Open",
     },
     {
@@ -59,6 +60,7 @@ const UpcomingSessions = ({ id, modal }) => {
       capacity: "10 Seats",
       organisedby: "Dr Manoj",
       organiserEmail: "docbhardwaj@gmail.com",
+      link: "https://brooke-schwab.as.me/schedule/3ceac482/?appointmentTypeIds[]=60696639",
       status: "Open",
     },
 

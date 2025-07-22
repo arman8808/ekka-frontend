@@ -166,7 +166,7 @@ const events = [
     facilitator: "Yuvraj Kapadia",
     link: "/family-constellation?id=3&modal=true",
     participants: "10 Seats",
-    pagelink: "/family-constellation",
+    pagelink: "https://brooke-schwab.as.me/schedule/3ceac482/?appointmentTypeIds[]=60696639",
   },
 
   {
@@ -183,7 +183,7 @@ const events = [
     facilitator: "Yuvraj Kapadia",
     link: "/family-constellation?id=4&modal=true",
     participants: "10 Seats",
-    pagelink: "/family-constellation",
+    pagelink: "https://brooke-schwab.as.me/schedule/3ceac482/?appointmentTypeIds[]=60696639",
   },
   {
     id: 8,

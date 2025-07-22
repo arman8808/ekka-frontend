@@ -42,6 +42,16 @@ const UpcomingSessions = ({ id, modal }) => {
       status: "Open",
     },
     {
+      id: 9,
+      Event: "Family Constellation",
+      Date: "Aug 20, 2025",
+      Location: "San Francisco, CA",
+      capacity: "10 Seats",
+      organisedby: "Dr Sonia Gupte",
+      organiserEmail: "Sonia@enso-nia.com",
+      status: "Open",
+    },
+    {
       id: 3,
       Event: "Family Constellation",
       Date: "Aug 22, 2025",

@@ -164,9 +164,9 @@ const events = [
     currency: "USD",
     priceValue: 5999,
     facilitator: "Yuvraj Kapadia",
-    link: "/family-constellation?id=3&modal=true",
+    link: "https://brooke-schwab.as.me/schedule/3ceac482/?appointmentTypeIds[]=60696639",
     participants: "10 Seats",
-    pagelink: "https://brooke-schwab.as.me/schedule/3ceac482/?appointmentTypeIds[]=60696639",
+    pagelink: "/family-constellation",
   },
 
   {
@@ -181,9 +181,9 @@ const events = [
     currency: "USD",
     priceValue: 6500,
     facilitator: "Yuvraj Kapadia",
-    link: "/family-constellation?id=4&modal=true",
+    link: "https://brooke-schwab.as.me/schedule/3ceac482/?appointmentTypeIds[]=60696639",
     participants: "10 Seats",
-    pagelink: "https://brooke-schwab.as.me/schedule/3ceac482/?appointmentTypeIds[]=60696639",
+    pagelink: "/family-constellation",
   },
   {
     id: 8,

@@ -239,7 +239,7 @@ const events = [
     name: "Family Constellation",
     seats: 10,
     date: "29th Aug",
-    location: "Cold Spring, TX",
+    location: "Woodlands, TX",
     trainer: "Dr. Alyasowmy's A/C",
     type: "Family Constellations",
     price: "$ 375",

@@ -9,6 +9,7 @@ import {
   X,
   ZoomIn,
   Calendar,
+  Trash2,
 } from "lucide-react";
 import Layout from "../components/layout/Layout";
 
@@ -23,6 +24,9 @@ const IchRegistration = () => {
   const [selectedImage, setSelectedImage] = useState(null);
   const [showImageModal, setShowImageModal] = useState(false);
   const [showDownloadModal, setShowDownloadModal] = useState(false);
+  const [registrationToDelete, setRegistrationToDelete] = useState(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [downloadDateRange, setDownloadDateRange] = useState({
     startDate: "",
     endDate: "",
@@ -31,7 +35,7 @@ const IchRegistration = () => {
   const [pagination, setPagination] = useState({
     currentPage: 1,
     totalPages: 1,
-    totalRegistrations: 0
+    totalRegistrations: 0,
   });
   const itemsPerPage = 10;
 
@@ -45,10 +49,10 @@ const IchRegistration = () => {
 
     try {
       const url = new URL(`${import.meta.env.VITE_API_BASE_URL}ich`);
-      url.searchParams.append('page', page);
-      url.searchParams.append('limit', itemsPerPage);
-      
-      if (searchTerm) url.searchParams.append('search', searchTerm);
+      url.searchParams.append("page", page);
+      url.searchParams.append("limit", itemsPerPage);
+
+      if (searchTerm) url.searchParams.append("search", searchTerm);
 
       const response = await fetch(url);
       const data = await response.json();
@@ -113,7 +117,9 @@ const IchRegistration = () => {
         params.append("endDate", downloadDateRange.endDate);
 
       const response = await fetch(
-        `${import.meta.env.VITE_API_BASE_URL}ich/download-csv?${params.toString()}`,
+        `${
+          import.meta.env.VITE_API_BASE_URL
+        }ich/download-csv?${params.toString()}`,
         {
           method: "GET",
           headers: {
@@ -140,6 +146,40 @@ const IchRegistration = () => {
       alert("Download failed. Please try again.");
     } finally {
       setIsDownloading(false);
+    }
+  };
+  const handleDeleteRegistration = async () => {
+    if (!registrationToDelete) return;
+
+    setIsDeleting(true);
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_API_BASE_URL}ich/${registrationToDelete._id}`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to delete registration");
+      }
+
+      const data = await response.json();
+      if (data.success) {
+        // Refresh the data after successful deletion
+        fetchRegistrations(pagination.currentPage);
+        setShowDeleteModal(false);
+      } else {
+        throw new Error(data.message || "Failed to delete registration");
+      }
+    } catch (err) {
+      console.error("Delete error:", err);
+      setError(`Delete failed: ${err.message}`);
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -234,7 +274,8 @@ const IchRegistration = () => {
               <div className="flex items-center space-x-2 text-gray-600">
                 <Filter className="w-5 h-5" />
                 <span className="text-sm">
-                  Showing {registrations.length} of {pagination.totalRegistrations} records
+                  Showing {registrations.length} of{" "}
+                  {pagination.totalRegistrations} records
                 </span>
               </div>
             </div>
@@ -304,13 +345,24 @@ const IchRegistration = () => {
                     <td className="px-4 py-4 text-sm text-gray-900 hidden xl:table-cell">
                       {formatDateTime(registration.createdAt)}
                     </td>
-                    <td className="px-4 py-4 text-center">
+
+                    <td className="px-4 py-4 text-center flex items-center space-x-2">
                       <button
                         onClick={() => viewDetails(registration)}
                         className="bg-[#6E2D79] text-white p-2 rounded-lg hover:bg-[#5C2166] transition-colors"
                         title="View Details"
                       >
                         <Eye className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={() => {
+                          setRegistrationToDelete(registration);
+                          setShowDeleteModal(true);
+                        }}
+                        className="bg-red-600 text-white p-2 rounded-lg hover:bg-red-700 transition-colors"
+                        title="Delete Registration"
+                      >
+                        <Trash2 className="w-4 h-4" />
                       </button>
                     </td>
                   </tr>
@@ -337,8 +389,11 @@ const IchRegistration = () => {
             <div className="flex flex-col sm:flex-row items-center justify-between space-y-3 sm:space-y-0">
               <div className="text-sm text-gray-700">
                 Showing {(pagination.currentPage - 1) * itemsPerPage + 1} to{" "}
-                {Math.min(pagination.currentPage * itemsPerPage, pagination.totalRegistrations)} of{" "}
-                {pagination.totalRegistrations} results
+                {Math.min(
+                  pagination.currentPage * itemsPerPage,
+                  pagination.totalRegistrations
+                )}{" "}
+                of {pagination.totalRegistrations} results
               </div>
 
               <div className="flex items-center space-x-2">
@@ -351,32 +406,38 @@ const IchRegistration = () => {
                 </button>
 
                 <div className="flex items-center space-x-1">
-                  {Array.from({ length: Math.min(5, pagination.totalPages) }, (_, i) => {
-                    let pageNum;
-                    if (pagination.totalPages <= 5) {
-                      pageNum = i + 1;
-                    } else if (pagination.currentPage <= 3) {
-                      pageNum = i + 1;
-                    } else if (pagination.currentPage >= pagination.totalPages - 2) {
-                      pageNum = pagination.totalPages - 4 + i;
-                    } else {
-                      pageNum = pagination.currentPage - 2 + i;
-                    }
+                  {Array.from(
+                    { length: Math.min(5, pagination.totalPages) },
+                    (_, i) => {
+                      let pageNum;
+                      if (pagination.totalPages <= 5) {
+                        pageNum = i + 1;
+                      } else if (pagination.currentPage <= 3) {
+                        pageNum = i + 1;
+                      } else if (
+                        pagination.currentPage >=
+                        pagination.totalPages - 2
+                      ) {
+                        pageNum = pagination.totalPages - 4 + i;
+                      } else {
+                        pageNum = pagination.currentPage - 2 + i;
+                      }
 
-                    return (
-                      <button
-                        key={pageNum}
-                        onClick={() => fetchRegistrations(pageNum)}
-                        className={`px-3 py-2 rounded-lg ${
-                          pagination.currentPage === pageNum
-                            ? "bg-[#6E2D79] text-white"
-                            : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                        }`}
-                      >
-                        {pageNum}
-                      </button>
-                    );
-                  })}
+                      return (
+                        <button
+                          key={pageNum}
+                          onClick={() => fetchRegistrations(pageNum)}
+                          className={`px-3 py-2 rounded-lg ${
+                            pagination.currentPage === pageNum
+                              ? "bg-[#6E2D79] text-white"
+                              : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                          }`}
+                        >
+                          {pageNum}
+                        </button>
+                      );
+                    }
+                  )}
                 </div>
 
                 <button
@@ -397,9 +458,7 @@ const IchRegistration = () => {
             <div className="bg-white rounded-lg max-w-md w-full">
               <div className="sticky top-0 bg-[#6E2D79] text-white p-6 rounded-t-lg">
                 <div className="flex items-center justify-between">
-                  <h2 className="text-xl font-bold">
-                    Download Registrations
-                  </h2>
+                  <h2 className="text-xl font-bold">Download Registrations</h2>
                   <button
                     onClick={() => setShowDownloadModal(false)}
                     className="text-white hover:text-gray-200 text-2xl"
@@ -515,218 +574,262 @@ const IchRegistration = () => {
         )}
 
         {/* Image Modal */}
-     {showModal && selectedRegistration && (
-            <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-              <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-                <div className="sticky top-0 bg-[#6E2D79] text-white p-6 rounded-t-lg">
-                  <div className="flex items-center justify-between">
-                    <h2 className="text-xl font-bold">
-                      ICH Registration Details
-                    </h2>
-                    <button
-                      onClick={() => setShowModal(false)}
-                      className="text-white hover:text-gray-200 text-2xl"
-                    >
-                      ×
-                    </button>
+        {showModal && selectedRegistration && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+            <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+              <div className="sticky top-0 bg-[#6E2D79] text-white p-6 rounded-t-lg">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-xl font-bold">
+                    ICH Registration Details
+                  </h2>
+                  <button
+                    onClick={() => setShowModal(false)}
+                    className="text-white hover:text-gray-200 text-2xl"
+                  >
+                    ×
+                  </button>
+                </div>
+              </div>
+
+              <div className="p-6 space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-semibold text-[#5C2166] border-b pb-2">
+                      Personal Information
+                    </h3>
+                    <div className="space-y-2">
+                      <p>
+                        <span className="font-medium">Name:</span>{" "}
+                        {selectedRegistration.nameAsCertificate}
+                      </p>
+                      <p>
+                        <span className="font-medium">Email:</span>{" "}
+                        {selectedRegistration.email}
+                      </p>
+                      <p>
+                        <span className="font-medium">Mobile:</span>{" "}
+                        {selectedRegistration.mobileNo}
+                      </p>
+                      <p>
+                        <span className="font-medium">Date of Birth:</span>{" "}
+                        {formatDateTime(selectedRegistration.dob)}
+                      </p>
+                      <p>
+                        <span className="font-medium">Occupation:</span>{" "}
+                        {selectedRegistration.occupation}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-semibold text-[#5C2166] border-b pb-2">
+                      Address Information
+                    </h3>
+                    <div className="space-y-2">
+                      <p>
+                        <span className="font-medium">Current Address:</span>{" "}
+                        {selectedRegistration.currentAddress}
+                      </p>
+                      <p>
+                        <span className="font-medium">Permanent Address:</span>{" "}
+                        {selectedRegistration.permanenetAddress}
+                      </p>
+                      <p>
+                        <span className="font-medium">City:</span>{" "}
+                        {selectedRegistration.city.split("|")[0].trim()}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-semibold text-[#5C2166] border-b pb-2">
+                      Course Information
+                    </h3>
+                    <div className="space-y-2">
+                      <p>
+                        <span className="font-medium">Level:</span>{" "}
+                        {selectedRegistration.levelName}
+                      </p>
+                      <p>
+                        <span className="font-medium">Venue:</span>{" "}
+                        {selectedRegistration.city.split("|")[1]?.trim() ||
+                          selectedRegistration.city}
+                      </p>
+                      <p>
+                        <span className="font-medium">Time:</span>{" "}
+                        {selectedRegistration.city.split("|")[2]?.trim() ||
+                          "Not specified"}
+                      </p>
+                      <p>
+                        <span className="font-medium">Time Slot:</span>{" "}
+                        {selectedRegistration.timeslot}
+                      </p>
+                      <p>
+                        <span className="font-medium">Venue Detail:</span>{" "}
+                        {selectedRegistration.courseDetailVenue}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-semibold text-[#5C2166] border-b pb-2">
+                      Additional Information
+                    </h3>
+                    <div className="space-y-2">
+                      <p>
+                        <span className="font-medium">
+                          How did you hear about us:
+                        </span>{" "}
+                        {selectedRegistration.hearAbout}
+                      </p>
+                      <p>
+                        <span className="font-medium">
+                          Communication Preferences:
+                        </span>{" "}
+                        {selectedRegistration.communicationPreferences
+                          ? "Yes"
+                          : "No"}
+                      </p>
+                      <p>
+                        <span className="font-medium">Terms Accepted:</span>{" "}
+                        {selectedRegistration.termsandcondition ? "Yes" : "No"}
+                      </p>
+                      <p>
+                        <span className="font-medium">Registration Date:</span>{" "}
+                        {formatDateTime(selectedRegistration.createdAt)}
+                      </p>
+                    </div>
                   </div>
                 </div>
 
-                <div className="p-6 space-y-6">
+                {/* ID Photos Section */}
+                <div className="space-y-4">
+                  <h3 className="text-lg font-semibold text-[#5C2166] border-b pb-2">
+                    ID Photos
+                  </h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="space-y-4">
-                      <h3 className="text-lg font-semibold text-[#5C2166] border-b pb-2">
-                        Personal Information
-                      </h3>
+                    {/* Profile Image */}
+                    {selectedRegistration.profileImage && (
                       <div className="space-y-2">
-                        <p>
-                          <span className="font-medium">Name:</span>{" "}
-                          {selectedRegistration.nameAsCertificate}
-                        </p>
-                        <p>
-                          <span className="font-medium">Email:</span>{" "}
-                          {selectedRegistration.email}
-                        </p>
-                        <p>
-                          <span className="font-medium">Mobile:</span>{" "}
-                          {selectedRegistration.mobileNo}
-                        </p>
-                        <p>
-                          <span className="font-medium">Date of Birth:</span>{" "}
-                          {formatDateTime(selectedRegistration.dob)}
-                        </p>
-                        <p>
-                          <span className="font-medium">Occupation:</span>{" "}
-                          {selectedRegistration.occupation}
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="space-y-4">
-                      <h3 className="text-lg font-semibold text-[#5C2166] border-b pb-2">
-                        Address Information
-                      </h3>
-                      <div className="space-y-2">
-                        <p>
-                          <span className="font-medium">Current Address:</span>{" "}
-                          {selectedRegistration.currentAddress}
-                        </p>
-                        <p>
-                          <span className="font-medium">
-                            Permanent Address:
-                          </span>{" "}
-                          {selectedRegistration.permanenetAddress}
-                        </p>
-                        <p>
-                          <span className="font-medium">City:</span>{" "}
-                          {selectedRegistration.city.split("|")[0].trim()}
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="space-y-4">
-                      <h3 className="text-lg font-semibold text-[#5C2166] border-b pb-2">
-                        Course Information
-                      </h3>
-                      <div className="space-y-2">
-                        <p>
-                          <span className="font-medium">Level:</span>{" "}
-                          {selectedRegistration.levelName}
-                        </p>
-                        <p>
-                          <span className="font-medium">Venue:</span>{" "}
-                          {selectedRegistration.city.split("|")[1]?.trim() ||
-                            selectedRegistration.city}
-                        </p>
-                        <p>
-                          <span className="font-medium">Time:</span>{" "}
-                          {selectedRegistration.city.split("|")[2]?.trim() ||
-                            "Not specified"}
-                        </p>
-                        <p>
-                          <span className="font-medium">Time Slot:</span>{" "}
-                          {selectedRegistration.timeslot}
-                        </p>
-                        <p>
-                          <span className="font-medium">Venue Detail:</span>{" "}
-                          {selectedRegistration.courseDetailVenue}
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="space-y-4">
-                      <h3 className="text-lg font-semibold text-[#5C2166] border-b pb-2">
-                        Additional Information
-                      </h3>
-                      <div className="space-y-2">
-                        <p>
-                          <span className="font-medium">
-                            How did you hear about us:
-                          </span>{" "}
-                          {selectedRegistration.hearAbout}
-                        </p>
-                        <p>
-                          <span className="font-medium">
-                            Communication Preferences:
-                          </span>{" "}
-                          {selectedRegistration.communicationPreferences
-                            ? "Yes"
-                            : "No"}
-                        </p>
-                        <p>
-                          <span className="font-medium">Terms Accepted:</span>{" "}
-                          {selectedRegistration.termsandcondition
-                            ? "Yes"
-                            : "No"}
-                        </p>
-                        <p>
-                          <span className="font-medium">
-                            Registration Date:
-                          </span>{" "}
-                          {formatDateTime(selectedRegistration.createdAt)}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* ID Photos Section */}
-                  <div className="space-y-4">
-                    <h3 className="text-lg font-semibold text-[#5C2166] border-b pb-2">
-                      ID Photos
-                    </h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      {/* Profile Image */}
-                      {selectedRegistration.profileImage && (
-                        <div className="space-y-2">
-                          <p className="font-medium text-sm">Profile Image:</p>
-                          <div className="relative group">
-                            <img
-                              src={getImageUrl(
-                                selectedRegistration.profileImage
-                              )}
-                              alt="Profile Image"
-                              className="w-full h-48 object-cover rounded-lg border-2 border-gray-200 cursor-pointer hover:border-[#6E2D79] transition-colors"
-                              onClick={() =>
-                                viewImage(
-                                  selectedRegistration.profileImage,
-                                  "Profile Image"
-                                )
-                              }
-                              onError={(e) => {
-                                e.target.src =
-                                  "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZjNmNGY2Ii8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzk5YTNhZiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zNWVtIj5JbWFnZSBub3QgZm91bmQ8L3RleHQ+PC9zdmc+";
-                              }}
-                            />
-                            <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all rounded-lg">
-                              <ZoomIn className="w-8 h-8 text-white" />
-                            </div>
+                        <p className="font-medium text-sm">Profile Image:</p>
+                        <div className="relative group">
+                          <img
+                            src={getImageUrl(selectedRegistration.profileImage)}
+                            alt="Profile Image"
+                            className="w-full h-48 object-cover rounded-lg border-2 border-gray-200 cursor-pointer hover:border-[#6E2D79] transition-colors"
+                            onClick={() =>
+                              viewImage(
+                                selectedRegistration.profileImage,
+                                "Profile Image"
+                              )
+                            }
+                            onError={(e) => {
+                              e.target.src =
+                                "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZjNmNGY2Ii8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzk5YTNhZiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zNWVtIj5JbWFnZSBub3QgZm91bmQ8L3RleHQ+PC9zdmc+";
+                            }}
+                          />
+                          <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all rounded-lg">
+                            <ZoomIn className="w-8 h-8 text-white" />
                           </div>
                         </div>
-                      )}
+                      </div>
+                    )}
 
-                      {/* ID Photo Front */}
-                      {selectedRegistration.idPhotofront && (
-                        <div className="space-y-2">
-                          <p className="font-medium text-sm">
-                            ID Photo (Front):
-                          </p>
-                          <div className="relative group">
-                            <img
-                              src={getImageUrl(
-                                selectedRegistration.idPhotofront
-                              )}
-                              alt="ID Photo Front"
-                              className="w-full h-48 object-cover rounded-lg border-2 border-gray-200 cursor-pointer hover:border-[#6E2D79] transition-colors"
-                              onClick={() =>
-                                viewImage(
-                                  selectedRegistration.idPhotofront,
-                                  "ID Photo (Front)"
-                                )
-                              }
-                              onError={(e) => {
-                                e.target.src =
-                                  "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZjNmNGY2Ii8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzk5YTNhZiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zNWVtIj5JbWFnZSBub3QgZm91bmQ8L3RleHQ+PC9zdmc+";
-                              }}
-                            />
-                            <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all rounded-lg">
-                              <ZoomIn className="w-8 h-8 text-white" />
-                            </div>
+                    {/* ID Photo Front */}
+                    {selectedRegistration.idPhotofront && (
+                      <div className="space-y-2">
+                        <p className="font-medium text-sm">ID Photo (Front):</p>
+                        <div className="relative group">
+                          <img
+                            src={getImageUrl(selectedRegistration.idPhotofront)}
+                            alt="ID Photo Front"
+                            className="w-full h-48 object-cover rounded-lg border-2 border-gray-200 cursor-pointer hover:border-[#6E2D79] transition-colors"
+                            onClick={() =>
+                              viewImage(
+                                selectedRegistration.idPhotofront,
+                                "ID Photo (Front)"
+                              )
+                            }
+                            onError={(e) => {
+                              e.target.src =
+                                "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZjNmNGY2Ii8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzk5YTNhZiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zNWVtIj5JbWFnZSBub3QgZm91bmQ8L3RleHQ+PC9zdmc+";
+                            }}
+                          />
+                          <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all rounded-lg">
+                            <ZoomIn className="w-8 h-8 text-white" />
                           </div>
                         </div>
-                      )}
+                      </div>
+                    )}
 
-                      {!selectedRegistration.profileImage &&
-                        !selectedRegistration.idPhotofront && (
-                          <div className="text-center py-8 text-gray-500 md:col-span-2">
-                            <p>No images available</p>
-                          </div>
-                        )}
-                    </div>
+                    {!selectedRegistration.profileImage &&
+                      !selectedRegistration.idPhotofront && (
+                        <div className="text-center py-8 text-gray-500 md:col-span-2">
+                          <p>No images available</p>
+                        </div>
+                      )}
                   </div>
                 </div>
               </div>
             </div>
-          )}
+          </div>
+        )}
+        {showDeleteModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+            <div className="bg-white rounded-lg max-w-md w-full">
+              <div className="bg-red-600 text-white p-6 rounded-t-lg">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-xl font-bold">Confirm Deletion</h2>
+                  <button
+                    onClick={() => setShowDeleteModal(false)}
+                    className="text-white hover:text-gray-200 text-2xl"
+                  >
+                    ×
+                  </button>
+                </div>
+              </div>
+
+              <div className="p-6 space-y-6">
+                <div className="space-y-4">
+                  <p className="text-gray-700">
+                    Are you sure you want to delete the registration for{" "}
+                    <span className="font-semibold">
+                      {registrationToDelete?.nameAsCertificate}
+                    </span>
+                    ? This action cannot be undone.
+                  </p>
+                </div>
+
+                <div className="flex justify-end space-x-3">
+                  <button
+                    onClick={() => setShowDeleteModal(false)}
+                    className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
+                    disabled={isDeleting}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handleDeleteRegistration}
+                    disabled={isDeleting}
+                    className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors flex items-center space-x-2 disabled:opacity-50"
+                  >
+                    {isDeleting ? (
+                      <>
+                        <RefreshCw className="w-4 h-4 animate-spin" />
+                        <span>Deleting...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Trash2 className="w-4 h-4" />
+                        <span>Delete</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </Layout>
   );

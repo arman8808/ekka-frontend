@@ -35,7 +35,10 @@ const IchRegistration = () => {
   const [pagination, setPagination] = useState({
     currentPage: 1,
     totalPages: 1,
-    totalRegistrations: 0,
+    total: 0,
+    limit: 10,
+    nextPage: null,
+    prevPage: null,
   });
   const itemsPerPage = 10;
 
@@ -388,12 +391,12 @@ const IchRegistration = () => {
           <div className="bg-white rounded-lg shadow-lg p-4">
             <div className="flex flex-col sm:flex-row items-center justify-between space-y-3 sm:space-y-0">
               <div className="text-sm text-gray-700">
-                Showing {(pagination.currentPage - 1) * itemsPerPage + 1} to{" "}
+                Showing {(pagination.currentPage - 1) * pagination.limit + 1} to{" "}
                 {Math.min(
-                  pagination.currentPage * itemsPerPage,
-                  pagination.totalRegistrations
+                  pagination.currentPage * pagination.limit,
+                  pagination.total
                 )}{" "}
-                of {pagination.totalRegistrations} results
+                of {pagination.total} results
               </div>
 
               <div className="flex items-center space-x-2">

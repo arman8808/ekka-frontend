@@ -639,63 +639,63 @@ const FamilyConsultationTable = () => {
             </div>
           </div>
         )}
-        // Add this modal component with your other modals (before the closing Layout tag)
-{showDeleteModal && (
-  <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-    <div className="bg-white rounded-lg max-w-md w-full">
-      <div className="bg-red-600 text-white p-6 rounded-t-lg">
-        <div className="flex items-center justify-between">
-          <h2 className="text-xl font-bold">Confirm Deletion</h2>
-          <button
-            onClick={() => setShowDeleteModal(false)}
-            className="text-white hover:text-gray-200 text-2xl"
-          >
-            ×
-          </button>
-        </div>
-      </div>
 
-      <div className="p-6 space-y-6">
-        <div className="space-y-4">
-          <p className="text-gray-700">
-            Are you sure you want to delete the consultation for{" "}
-            <span className="font-semibold">
-              {consultationToDelete?.fullName}
-            </span>
-            ? This action cannot be undone.
-          </p>
-        </div>
+        {showDeleteModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+            <div className="bg-white rounded-lg max-w-md w-full">
+              <div className="bg-red-600 text-white p-6 rounded-t-lg">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-xl font-bold">Confirm Deletion</h2>
+                  <button
+                    onClick={() => setShowDeleteModal(false)}
+                    className="text-white hover:text-gray-200 text-2xl"
+                  >
+                    ×
+                  </button>
+                </div>
+              </div>
 
-        <div className="flex justify-end space-x-3">
-          <button
-            onClick={() => setShowDeleteModal(false)}
-            className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
-            disabled={isDeleting}
-          >
-            Cancel
-          </button>
-          <button
-            onClick={handleDeleteConsultation}
-            disabled={isDeleting}
-            className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors flex items-center space-x-2 disabled:opacity-50"
-          >
-            {isDeleting ? (
-              <>
-                <RefreshCw className="w-4 h-4 animate-spin" />
-                <span>Deleting...</span>
-              </>
-            ) : (
-              <>
-                <Trash2 className="w-4 h-4" />
-                <span>Delete</span>
-              </>
-            )}
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
-)}
+              <div className="p-6 space-y-6">
+                <div className="space-y-4">
+                  <p className="text-gray-700">
+                    Are you sure you want to delete the consultation for{" "}
+                    <span className="font-semibold">
+                      {consultationToDelete?.fullName}
+                    </span>
+                    ? This action cannot be undone.
+                  </p>
+                </div>
+
+                <div className="flex justify-end space-x-3">
+                  <button
+                    onClick={() => setShowDeleteModal(false)}
+                    className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
+                    disabled={isDeleting}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handleDeleteConsultation}
+                    disabled={isDeleting}
+                    className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors flex items-center space-x-2 disabled:opacity-50"
+                  >
+                    {isDeleting ? (
+                      <>
+                        <RefreshCw className="w-4 h-4 animate-spin" />
+                        <span>Deleting...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Trash2 className="w-4 h-4" />
+                        <span>Delete</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </Layout>
   );

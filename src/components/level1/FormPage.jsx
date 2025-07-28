@@ -200,8 +200,17 @@ const validateForm = (formData, frontImage, backImage, profileImage) => {
 };
 
 // Form Data Builder - Ensures proper API payload structure
-const buildFormDataPayload = (formData) => {
+const buildFormDataPayload = (
+  formData,
+  frontImageFile,
+  backImageFile,
+  profileImageFile
+) => {
   const payload = new FormData();
+
+  // Default base64 images (1x1 transparent PNG)
+  const defaultProfileImage = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=";
+  const defaultFrontImage = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=";
 
   // Append all form fields with proper data types
   Object.entries(formData).forEach(([key, value]) => {
@@ -219,8 +228,51 @@ const buildFormDataPayload = (formData) => {
     payload.append(key, formattedValue);
   });
 
+  // Append profile image - use default if not provided
+  if (profileImageFile) {
+    payload.append("profileImage", profileImageFile, profileImageFile.name);
+  } else {
+    // Convert base64 to blob and append
+    const blob = base64ToBlob(defaultProfileImage, 'image/png');
+    payload.append("profileImage", blob, "default-profile.png");
+  }
+
+  // Append front ID image - use default if not provided
+  if (frontImageFile) {
+    payload.append("idPhotofront", frontImageFile, frontImageFile.name);
+  } else {
+    // Convert base64 to blob and append
+    const blob = base64ToBlob(defaultFrontImage, 'image/png');
+    payload.append("idPhotofront", blob, "default-front-id.png");
+  }
+
+  // Append back ID image (no default)
+  if (backImageFile) {
+    payload.append("idphotoback", backImageFile, backImageFile.name);
+  }
+
   return payload;
 };
+
+// Helper function to convert base64 to Blob
+function base64ToBlob(base64, contentType = '', sliceSize = 512) {
+  const byteCharacters = atob(base64);
+  const byteArrays = [];
+
+  for (let offset = 0; offset < byteCharacters.length; offset += sliceSize) {
+    const slice = byteCharacters.slice(offset, offset + sliceSize);
+
+    const byteNumbers = new Array(slice.length);
+    for (let i = 0; i < slice.length; i++) {
+      byteNumbers[i] = slice.charCodeAt(i);
+    }
+
+    const byteArray = new Uint8Array(byteNumbers);
+    byteArrays.push(byteArray);
+  }
+
+  return new Blob(byteArrays, { type: contentType });
+}
 
 // Profile Image Upload Component - New component for profile photo
 const ProfileImageUpload = ({ image, onUpload, error }) => (

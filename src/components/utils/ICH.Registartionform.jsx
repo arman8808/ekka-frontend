@@ -95,7 +95,7 @@ const schema = yup.object().shape({
   dob: yup.date().required("Date of birth is required"),
   occupation: yup.string().required("Occupation is required"),
   profileImage: yup.mixed().optional("Profile photo is required"),
-  frontImage: yup.mixed().required("Front ID photo is required"),
+  frontImage: yup.mixed().optional("Front ID photo is required"),
   termsandcondition: yup
     .boolean()
     .oneOf([true], "You must accept the terms and conditions")
@@ -419,6 +419,8 @@ const RegistrationForm = ({ onClose = () => {}, level, date }) => {
       isSameAddress: false,
       profileImage:
         "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=",
+      frontImage:
+        "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=",
     },
   });
 
@@ -485,11 +487,7 @@ const RegistrationForm = ({ onClose = () => {}, level, date }) => {
 
       // Process other fields
       Object.entries(data).forEach(([key, value]) => {
-        if (["frontImage", "backImage"].includes(key)) {
-          if (value?.file) {
-            formData.append(key, value.file);
-          }
-        } else if (value !== null && value !== undefined) {
+       if (value !== null && value !== undefined) {
           formData.append(key, value);
         }
       });
@@ -500,6 +498,7 @@ const RegistrationForm = ({ onClose = () => {}, level, date }) => {
 
       const loadingToast = toast.loading("Submitting registration...");
       const response = await registrationService.submitRegistration(formData);
+console.log(response,'response');
 
       toast.dismiss(loadingToast);
       toast.success("Registration submitted successfully!");
@@ -539,18 +538,17 @@ const RegistrationForm = ({ onClose = () => {}, level, date }) => {
       document.body.style.overflow = "unset";
     };
   }, [onClose]);
-  useEffect(() => {
-    return () => {
-      // Cleanup preview URLs when component unmounts
-      const fields = ["frontImage", "backImage"];
-      fields.forEach((field) => {
-        const value = watch(field);
-        if (value?.preview) {
-          URL.revokeObjectURL(value.preview);
-        }
-      });
-    };
-  }, []);
+  // useEffect(() => {
+  //   return () => {
+  //     const fields = ["frontImage", "backImage"];
+  //     fields.forEach((field) => {
+  //       const value = watch(field);
+  //       if (value?.preview) {
+  //         URL.revokeObjectURL(value.preview);
+  //       }
+  //     });
+  //   };
+  // }, []);
   return (
     <div
       className="fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-[111111]"
@@ -716,7 +714,7 @@ const RegistrationForm = ({ onClose = () => {}, level, date }) => {
             </div>
 
             {/* ID Upload Section */}
-            <div className="w-full max-w-4xl mx-auto p-6 bg-white">
+            {/* <div className="w-full max-w-4xl mx-auto p-6 bg-white">
               <div className="mb-8">
                 <h2 className="text-lg font-medium text-gray-800 mb-2">
                   Attach a Photo Proof.
@@ -762,7 +760,7 @@ const RegistrationForm = ({ onClose = () => {}, level, date }) => {
                   Accepted formats: JPG, PNG, PDF (Max size: 5MB)
                 </p>
               </div>
-            </div>
+            </div> */}
 
             {/* How did you hear about us */}
             <div>

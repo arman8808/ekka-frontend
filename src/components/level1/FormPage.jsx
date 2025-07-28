@@ -181,12 +181,12 @@ const validateForm = (formData, frontImage, backImage, profileImage) => {
   // }
 
   // File validation
-  if (!profileImage) {
-    errors.profileImage = "Profile photo is required";
-  }
-  if (!frontImage) {
-    errors.frontImage = "Front ID photo is required";
-  }
+  // if (!profileImage) {
+  //   errors.profileImage = "Profile photo is required";
+  // }
+  // if (!frontImage) {
+  //   errors.frontImage = "Front ID photo is required";
+  // }
   // if (!backImage) {
   //   errors.backImage = "Back ID photo is required";
   // }
@@ -200,12 +200,7 @@ const validateForm = (formData, frontImage, backImage, profileImage) => {
 };
 
 // Form Data Builder - Ensures proper API payload structure
-const buildFormDataPayload = (
-  formData,
-  frontImageFile,
-  backImageFile,
-  profileImageFile
-) => {
+const buildFormDataPayload = (formData) => {
   const payload = new FormData();
 
   // Append all form fields with proper data types
@@ -223,17 +218,6 @@ const buildFormDataPayload = (
 
     payload.append(key, formattedValue);
   });
-
-  // Append files with exact field names matching your API
-  if (profileImageFile) {
-    payload.append("profileImage", profileImageFile, profileImageFile.name);
-  }
-  if (frontImageFile) {
-    payload.append("idPhotofront", frontImageFile, frontImageFile.name);
-  }
-  if (backImageFile) {
-    payload.append("idphotoback", backImageFile, backImageFile.name);
-  }
 
   return payload;
 };
@@ -858,7 +842,7 @@ function FormPage({ onClose = () => {}, level }) {
             )}
 
             {/* Profile Image Section */}
-            <div>
+            {/* <div>
               <div className="bg-[#F8F1FF] h-[2px] mb-6"></div>
 
               <div className="flex justify-center">
@@ -868,7 +852,7 @@ function FormPage({ onClose = () => {}, level }) {
                   error={formErrors.profileImage}
                 />
               </div>
-            </div>
+            </div> */}
 
             {/* Personal Information */}
             <div>
@@ -1010,7 +994,7 @@ function FormPage({ onClose = () => {}, level }) {
             </div>
 
             {/* ID Upload Section */}
-            <div className="w-full max-w-4xl mx-auto p-6 bg-white">
+            {/* <div className="w-full max-w-4xl mx-auto p-6 bg-white">
               <div className="mb-8">
                 <h2 className="text-lg font-medium text-gray-800 mb-2">
                   Attach a Photo Proof.
@@ -1038,7 +1022,7 @@ function FormPage({ onClose = () => {}, level }) {
                   Accepted formats: JPG, PNG, PDF (Max size: 5MB)
                 </p>
               </div>
-            </div>
+            </div> */}
 
             {/* How did you hear about us */}
             <div>

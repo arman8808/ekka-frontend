@@ -64,6 +64,22 @@ function Usateamsection() {
           <h2 className="text-xl sm:text-2xl leading-[24px] font-medium text-[#6E2D79] font-poppins mb-2">
             Dr. Aiyasawmy, M.D.
           </h2>
+          <p className="text-base sm:text-lg leading-[30px] text-[#A35F93] font-normal">
+            Aiyasawmy Dorairajan is board-certified in Critical Care Medicine
+            with a deep passion for physician wellness. He believes that,
+            ultimately, every patient heals themselves—his role is to provide
+            them with the tools to get there. He recognizes the power of the
+            mind as one of the most vital yet often overlooked assets in
+            achieving true health.
+          </p>
+          <p className="text-base sm:text-lg leading-[30px] text-[#A35F93] font-normal">
+            Currently, he is completing his Ekaa hypnosis training and hosting
+            the Decode the Docs series, which explores wellness from a
+            physician’s perspective. In addition to his work in critical care
+            and mental wellness, Dr. Dorairajan is deeply committed to men's
+            health and the essential role of community in sustaining meaningful
+            and lasting behavior change.
+          </p>
         </div>
       </div>
       {/* Horizontal Line */}
@@ -198,6 +214,46 @@ function Usateamsection() {
           </p>
         </div>
       </div>
+      <div className="relative w-full my-8">
+        {/* Horizontal Line */}
+        <div className="w-full h-[1px] bg-[#B879D3]"></div>
+
+        {/* Left Circle */}
+        <div className="w-2 h-2 bg-[#B879D3] rounded-full absolute top-1/2 -translate-y-1/2 left-0"></div>
+
+        {/* Right Circle */}
+        <div className="w-2 h-2 bg-[#B879D3] rounded-full absolute top-1/2 -translate-y-1/2 right-0"></div>
+      </div>
+      <div className="flex flex-col md:flex-row justify-between items-center gap-10 mt-12">
+        <img
+          src="/about/Madhavi Kata Chalasani.jpeg"
+          alt="Priya KP"
+          className="w-full max-w-[431px] h-auto md:h-[428px] object-contain shadow-lg"
+        />
+
+        <div className="flex-1 text-[#5E3D8A]">
+          <h2 className="text-xl sm:text-2xl leading-[24px] font-medium text-[#6E2D79] font-poppins mb-2">
+            Madhavi Kata Chalasani, Spiritual Teacher & Energy Healer
+          </h2>
+          <p className="text-base sm:text-lg leading-[30px] text-[#A35F93] font-normal">
+            Madhavi Kata Chalasani is a Complementary Medicine Practitioner and
+            Consciousness Accelerator based in The Woodlands, Texas.
+          </p>
+          <p className="text-base sm:text-lg leading-[30px] text-[#A35F93] font-normal mt-2">
+            She blends her medical background with powerful modalities like
+            Energy Medicine, Shamanism, and Pranic Psychotherapy to help clients
+            explore the deeper mind-body-spirit connection.
+          </p>
+          <p className="text-base sm:text-lg leading-[30px] text-[#A35F93] font-normal mt-2">
+            Madhavi founded Chakra Bliss Center in 2011 to bridge science and
+            spirituality, offering a grounded and transformative space for
+            healing. Through deep empathy and intuitive presence, she helps
+            others awaken their innate wholeness, one consciousness step at a
+            time.
+          </p>
+        </div>
+      </div>
+
       <div className="relative w-full my-8">
         {/* Horizontal Line */}
         <div className="w-full h-[1px] bg-[#B879D3]"></div>

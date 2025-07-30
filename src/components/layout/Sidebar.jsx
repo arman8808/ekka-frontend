@@ -35,6 +35,21 @@ const navigation = [
     path: "/all-ICTable.usa",
     icon: <FaWpforms />,
   },
+  {
+    name: "Family Constellation Page",
+    path: "/admin-familyconstellation",
+    icon: <FaWpforms />,
+  },
+  {
+    name: "Hypnotherapy Page",
+    path: "/admin-Hypnotherapy",
+    icon: <FaWpforms />,
+  },
+  {
+    name: "Decode Page",
+    path: "/admin-decode",
+    icon: <FaWpforms />,
+  },
 ];
 
 const Sidebar = ({ isOpen, onClose }) => {

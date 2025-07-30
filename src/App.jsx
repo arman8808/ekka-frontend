@@ -47,6 +47,8 @@ import FamilyConsultationTable from "./pages/FamilyConsultationTable";
 import IchRegistration from "./pages/ICHTable";
 import Schedule from "./pages/Schedule";
 import Tasso from "./pages/Tasso";
+import FamilyConstellationPage from "./pages/AdminPages/FamilyConstellation";
+import HypnotherapyPage from "./pages/AdminPages/HypnotherapyPage";
 
 function App() {
   return (
@@ -61,7 +63,7 @@ function App() {
         <Route path="/tasso" element={<Tasso />} />
         <Route path="/family-constellation" element={<FamilyConstellation />} />
         <Route path="/ich" element={<ICH />} />
-            <Route path="/ich/levels" element={<ICHLevels />} />
+        <Route path="/ich/levels" element={<ICHLevels />} />
         {/* <Route path="/ich" element={<ICH />} /> */}
         <Route path="/admin/login" element={<AdminLogin />} />
         {/* Dynamic route for all levels */}
@@ -92,10 +94,10 @@ function App() {
           path="all-FamilyConsultationTable.usa"
           element={<FamilyConsultationTable />}
         />{" "}
-        <Route
-          path="all-ICTable.usa"
-          element={<IchRegistration />}
-        />
+        <Route path="all-ICTable.usa" element={<IchRegistration />} />{" "}
+        <Route path="admin-familyconstellation" element={<FamilyConstellationPage />} />
+        <Route path="admin-Hypnotherapy" element={<HypnotherapyPage />} />
+        <Route path="admin-decode" element={<IchRegistration />} />
         {/* </Route> */}
       </Routes>
     </>

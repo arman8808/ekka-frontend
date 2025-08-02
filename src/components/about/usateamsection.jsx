@@ -113,7 +113,7 @@ function Usateamsection() {
 
         {/* Right: Image */}
         <img
-          src="/default.png"
+          src="/about/rupa.JPG"
           alt=" Dr. Rupa Mahadevan"
           className="w-full max-w-[431px] h-auto md:h-[428px] object-contain shadow-lg order-1 md:order-2"
         />

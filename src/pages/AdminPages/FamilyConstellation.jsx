@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import {
   Eye,
@@ -13,53 +13,18 @@ import {
   Trash2,
 } from "lucide-react";
 import Layout from "../../components/layout/Layout";
+import familyEventService from "../../components/services/familyEventService.js";
+import toast from "react-hot-toast";
 
 const FamilyConstellationPage = () => {
-  // Static data for demonstration
-  const initialEvents = [
-    {
-      id: 1,
-      event: "Family Constellation",
-      date: "Aug 9, 2025",
-      location: "Cold Spring, TX",
-      capacity: "10 Seats",
-      organisedby: "Dr Aiyasawmy",
-      organiserEmail: "Aiyasawmy@gmail.com",
-      price: "$ 375",
-      paymentLink: "https://payment.link/1",
-      status: "Open",
-    },
-    {
-      id: 2,
-      event: "Family Constellation",
-      date: "Sep 15, 2025",
-      location: "Austin, TX",
-      capacity: "15 Seats",
-      organisedby: "Dr Smith",
-      organiserEmail: "smith@gmail.com",
-      price: "$ 400",
-      paymentLink: "https://payment.link/2",
-      status: "Open",
-    },
-    {
-      id: 3,
-      event: "Family Constellation",
-      date: "Oct 20, 2025",
-      location: "Houston, TX",
-      capacity: "12 Seats",
-      organisedby: "Dr Johnson",
-      organiserEmail: "johnson@gmail.com",
-      price: "$ 350",
-      paymentLink: "https://payment.link/3",
-      status: "Closed",
-    },
-  ];
-
-  const [events, setEvents] = useState(initialEvents);
+  const [user, setUser] = useState(null); // Track user authentication state
+  const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalEvents, setTotalEvents] = useState(0);
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [currentEvent, setCurrentEvent] = useState(null);
@@ -69,6 +34,14 @@ const FamilyConstellationPage = () => {
   
   const itemsPerPage = 5;
   
+  // Check for user authentication on component mount
+  useEffect(() => {
+    const token = localStorage.getItem('adminToken');
+    if (token) {
+      setUser({ token }); // Set user as authenticated
+    }
+  }, []);
+
   // React Hook Form setup
   const {
     register,
@@ -91,56 +64,58 @@ const FamilyConstellationPage = () => {
     },
   });
 
-  // Pagination calculation
-  const totalPages = Math.ceil(events.length / itemsPerPage);
-  const paginatedEvents = events.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
+  // Fetch events
+  const fetchEvents = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const token = localStorage.getItem('adminToken');
+      const data = await familyEventService.getEvents(searchTerm, currentPage, itemsPerPage, token);
+      setEvents(data.events);
+      setTotalPages(data.totalPages);
+      setTotalEvents(data.totalEvents);
+    } catch (error) {
+      setError(error.message || 'Failed to fetch events');
+      toast.error(error.message || 'Failed to fetch events');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Load events on component mount and when search/page changes
+  useEffect(() => {
+    fetchEvents();
+  }, [searchTerm, currentPage]);
 
   // Handle search
   const handleSearch = () => {
-    if (searchTerm.trim() === "") {
-      setEvents(initialEvents);
-      setCurrentPage(1);
-      return;
-    }
-
-    const filtered = initialEvents.filter(
-      (event) =>
-        event.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        event.organisedby.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        event.status.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        event.date.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-    setEvents(filtered);
-    setCurrentPage(1);
+    setCurrentPage(1); // Reset to first page when searching
+    fetchEvents();
   };
 
-  // Handle form submit (add new event)
+  // Handle form submit (add/edit event)
   const onSubmit = async (data) => {
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      const newEvent = {
-        id: events.length + 1,
-        ...data,
-      };
-      
+      const token = localStorage.getItem('adminToken');
+      if (!token) {
+        toast.error('Authentication required');
+        return;
+      }
+
       if (showAddModal) {
-        setEvents([...events, newEvent]);
-        setShowAddModal(false);
+        await familyEventService.createEvent(data, token);
+        toast.success('Event created successfully');
       } else if (showEditModal && currentEvent) {
-        const updatedEvents = events.map((event) =>
-          event.id === currentEvent.id ? { ...data, id: currentEvent.id } : event
-        );
-        setEvents(updatedEvents);
-        setShowEditModal(false);
+        await familyEventService.updateEvent(currentEvent._id, data, token);
+        toast.success('Event updated successfully');
       }
       
+      fetchEvents(); // Refresh the list
       reset();
+      setShowAddModal(false);
+      setShowEditModal(false);
     } catch (error) {
+      toast.error(error.message || 'Failed to save event');
       console.error("Form submission error:", error);
     }
   };
@@ -148,15 +123,19 @@ const FamilyConstellationPage = () => {
   // Handle delete event
   const handleDeleteEvent = async () => {
     setIsDeleting(true);
-    
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      const filteredEvents = events.filter((event) => event.id !== eventToDelete.id);
-      setEvents(filteredEvents);
+      const token = localStorage.getItem('adminToken');
+      if (!token) {
+        toast.error('Authentication required');
+        return;
+      }
+
+      await familyEventService.deleteEvent(eventToDelete._id, token);
+      toast.success('Event deleted successfully');
+      fetchEvents(); // Refresh the list
       setShowDeleteModal(false);
     } catch (error) {
+      toast.error(error.message || 'Failed to delete event');
       console.error("Delete error:", error);
     } finally {
       setIsDeleting(false);
@@ -208,6 +187,7 @@ const FamilyConstellationPage = () => {
     return priceRegex.test(value) || "Price must be in currency format (e.g., $375 or $375.00)";
   };
 
+  // Loading state
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-64">
@@ -219,6 +199,7 @@ const FamilyConstellationPage = () => {
     );
   }
 
+  // Error state
   if (error) {
     return (
       <div className="bg-red-50 border border-red-200 rounded-lg p-6">
@@ -228,7 +209,7 @@ const FamilyConstellationPage = () => {
         </div>
         <p className="text-red-700 mb-4">{error}</p>
         <button
-          onClick={() => window.location.reload()}
+          onClick={fetchEvents}
           className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors flex items-center space-x-2"
         >
           <RefreshCw className="w-4 h-4" />
@@ -249,18 +230,20 @@ const FamilyConstellationPage = () => {
                 Family Constellation Events
               </h1>
               <p className="text-gray-600 mt-1">
-                Total Events: {events.length}
+                Total Events: {totalEvents}
               </p>
             </div>
 
             <div className="flex flex-col sm:flex-row gap-3">
-              <button
-                onClick={openAddModal}
-                className="bg-[#6E2D79] text-white px-4 py-2 rounded-lg hover:bg-[#5C2166] transition-colors flex items-center justify-center space-x-2"
-              >
-                <Plus className="w-4 h-4" />
-                <span>Add Event</span>
-              </button>
+              {user && (
+                <button
+                  onClick={openAddModal}
+                  className="bg-[#6E2D79] text-white px-4 py-2 rounded-lg hover:bg-[#5C2166] transition-colors flex items-center justify-center space-x-2"
+                >
+                  <Plus className="w-4 h-4" />
+                  <span>Add Event</span>
+                </button>
+              )}
             </div>
           </div>
         </div>
@@ -292,7 +275,7 @@ const FamilyConstellationPage = () => {
               <button
                 onClick={() => {
                   setSearchTerm("");
-                  setEvents(initialEvents);
+                  setCurrentPage(1);
                 }}
                 className="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 transition-colors flex items-center space-x-2"
               >
@@ -330,15 +313,17 @@ const FamilyConstellationPage = () => {
                   <th className="px-4 py-4 text-left text-sm font-semibold">
                     Status
                   </th>
-                  <th className="px-4 py-4 text-center text-sm font-semibold">
-                    Actions
-                  </th>
+                  {user && (
+                    <th className="px-4 py-4 text-center text-sm font-semibold">
+                      Actions
+                    </th>
+                  )}
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
-                {paginatedEvents.map((event) => (
+                {events.map((event) => (
                   <tr
-                    key={event.id}
+                    key={event._id}
                     className="hover:bg-gray-50"
                   >
                     <td className="px-4 py-4 text-sm font-medium text-[#5C2166]">
@@ -364,25 +349,27 @@ const FamilyConstellationPage = () => {
                         {event.status}
                       </span>
                     </td>
-                    <td className="px-4 py-4 text-center flex items-center justify-center space-x-2">
-                      <button
-                        onClick={() => openEditModal(event)}
-                        className="bg-blue-600 text-white p-2 rounded-lg hover:bg-blue-700 transition-colors"
-                        title="Edit Event"
-                      >
-                        <Edit className="w-4 h-4" />
-                      </button>
-                      <button
-                        onClick={() => {
-                          setEventToDelete(event);
-                          setShowDeleteModal(true);
-                        }}
-                        className="bg-red-600 text-white p-2 rounded-lg hover:bg-red-700 transition-colors"
-                        title="Delete Event"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    </td>
+                    {user && (
+                      <td className="px-4 py-4 text-center flex items-center justify-center space-x-2">
+                        <button
+                          onClick={() => openEditModal(event)}
+                          className="bg-blue-600 text-white p-2 rounded-lg hover:bg-blue-700 transition-colors"
+                          title="Edit Event"
+                        >
+                          <Edit className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={() => {
+                            setEventToDelete(event);
+                            setShowDeleteModal(true);
+                          }}
+                          className="bg-red-600 text-white p-2 rounded-lg hover:bg-red-700 transition-colors"
+                          title="Delete Event"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </td>
+                    )}
                   </tr>
                 ))}
               </tbody>
@@ -407,8 +394,8 @@ const FamilyConstellationPage = () => {
             <div className="flex flex-col sm:flex-row items-center justify-between space-y-3 sm:space-y-0">
               <div className="text-sm text-gray-700">
                 Showing {(currentPage - 1) * itemsPerPage + 1} to{" "}
-                {Math.min(currentPage * itemsPerPage, events.length)} of{" "}
-                {events.length} results
+                {Math.min(currentPage * itemsPerPage, totalEvents)} of{" "}
+                {totalEvents} results
               </div>
 
               <div className="flex items-center space-x-2">

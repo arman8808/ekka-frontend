@@ -10,8 +10,11 @@ import {
   Trash2,
 } from "lucide-react";
 import Layout from "../components/layout/Layout";
+import { useNavigate } from "react-router-dom";
 
 const FamilyConsultationTable = () => {
+  const navigate = useNavigate(); // Added for redirection
+  const [authChecked, setAuthChecked] = useState(false);
   const [consultations, setConsultations] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -168,7 +171,14 @@ const FamilyConsultationTable = () => {
     setDownloadStartDate("");
     setDownloadEndDate("");
   };
-
+  useEffect(() => {
+    const adminToken = localStorage.getItem("adminToken");
+    if (!adminToken) {
+      navigate("/admin/login");
+    } else {
+      setAuthChecked(true);
+    }
+  }, [navigate]);
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-64">
@@ -200,7 +210,20 @@ const FamilyConsultationTable = () => {
       </div>
     );
   }
-
+  if (!authChecked) {
+    return (
+      <Layout>
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="flex items-center space-x-2">
+            <RefreshCw className="w-6 h-6 animate-spin text-[#6E2D79]" />
+            <span className="text-[#6E2D79] font-medium">
+              Verifying authentication...
+            </span>
+          </div>
+        </div>
+      </Layout>
+    );
+  }
   return (
     <Layout>
       <div className="w-full max-w-7xl mx-auto p-4 space-y-6">

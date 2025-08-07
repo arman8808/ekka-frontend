@@ -1,4 +1,3 @@
-// src/pages/Hypnotherapy.js
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import {
@@ -23,10 +22,10 @@ import {
   AlertCircle,
 } from "lucide-react";
 import Layout from "../../components/layout/Layout";
-import hypnotherapyService from "../../components/services/hypnotherapyService";
+import decodeService from "../../components/services/decodeService";
 import toast from "react-hot-toast";
 
-const HypnotherapyPage = () => {
+const DecodeAdminPage = () => {
   const [programs, setPrograms] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -57,7 +56,7 @@ const HypnotherapyPage = () => {
       title: "",
       subtitle: "",
       duration: "",
-      cardPoints: [""], // NEW: Added card points for card display
+      cardPoints: [""],
       learningSections: [{ title: "", points: [""] }],
       upcomingEvents: [{
         date: "",
@@ -118,7 +117,7 @@ const HypnotherapyPage = () => {
     setLoading(true);
     setError(null);
     try {
-      const data = await hypnotherapyService.getPrograms(
+      const data = await decodeService.getPrograms(
         searchTerm,
         currentPage,
         itemsPerPage
@@ -150,10 +149,10 @@ const HypnotherapyPage = () => {
     try {
       setLoading(true);
       if (currentProgram) {
-        await hypnotherapyService.updateProgram(currentProgram._id, data);
+        await decodeService.updateProgram(currentProgram._id, data);
         toast.success("Program updated successfully");
       } else {
-        await hypnotherapyService.createProgram(data);
+        await decodeService.createProgram(data);
         toast.success("Program created successfully");
       }
       
@@ -172,7 +171,7 @@ const HypnotherapyPage = () => {
   const handleDeleteProgram = async () => {
     setIsDeleting(true);
     try {
-      await hypnotherapyService.deleteProgram(programToDelete._id);
+      await decodeService.deleteProgram(programToDelete._id);
       toast.success("Program deleted successfully");
       fetchPrograms();
       setShowDeleteModal(false);
@@ -190,7 +189,7 @@ const HypnotherapyPage = () => {
     setValue("title", program.title);
     setValue("subtitle", program.subtitle);
     setValue("duration", program.duration);
-    setValue("cardPoints", program.cardPoints || [""]); // NEW: Set card points
+    setValue("cardPoints", program.cardPoints || [""]);
     setValue("learningSections", program.learningSections);
     setValue("upcomingEvents", program.upcomingEvents);
     setValue("status", program.status);
@@ -204,7 +203,7 @@ const HypnotherapyPage = () => {
       title: "",
       subtitle: "",
       duration: "",
-      cardPoints: [""], // NEW: Initialize card points
+      cardPoints: [""],
       learningSections: [{ title: "", points: [""] }],
       upcomingEvents: [
         {
@@ -238,13 +237,13 @@ const HypnotherapyPage = () => {
     }
   };
 
-  // NEW: Add a new card point
+  // Add a new card point
   const addCardPoint = () => {
     const currentPoints = watch("cardPoints") || [];
     setValue("cardPoints", [...currentPoints, ""]);
   };
 
-  // NEW: Remove a card point
+  // Remove a card point
   const removeCardPoint = (index) => {
     const currentPoints = watch("cardPoints") || [];
     if (currentPoints.length > 1) {
@@ -363,7 +362,7 @@ const HypnotherapyPage = () => {
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
             <div>
               <h1 className="text-2xl lg:text-3xl font-bold text-[#6E2D79]">
-                Hypnotherapy Events Management
+                Decode Events 
               </h1>
               <p className="text-gray-600 mt-1">
                 Total Programs: {totalPrograms}
@@ -441,7 +440,7 @@ const HypnotherapyPage = () => {
                   </div>
                   <p className="text-gray-600 mt-1">{program.subtitle}</p>
                   
-                  {/* NEW: Display card points in collapsed view */}
+                  {/* Display card points in collapsed view */}
                   {expandedProgram !== program._id && program.cardPoints && (
                     <ul className="mt-3 space-y-1">
                       {program.cardPoints.map((point, index) => (
@@ -653,7 +652,7 @@ const HypnotherapyPage = () => {
                 <Search className="w-8 h-8 text-[#6E2D79]" />
               </div>
               <div className="text-xl text-[#6E2D79] font-bold mt-4">
-                No hypnotherapy programs found
+                No decode programs found
               </div>
               <p className="text-gray-600 mt-2">
                 Try adjusting your search criteria or add a new program
@@ -717,8 +716,8 @@ const HypnotherapyPage = () => {
                 <div className="flex items-center justify-between">
                   <h2 className="text-xl font-bold">
                     {currentProgram
-                      ? "Edit Hypnotherapy Program"
-                      : "Add New Hypnotherapy Program"}
+                      ? "Edit Decode Program"
+                      : "Add New Decode Program"}
                   </h2>
                   <button
                     onClick={() => setShowModal(false)}
@@ -748,7 +747,7 @@ const HypnotherapyPage = () => {
                         className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#6E2D79] focus:border-transparent outline-none ${
                           errors.title ? "border-red-500" : "border-gray-300"
                         }`}
-                        placeholder="Advanced Hypnotherapy Certification"
+                        placeholder="Advanced Decode Certification"
                       />
                       {errors.title && (
                         <p className="mt-1 text-sm text-red-600">
@@ -772,7 +771,7 @@ const HypnotherapyPage = () => {
                         className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#6E2D79] focus:border-transparent outline-none ${
                           errors.subtitle ? "border-red-500" : "border-gray-300"
                         }`}
-                        placeholder="Master the art of therapeutic hypnosis"
+                        placeholder="Master the art of decoding consciousness"
                       />
                       {errors.subtitle && (
                         <p className="mt-1 text-sm text-red-600">
@@ -781,7 +780,7 @@ const HypnotherapyPage = () => {
                       )}
                     </div>
 
-                    {/* NEW: Card Points Section */}
+                    {/* Card Points Section */}
                     <div className="md:col-span-2">
                       <div className="flex items-center justify-between mb-1">
                         <label className="block text-sm font-medium text-gray-700">
@@ -1247,7 +1246,7 @@ const HypnotherapyPage = () => {
                                       ? "border-red-500"
                                       : "border-gray-300"
                                   }`}
-                                  placeholder="https://payment.example.com/hypno1"
+                                  placeholder="https://payment.example.com/decode1"
                                 />
                               </div>
                               {errors.upcomingEvents?.[index]?.paymentLink && (
@@ -1368,4 +1367,4 @@ const HypnotherapyPage = () => {
   );
 };
 
-export default HypnotherapyPage;
+export default DecodeAdminPage;

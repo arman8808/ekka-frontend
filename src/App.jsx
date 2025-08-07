@@ -49,6 +49,7 @@ import Schedule from "./pages/Schedule";
 import Tasso from "./pages/Tasso";
 import FamilyConstellationPage from "./pages/AdminPages/FamilyConstellation";
 import HypnotherapyPage from "./pages/AdminPages/HypnotherapyPage";
+import DecodeAdminPage from "./pages/AdminPages/DecodePage";
 
 function App() {
   return (
@@ -97,7 +98,7 @@ function App() {
         <Route path="all-ICTable.usa" element={<IchRegistration />} />{" "}
         <Route path="admin-familyconstellation" element={<FamilyConstellationPage />} />
         <Route path="admin-Hypnotherapy" element={<HypnotherapyPage />} />
-        <Route path="admin-decode" element={<IchRegistration />} />
+        <Route path="admin-decode" element={<DecodeAdminPage />} />
         {/* </Route> */}
       </Routes>
     </>

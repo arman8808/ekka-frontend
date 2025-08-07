@@ -24,8 +24,11 @@ import {
 import Layout from "../../components/layout/Layout";
 import decodeService from "../../components/services/decodeService";
 import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 
 const DecodeAdminPage = () => {
+  const navigate = useNavigate(); // Added for redirection
+  const [authChecked, setAuthChecked] = useState(false);
   const [programs, setPrograms] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -50,7 +53,7 @@ const DecodeAdminPage = () => {
     formState: { errors, isSubmitting },
     setValue,
     watch,
-    trigger
+    trigger,
   } = useForm({
     defaultValues: {
       title: "",
@@ -58,27 +61,34 @@ const DecodeAdminPage = () => {
       duration: "",
       cardPoints: [""],
       learningSections: [{ title: "", points: [""] }],
-      upcomingEvents: [{
-        date: "",
-        eventName: "",
-        location: "",
-        organiser: "",
-        price: "",
-        paymentLink: "",
-      }],
+      upcomingEvents: [
+        {
+          date: "",
+          eventName: "",
+          location: "",
+          organiser: "",
+          price: "",
+          paymentLink: "",
+        },
+      ],
       status: "Open",
-    }
+    },
   });
-  
+
   // Validation functions
   const validateSectionTitle = (value, sectionIndex) => {
     const sections = watch("learningSections");
-    return sections[sectionIndex].title.trim() !== "" || "Section title is required";
+    return (
+      sections[sectionIndex].title.trim() !== "" || "Section title is required"
+    );
   };
-  
+
   const validateSectionPoint = (value, sectionIndex, pointIndex) => {
     const sections = watch("learningSections");
-    return sections[sectionIndex].points[pointIndex].trim() !== "" || "Learning point is required";
+    return (
+      sections[sectionIndex].points[pointIndex].trim() !== "" ||
+      "Learning point is required"
+    );
   };
 
   const validateCardPoint = (value, index) => {
@@ -102,8 +112,9 @@ const DecodeAdminPage = () => {
 
   const validatePaymentLink = (value, eventIndex) => {
     const events = watch("upcomingEvents");
-    if (!events[eventIndex].paymentLink.trim()) return "Payment link is required";
-    
+    if (!events[eventIndex].paymentLink.trim())
+      return "Payment link is required";
+
     try {
       new URL(events[eventIndex].paymentLink);
       return true;
@@ -155,7 +166,7 @@ const DecodeAdminPage = () => {
         await decodeService.createProgram(data);
         toast.success("Program created successfully");
       }
-      
+
       fetchPrograms();
       reset();
       setShowModal(false);
@@ -260,7 +271,7 @@ const DecodeAdminPage = () => {
       ...currentSections,
       { title: "", points: [""] },
     ]);
-    
+
     // Trigger validation for new section
     setTimeout(() => {
       trigger(`learningSections.${currentSections.length}.title`);
@@ -320,6 +331,14 @@ const DecodeAdminPage = () => {
     }
   };
 
+  useEffect(() => {
+    const adminToken = localStorage.getItem("adminToken");
+    if (!adminToken) {
+      navigate("/admin/login");
+    } else {
+      setAuthChecked(true);
+    }
+  }, [navigate]);
   // Loading state
   if (loading) {
     return (
@@ -353,7 +372,20 @@ const DecodeAdminPage = () => {
       </div>
     );
   }
-
+  if (!authChecked) {
+    return (
+      <Layout>
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="flex items-center space-x-2">
+            <RefreshCw className="w-6 h-6 animate-spin text-[#6E2D79]" />
+            <span className="text-[#6E2D79] font-medium">
+              Verifying authentication...
+            </span>
+          </div>
+        </div>
+      </Layout>
+    );
+  }
   return (
     <Layout>
       <div className="w-full max-w-7xl mx-auto p-4 space-y-6">
@@ -362,7 +394,7 @@ const DecodeAdminPage = () => {
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
             <div>
               <h1 className="text-2xl lg:text-3xl font-bold text-[#6E2D79]">
-                Decode Events 
+                Decode Events
               </h1>
               <p className="text-gray-600 mt-1">
                 Total Programs: {totalPrograms}
@@ -439,12 +471,15 @@ const DecodeAdminPage = () => {
                     </h3>
                   </div>
                   <p className="text-gray-600 mt-1">{program.subtitle}</p>
-                  
+
                   {/* Display card points in collapsed view */}
                   {expandedProgram !== program._id && program.cardPoints && (
                     <ul className="mt-3 space-y-1">
                       {program.cardPoints.map((point, index) => (
-                        <li key={index} className="flex items-start text-gray-700">
+                        <li
+                          key={index}
+                          className="flex items-start text-gray-700"
+                        >
                           <span className="bg-gray-200 text-[#6E2D79] p-1 rounded-full mr-2 mt-1">
                             <Check className="w-3 h-3" />
                           </span>
@@ -512,21 +547,28 @@ const DecodeAdminPage = () => {
                           </p>
                         </div>
                         <ul className="ml-9 space-y-2">
-                          {program.learningSections.map((section, sectionIdx) => (
-                            <React.Fragment key={sectionIdx}>
-                              <li className="font-semibold text-[#6E2D79]">
-                                {section.title}
-                              </li>
-                              {section.points.map((point, pointIdx) => (
-                                <li key={pointIdx} className="flex items-start ml-4">
-                                  <span className="bg-gray-200 text-[#6E2D79] p-1 rounded-full mr-2 mt-1">
-                                    <Check className="w-4 h-4" />
-                                  </span>
-                                  <span className="text-gray-700">{point}</span>
+                          {program.learningSections.map(
+                            (section, sectionIdx) => (
+                              <React.Fragment key={sectionIdx}>
+                                <li className="font-semibold text-[#6E2D79]">
+                                  {section.title}
                                 </li>
-                              ))}
-                            </React.Fragment>
-                          ))}
+                                {section.points.map((point, pointIdx) => (
+                                  <li
+                                    key={pointIdx}
+                                    className="flex items-start ml-4"
+                                  >
+                                    <span className="bg-gray-200 text-[#6E2D79] p-1 rounded-full mr-2 mt-1">
+                                      <Check className="w-4 h-4" />
+                                    </span>
+                                    <span className="text-gray-700">
+                                      {point}
+                                    </span>
+                                  </li>
+                                ))}
+                              </React.Fragment>
+                            )
+                          )}
                         </ul>
                       </div>
                     </div>
@@ -741,8 +783,8 @@ const DecodeAdminPage = () => {
                           required: "Title is required",
                           minLength: {
                             value: 5,
-                            message: "Title must be at least 5 characters"
-                          }
+                            message: "Title must be at least 5 characters",
+                          },
                         })}
                         className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#6E2D79] focus:border-transparent outline-none ${
                           errors.title ? "border-red-500" : "border-gray-300"
@@ -765,8 +807,8 @@ const DecodeAdminPage = () => {
                           required: "Subtitle is required",
                           minLength: {
                             value: 10,
-                            message: "Subtitle must be at least 10 characters"
-                          }
+                            message: "Subtitle must be at least 10 characters",
+                          },
                         })}
                         className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#6E2D79] focus:border-transparent outline-none ${
                           errors.subtitle ? "border-red-500" : "border-gray-300"
@@ -794,10 +836,13 @@ const DecodeAdminPage = () => {
                           Add Point
                         </button>
                       </div>
-                      
+
                       <div className="space-y-3">
                         {watch("cardPoints")?.map((_, index) => (
-                          <div key={index} className="flex items-start space-x-3">
+                          <div
+                            key={index}
+                            className="flex items-start space-x-3"
+                          >
                             <div className="flex-1">
                               <div className="flex items-center">
                                 <div className="bg-gray-100 text-[#6E2D79] p-2 rounded-lg mr-3">
@@ -808,12 +853,16 @@ const DecodeAdminPage = () => {
                                     required: "Card point is required",
                                     minLength: {
                                       value: 5,
-                                      message: "Point must be at least 5 characters"
+                                      message:
+                                        "Point must be at least 5 characters",
                                     },
-                                    validate: (value) => validateCardPoint(value, index)
+                                    validate: (value) =>
+                                      validateCardPoint(value, index),
                                   })}
                                   className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#6E2D79] focus:border-transparent outline-none ${
-                                    errors.cardPoints?.[index] ? "border-red-500" : "border-gray-300"
+                                    errors.cardPoints?.[index]
+                                      ? "border-red-500"
+                                      : "border-gray-300"
                                   }`}
                                   placeholder="Short point for card display..."
                                 />
@@ -846,8 +895,8 @@ const DecodeAdminPage = () => {
                           required: "Duration is required",
                           pattern: {
                             value: /^[a-zA-Z0-9\s]+$/,
-                            message: "Invalid duration format"
-                          }
+                            message: "Invalid duration format",
+                          },
                         })}
                         className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#6E2D79] focus:border-transparent outline-none ${
                           errors.duration ? "border-red-500" : "border-gray-300"
@@ -867,7 +916,7 @@ const DecodeAdminPage = () => {
                       </label>
                       <select
                         {...register("status", {
-                          required: "Status is required"
+                          required: "Status is required",
                         })}
                         className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#6E2D79] focus:border-transparent outline-none ${
                           errors.status ? "border-red-500" : "border-gray-300"
@@ -919,10 +968,14 @@ const DecodeAdminPage = () => {
                                       required: "Section title is required",
                                       minLength: {
                                         value: 3,
-                                        message: "Title must be at least 3 characters"
+                                        message:
+                                          "Title must be at least 3 characters",
                                       },
-                                      validate: (value) => 
-                                        validateSectionTitle(value, sectionIndex)
+                                      validate: (value) =>
+                                        validateSectionTitle(
+                                          value,
+                                          sectionIndex
+                                        ),
                                     }
                                   )}
                                   className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#6E2D79] focus:border-transparent outline-none ${
@@ -945,7 +998,9 @@ const DecodeAdminPage = () => {
                               </div>
                               <button
                                 type="button"
-                                onClick={() => removeLearningSection(sectionIndex)}
+                                onClick={() =>
+                                  removeLearningSection(sectionIndex)
+                                }
                                 className="text-red-500 hover:text-red-700 ml-4 mt-6"
                                 disabled={
                                   watch("learningSections")?.length <= 1
@@ -983,13 +1038,19 @@ const DecodeAdminPage = () => {
                                         {...register(
                                           `learningSections.${sectionIndex}.points.${pointIndex}`,
                                           {
-                                            required: "Learning point is required",
+                                            required:
+                                              "Learning point is required",
                                             minLength: {
                                               value: 5,
-                                              message: "Point must be at least 5 characters"
+                                              message:
+                                                "Point must be at least 5 characters",
                                             },
-                                            validate: (value) => 
-                                              validateSectionPoint(value, sectionIndex, pointIndex)
+                                            validate: (value) =>
+                                              validateSectionPoint(
+                                                value,
+                                                sectionIndex,
+                                                pointIndex
+                                              ),
                                           }
                                         )}
                                         className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#6E2D79] focus:border-transparent outline-none ${
@@ -1014,7 +1075,12 @@ const DecodeAdminPage = () => {
                                   </div>
                                   <button
                                     type="button"
-                                    onClick={() => removeLearningPoint(sectionIndex, pointIndex)}
+                                    onClick={() =>
+                                      removeLearningPoint(
+                                        sectionIndex,
+                                        pointIndex
+                                      )
+                                    }
                                     className="mt-3 text-red-500 hover:text-red-700"
                                     disabled={section.points.length <= 1}
                                   >
@@ -1028,7 +1094,7 @@ const DecodeAdminPage = () => {
                       )}
                     </div>
                   </div>
-                  
+
                   {/* Upcoming Events Section */}
                   <div className="space-y-4 pt-8">
                     <div className="flex items-center justify-between border-b border-gray-200 pb-3">
@@ -1075,8 +1141,8 @@ const DecodeAdminPage = () => {
                                 <input
                                   {...register(`upcomingEvents.${index}.date`, {
                                     required: "Date is required",
-                                    validate: (value) => 
-                                      validateEventDate(value, index)
+                                    validate: (value) =>
+                                      validateEventDate(value, index),
                                   })}
                                   className={`w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#6E2D79] focus:border-transparent outline-none ${
                                     errors.upcomingEvents?.[index]?.date
@@ -1104,8 +1170,9 @@ const DecodeAdminPage = () => {
                                     required: "Event name is required",
                                     minLength: {
                                       value: 5,
-                                      message: "Name must be at least 5 characters"
-                                    }
+                                      message:
+                                        "Name must be at least 5 characters",
+                                    },
                                   }
                                 )}
                                 className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#6E2D79] focus:border-transparent outline-none ${
@@ -1138,8 +1205,9 @@ const DecodeAdminPage = () => {
                                       required: "Location is required",
                                       minLength: {
                                         value: 3,
-                                        message: "Location must be at least 3 characters"
-                                      }
+                                        message:
+                                          "Location must be at least 3 characters",
+                                      },
                                     }
                                   )}
                                   className={`w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#6E2D79] focus:border-transparent outline-none ${
@@ -1173,8 +1241,9 @@ const DecodeAdminPage = () => {
                                       required: "Organizer is required",
                                       minLength: {
                                         value: 3,
-                                        message: "Organizer must be at least 3 characters"
-                                      }
+                                        message:
+                                          "Organizer must be at least 3 characters",
+                                      },
                                     }
                                   )}
                                   className={`w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#6E2D79] focus:border-transparent outline-none ${
@@ -1206,8 +1275,8 @@ const DecodeAdminPage = () => {
                                     `upcomingEvents.${index}.price`,
                                     {
                                       required: "Price is required",
-                                      validate: (value) => 
-                                        validatePrice(value, index)
+                                      validate: (value) =>
+                                        validatePrice(value, index),
                                     }
                                   )}
                                   className={`w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#6E2D79] focus:border-transparent outline-none ${
@@ -1237,8 +1306,8 @@ const DecodeAdminPage = () => {
                                     `upcomingEvents.${index}.paymentLink`,
                                     {
                                       required: "Payment link is required",
-                                      validate: (value) => 
-                                        validatePaymentLink(value, index)
+                                      validate: (value) =>
+                                        validatePaymentLink(value, index),
                                     }
                                   )}
                                   className={`w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#6E2D79] focus:border-transparent outline-none ${
@@ -1288,7 +1357,9 @@ const DecodeAdminPage = () => {
                         <>
                           <Check className="w-4 h-4" />
                           <span>
-                            {currentProgram ? "Update Program" : "Create Program"}
+                            {currentProgram
+                              ? "Update Program"
+                              : "Create Program"}
                           </span>
                         </>
                       )}

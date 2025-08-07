@@ -15,8 +15,11 @@ import {
 import Layout from "../../components/layout/Layout";
 import familyEventService from "../../components/services/familyEventService.js";
 import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 
 const FamilyConstellationPage = () => {
+  const navigate = useNavigate(); // Added for redirection
+  const [authChecked, setAuthChecked] = useState(false);
   const [user, setUser] = useState(null); // Track user authentication state
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -31,12 +34,12 @@ const FamilyConstellationPage = () => {
   const [eventToDelete, setEventToDelete] = useState(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
-  
+
   const itemsPerPage = 5;
-  
+
   // Check for user authentication on component mount
   useEffect(() => {
-    const token = localStorage.getItem('adminToken');
+    const token = localStorage.getItem("adminToken");
     if (token) {
       setUser({ token }); // Set user as authenticated
     }
@@ -69,14 +72,19 @@ const FamilyConstellationPage = () => {
     setLoading(true);
     setError(null);
     try {
-      const token = localStorage.getItem('adminToken');
-      const data = await familyEventService.getEvents(searchTerm, currentPage, itemsPerPage, token);
+      const token = localStorage.getItem("adminToken");
+      const data = await familyEventService.getEvents(
+        searchTerm,
+        currentPage,
+        itemsPerPage,
+        token
+      );
       setEvents(data.events);
       setTotalPages(data.totalPages);
       setTotalEvents(data.totalEvents);
     } catch (error) {
-      setError(error.message || 'Failed to fetch events');
-      toast.error(error.message || 'Failed to fetch events');
+      setError(error.message || "Failed to fetch events");
+      toast.error(error.message || "Failed to fetch events");
     } finally {
       setLoading(false);
     }
@@ -96,26 +104,26 @@ const FamilyConstellationPage = () => {
   // Handle form submit (add/edit event)
   const onSubmit = async (data) => {
     try {
-      const token = localStorage.getItem('adminToken');
+      const token = localStorage.getItem("adminToken");
       if (!token) {
-        toast.error('Authentication required');
+        toast.error("Authentication required");
         return;
       }
 
       if (showAddModal) {
         await familyEventService.createEvent(data, token);
-        toast.success('Event created successfully');
+        toast.success("Event created successfully");
       } else if (showEditModal && currentEvent) {
         await familyEventService.updateEvent(currentEvent._id, data, token);
-        toast.success('Event updated successfully');
+        toast.success("Event updated successfully");
       }
-      
+
       fetchEvents(); // Refresh the list
       reset();
       setShowAddModal(false);
       setShowEditModal(false);
     } catch (error) {
-      toast.error(error.message || 'Failed to save event');
+      toast.error(error.message || "Failed to save event");
       console.error("Form submission error:", error);
     }
   };
@@ -124,18 +132,18 @@ const FamilyConstellationPage = () => {
   const handleDeleteEvent = async () => {
     setIsDeleting(true);
     try {
-      const token = localStorage.getItem('adminToken');
+      const token = localStorage.getItem("adminToken");
       if (!token) {
-        toast.error('Authentication required');
+        toast.error("Authentication required");
         return;
       }
 
       await familyEventService.deleteEvent(eventToDelete._id, token);
-      toast.success('Event deleted successfully');
+      toast.success("Event deleted successfully");
       fetchEvents(); // Refresh the list
       setShowDeleteModal(false);
     } catch (error) {
-      toast.error(error.message || 'Failed to delete event');
+      toast.error(error.message || "Failed to delete event");
       console.error("Delete error:", error);
     } finally {
       setIsDeleting(false);
@@ -177,16 +185,30 @@ const FamilyConstellationPage = () => {
 
   // Date validation function
   const validateDate = (value) => {
-    const dateRegex = /^(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s\d{1,2},\s\d{4}$/;
-    return dateRegex.test(value) || "Date must be in 'MMM DD, YYYY' format (e.g., Aug 9, 2025)";
+    const dateRegex =
+      /^(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s\d{1,2},\s\d{4}$/;
+    return (
+      dateRegex.test(value) ||
+      "Date must be in 'MMM DD, YYYY' format (e.g., Aug 9, 2025)"
+    );
   };
 
   // Price validation function
   const validatePrice = (value) => {
     const priceRegex = /^\$\s?\d+(,\d{3})*(\.\d{2})?$/;
-    return priceRegex.test(value) || "Price must be in currency format (e.g., $375 or $375.00)";
+    return (
+      priceRegex.test(value) ||
+      "Price must be in currency format (e.g., $375 or $375.00)"
+    );
   };
-
+  useEffect(() => {
+    const adminToken = localStorage.getItem("adminToken");
+    if (!adminToken) {
+      navigate("/admin/login");
+    } else {
+      setAuthChecked(true);
+    }
+  }, [navigate]);
   // Loading state
   if (loading) {
     return (
@@ -218,7 +240,20 @@ const FamilyConstellationPage = () => {
       </div>
     );
   }
-
+  if (!authChecked) {
+    return (
+      <Layout>
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="flex items-center space-x-2">
+            <RefreshCw className="w-6 h-6 animate-spin text-[#6E2D79]" />
+            <span className="text-[#6E2D79] font-medium">
+              Verifying authentication...
+            </span>
+          </div>
+        </div>
+      </Layout>
+    );
+  }
   return (
     <Layout>
       <div className="w-full max-w-7xl mx-auto p-4 space-y-6">
@@ -229,9 +264,7 @@ const FamilyConstellationPage = () => {
               <h1 className="text-2xl lg:text-3xl font-bold text-[#6E2D79]">
                 Family Constellation Events
               </h1>
-              <p className="text-gray-600 mt-1">
-                Total Events: {totalEvents}
-              </p>
+              <p className="text-gray-600 mt-1">Total Events: {totalEvents}</p>
             </div>
 
             <div className="flex flex-col sm:flex-row gap-3">
@@ -258,7 +291,7 @@ const FamilyConstellationPage = () => {
                 placeholder="Search by location, organizer, status, or date..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
+                onKeyPress={(e) => e.key === "Enter" && handleSearch()}
                 className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#6E2D79] focus:border-transparent outline-none"
               />
             </div>
@@ -322,10 +355,7 @@ const FamilyConstellationPage = () => {
               </thead>
               <tbody className="divide-y divide-gray-200">
                 {events.map((event) => (
-                  <tr
-                    key={event._id}
-                    className="hover:bg-gray-50"
-                  >
+                  <tr key={event._id} className="hover:bg-gray-50">
                     <td className="px-4 py-4 text-sm font-medium text-[#5C2166]">
                       {event.event}
                     </td>
@@ -345,7 +375,11 @@ const FamilyConstellationPage = () => {
                       {event.price}
                     </td>
                     <td className="px-4 py-4 text-sm">
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(event.status)}`}>
+                      <span
+                        className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(
+                          event.status
+                        )}`}
+                      >
                         {event.status}
                       </span>
                     </td>
@@ -378,9 +412,7 @@ const FamilyConstellationPage = () => {
 
           {events.length === 0 && (
             <div className="text-center py-12">
-              <div className="text-gray-500 text-lg">
-                No events found
-              </div>
+              <div className="text-gray-500 text-lg">No events found</div>
               <p className="text-gray-400 mt-2">
                 Try adjusting your search criteria or add a new event
               </p>
@@ -465,14 +497,18 @@ const FamilyConstellationPage = () => {
                         Event Name
                       </label>
                       <input
-                        {...register("event", { required: "Event name is required" })}
+                        {...register("event", {
+                          required: "Event name is required",
+                        })}
                         className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#6E2D79] focus:border-transparent outline-none ${
                           errors.event ? "border-red-500" : "border-gray-300"
                         }`}
                         disabled
                       />
                       {errors.event && (
-                        <p className="mt-1 text-sm text-red-600">{errors.event.message}</p>
+                        <p className="mt-1 text-sm text-red-600">
+                          {errors.event.message}
+                        </p>
                       )}
                     </div>
 
@@ -482,9 +518,9 @@ const FamilyConstellationPage = () => {
                         Date (MMM DD, YYYY)
                       </label>
                       <input
-                        {...register("date", { 
+                        {...register("date", {
                           required: "Date is required",
-                          validate: validateDate
+                          validate: validateDate,
                         })}
                         placeholder="Aug 9, 2025"
                         className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#6E2D79] focus:border-transparent outline-none ${
@@ -492,7 +528,9 @@ const FamilyConstellationPage = () => {
                         }`}
                       />
                       {errors.date && (
-                        <p className="mt-1 text-sm text-red-600">{errors.date.message}</p>
+                        <p className="mt-1 text-sm text-red-600">
+                          {errors.date.message}
+                        </p>
                       )}
                     </div>
 
@@ -502,19 +540,21 @@ const FamilyConstellationPage = () => {
                         Location
                       </label>
                       <input
-                        {...register("location", { 
+                        {...register("location", {
                           required: "Location is required",
                           minLength: {
                             value: 3,
-                            message: "Location must be at least 3 characters"
-                          }
+                            message: "Location must be at least 3 characters",
+                          },
                         })}
                         className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#6E2D79] focus:border-transparent outline-none ${
                           errors.location ? "border-red-500" : "border-gray-300"
                         }`}
                       />
                       {errors.location && (
-                        <p className="mt-1 text-sm text-red-600">{errors.location.message}</p>
+                        <p className="mt-1 text-sm text-red-600">
+                          {errors.location.message}
+                        </p>
                       )}
                     </div>
 
@@ -524,19 +564,22 @@ const FamilyConstellationPage = () => {
                         Capacity
                       </label>
                       <input
-                        {...register("capacity", { 
+                        {...register("capacity", {
                           required: "Capacity is required",
                           pattern: {
                             value: /^\d+\sSeats?$/,
-                            message: "Capacity must be in format like '10 Seats'"
-                          }
+                            message:
+                              "Capacity must be in format like '10 Seats'",
+                          },
                         })}
                         className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#6E2D79] focus:border-transparent outline-none ${
                           errors.capacity ? "border-red-500" : "border-gray-300"
                         }`}
                       />
                       {errors.capacity && (
-                        <p className="mt-1 text-sm text-red-600">{errors.capacity.message}</p>
+                        <p className="mt-1 text-sm text-red-600">
+                          {errors.capacity.message}
+                        </p>
                       )}
                     </div>
 
@@ -546,19 +589,24 @@ const FamilyConstellationPage = () => {
                         Organizer Name
                       </label>
                       <input
-                        {...register("organisedby", { 
+                        {...register("organisedby", {
                           required: "Organizer name is required",
                           minLength: {
                             value: 3,
-                            message: "Organizer name must be at least 3 characters"
-                          }
+                            message:
+                              "Organizer name must be at least 3 characters",
+                          },
                         })}
                         className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#6E2D79] focus:border-transparent outline-none ${
-                          errors.organisedby ? "border-red-500" : "border-gray-300"
+                          errors.organisedby
+                            ? "border-red-500"
+                            : "border-gray-300"
                         }`}
                       />
                       {errors.organisedby && (
-                        <p className="mt-1 text-sm text-red-600">{errors.organisedby.message}</p>
+                        <p className="mt-1 text-sm text-red-600">
+                          {errors.organisedby.message}
+                        </p>
                       )}
                     </div>
 
@@ -569,19 +617,23 @@ const FamilyConstellationPage = () => {
                       </label>
                       <input
                         type="email"
-                        {...register("organiserEmail", { 
+                        {...register("organiserEmail", {
                           required: "Email is required",
                           pattern: {
                             value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                            message: "Invalid email address"
-                          }
+                            message: "Invalid email address",
+                          },
                         })}
                         className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#6E2D79] focus:border-transparent outline-none ${
-                          errors.organiserEmail ? "border-red-500" : "border-gray-300"
+                          errors.organiserEmail
+                            ? "border-red-500"
+                            : "border-gray-300"
                         }`}
                       />
                       {errors.organiserEmail && (
-                        <p className="mt-1 text-sm text-red-600">{errors.organiserEmail.message}</p>
+                        <p className="mt-1 text-sm text-red-600">
+                          {errors.organiserEmail.message}
+                        </p>
                       )}
                     </div>
 
@@ -591,16 +643,18 @@ const FamilyConstellationPage = () => {
                         Price
                       </label>
                       <input
-                        {...register("price", { 
+                        {...register("price", {
                           required: "Price is required",
-                          validate: validatePrice
+                          validate: validatePrice,
                         })}
                         className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#6E2D79] focus:border-transparent outline-none ${
                           errors.price ? "border-red-500" : "border-gray-300"
                         }`}
                       />
                       {errors.price && (
-                        <p className="mt-1 text-sm text-red-600">{errors.price.message}</p>
+                        <p className="mt-1 text-sm text-red-600">
+                          {errors.price.message}
+                        </p>
                       )}
                     </div>
 
@@ -611,19 +665,24 @@ const FamilyConstellationPage = () => {
                       </label>
                       <input
                         type="url"
-                        {...register("paymentLink", { 
+                        {...register("paymentLink", {
                           required: "Payment link is required",
                           pattern: {
-                            value: /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/,
-                            message: "Invalid URL format"
-                          }
+                            value:
+                              /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/,
+                            message: "Invalid URL format",
+                          },
                         })}
                         className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#6E2D79] focus:border-transparent outline-none ${
-                          errors.paymentLink ? "border-red-500" : "border-gray-300"
+                          errors.paymentLink
+                            ? "border-red-500"
+                            : "border-gray-300"
                         }`}
                       />
                       {errors.paymentLink && (
-                        <p className="mt-1 text-sm text-red-600">{errors.paymentLink.message}</p>
+                        <p className="mt-1 text-sm text-red-600">
+                          {errors.paymentLink.message}
+                        </p>
                       )}
                     </div>
 
@@ -633,7 +692,9 @@ const FamilyConstellationPage = () => {
                         Status
                       </label>
                       <select
-                        {...register("status", { required: "Status is required" })}
+                        {...register("status", {
+                          required: "Status is required",
+                        })}
                         className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#6E2D79] focus:border-transparent outline-none ${
                           errors.status ? "border-red-500" : "border-gray-300"
                         }`}
@@ -642,7 +703,9 @@ const FamilyConstellationPage = () => {
                         <option value="Closed">Closed</option>
                       </select>
                       {errors.status && (
-                        <p className="mt-1 text-sm text-red-600">{errors.status.message}</p>
+                        <p className="mt-1 text-sm text-red-600">
+                          {errors.status.message}
+                        </p>
                       )}
                     </div>
                   </div>
@@ -667,7 +730,9 @@ const FamilyConstellationPage = () => {
                       {isSubmitting ? (
                         <>
                           <RefreshCw className="w-4 h-4 animate-spin" />
-                          <span>{showAddModal ? "Adding..." : "Updating..."}</span>
+                          <span>
+                            {showAddModal ? "Adding..." : "Updating..."}
+                          </span>
                         </>
                       ) : (
                         <>
@@ -712,9 +777,12 @@ const FamilyConstellationPage = () => {
                 <div className="space-y-4">
                   <p className="text-gray-700">
                     Are you sure you want to delete the event on{" "}
-                    <span className="font-semibold">{eventToDelete.date}</span> at{" "}
-                    <span className="font-semibold">{eventToDelete.location}</span>?
-                    This action cannot be undone.
+                    <span className="font-semibold">{eventToDelete.date}</span>{" "}
+                    at{" "}
+                    <span className="font-semibold">
+                      {eventToDelete.location}
+                    </span>
+                    ? This action cannot be undone.
                   </p>
                 </div>
 

@@ -20,6 +20,8 @@ import {
   Link as LinkIcon,
   RefreshCw,
   AlertCircle,
+  Video,
+  Image,
 } from "lucide-react";
 import Layout from "../../components/layout/Layout";
 import decodeService from "../../components/services/decodeService";
@@ -27,7 +29,7 @@ import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 
 const DecodeAdminPage = () => {
-  const navigate = useNavigate(); // Added for redirection
+  const navigate = useNavigate();
   const [authChecked, setAuthChecked] = useState(false);
   const [programs, setPrograms] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -42,8 +44,28 @@ const DecodeAdminPage = () => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [expandedProgram, setExpandedProgram] = useState(null);
+  const [thumbnailPreview, setThumbnailPreview] = useState(null);
 
   const itemsPerPage = 10;
+
+  // Helper function to get thumbnail URL
+  const getThumbnailUrl = (thumbnail) => {
+    if (!thumbnail) return null;
+    
+    // Check if it's a data URL (local preview)
+    if (thumbnail.startsWith('data:')) {
+      return thumbnail;
+    }
+    
+    // Check if it's a full URL
+    if (thumbnail.startsWith('http')) {
+      return thumbnail;
+    }
+    
+    // Prepend base URL for server images
+    const baseUrl = 'https://api.ekaausa.com/uploads' || '';
+    return `${baseUrl}/${thumbnail.replace(/^\//, '')}`;
+  };
 
   // React Hook Form setup
   const {
@@ -58,6 +80,8 @@ const DecodeAdminPage = () => {
     defaultValues: {
       title: "",
       subtitle: "",
+      videoUrl: "",
+      thumbnail: null,
       duration: "",
       cardPoints: [""],
       learningSections: [{ title: "", points: [""] }],
@@ -123,6 +147,16 @@ const DecodeAdminPage = () => {
     }
   };
 
+  const validateVideoUrl = (value) => {
+    if (!value) return true; // Optional
+    try {
+      new URL(value);
+      return true;
+    } catch {
+      return "Invalid URL format";
+    }
+  };
+
   // Fetch programs
   const fetchPrograms = async () => {
     setLoading(true);
@@ -159,17 +193,33 @@ const DecodeAdminPage = () => {
   const onSubmit = async (data) => {
     try {
       setLoading(true);
+      
+      // Create FormData to handle file upload
+      const formData = new FormData();
+      
+      // Append all form data to FormData
+      Object.keys(data).forEach(key => {
+        if (key === 'thumbnail' && data[key]) {
+          formData.append('thumbnail', data.thumbnail);
+        } else if (Array.isArray(data[key])) {
+          formData.append(key, JSON.stringify(data[key]));
+        } else {
+          formData.append(key, data[key]);
+        }
+      });
+
       if (currentProgram) {
-        await decodeService.updateProgram(currentProgram._id, data);
+        await decodeService.updateProgram(currentProgram._id, formData);
         toast.success("Program updated successfully");
       } else {
-        await decodeService.createProgram(data);
+        await decodeService.createProgram(formData);
         toast.success("Program created successfully");
       }
 
       fetchPrograms();
       reset();
       setShowModal(false);
+      setThumbnailPreview(null);
     } catch (error) {
       toast.error(error || "Failed to save program");
       console.error("Form submission error:", error);
@@ -199,11 +249,20 @@ const DecodeAdminPage = () => {
     setCurrentProgram(program);
     setValue("title", program.title);
     setValue("subtitle", program.subtitle);
+    setValue("videoUrl", program.videoUrl || "");
     setValue("duration", program.duration);
     setValue("cardPoints", program.cardPoints || [""]);
     setValue("learningSections", program.learningSections);
     setValue("upcomingEvents", program.upcomingEvents);
     setValue("status", program.status);
+    
+    // Set thumbnail preview using helper function
+    if (program.thumbnail) {
+      setThumbnailPreview(getThumbnailUrl(program.thumbnail));
+    } else {
+      setThumbnailPreview(null);
+    }
+    
     setShowModal(true);
   };
 
@@ -213,6 +272,8 @@ const DecodeAdminPage = () => {
     reset({
       title: "",
       subtitle: "",
+      videoUrl: "",
+      thumbnail: null,
       duration: "",
       cardPoints: [""],
       learningSections: [{ title: "", points: [""] }],
@@ -228,6 +289,7 @@ const DecodeAdminPage = () => {
       ],
       status: "Open",
     });
+    setThumbnailPreview(null);
     setShowModal(true);
   };
 
@@ -331,6 +393,27 @@ const DecodeAdminPage = () => {
     }
   };
 
+  // Handle thumbnail change
+  const handleThumbnailChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setValue("thumbnail", file);
+      
+      // Create preview for UI
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setThumbnailPreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  // Remove thumbnail
+  const removeThumbnail = () => {
+    setValue("thumbnail", null);
+    setThumbnailPreview(null);
+  };
+
   useEffect(() => {
     const adminToken = localStorage.getItem("adminToken");
     if (!adminToken) {
@@ -339,6 +422,7 @@ const DecodeAdminPage = () => {
       setAuthChecked(true);
     }
   }, [navigate]);
+  
   // Loading state
   if (loading) {
     return (
@@ -537,6 +621,28 @@ const DecodeAdminPage = () => {
                           </span>
                         </p>
                       </div>
+                      
+                      {program.videoUrl && (
+                        <div className="flex items-center">
+                          <span className="bg-gray-100 text-[#6E2D79] p-2 rounded-lg mr-3">
+                            <Video className="w-5 h-5" />
+                          </span>
+                          <p>
+                            <span className="font-medium text-gray-700">
+                              Video:
+                            </span>{" "}
+                            <a
+                              href={program.videoUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-[#6E2D79] hover:underline"
+                            >
+                              Watch video
+                            </a>
+                          </p>
+                        </div>
+                      )}
+                      
                       <div>
                         <div className="flex items-center mb-2">
                           <span className="bg-gray-100 text-[#6E2D79] p-2 rounded-lg mr-3">
@@ -820,6 +926,81 @@ const DecodeAdminPage = () => {
                           {errors.subtitle.message}
                         </p>
                       )}
+                    </div>
+
+                    <div className="md:col-span-2">
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Video URL
+                      </label>
+                      <div className="relative">
+                        <Video className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                        <input
+                          {...register("videoUrl", {
+                            validate: validateVideoUrl
+                          })}
+                          className={`w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#6E2D79] focus:border-transparent outline-none ${
+                            errors.videoUrl ? "border-red-500" : "border-gray-300"
+                          }`}
+                          placeholder="https://youtube.com/watch?v=..."
+                        />
+                      </div>
+                      {errors.videoUrl && (
+                        <p className="mt-1 text-sm text-red-600">
+                          {errors.videoUrl.message}
+                        </p>
+                      )}
+                    </div>
+
+                    {/* Thumbnail Section */}
+                    <div className="md:col-span-2">
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Thumbnail Image
+                      </label>
+                      
+                      {thumbnailPreview ? (
+                        <div className="space-y-4">
+                          <div className="relative">
+                            <img
+                              src={getThumbnailUrl(thumbnailPreview)}
+                              alt="Thumbnail preview"
+                              className="max-w-xs rounded-lg border border-gray-300"
+                            />
+                            <button
+                              type="button"
+                              onClick={removeThumbnail}
+                              className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
+                            >
+                              <X className="w-4 h-4" />
+                            </button>
+                          </div>
+                          <p className="text-sm text-gray-500">Click to change</p>
+                        </div>
+                      ) : (
+                        <div className="flex items-center justify-center w-full">
+                          <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
+                            <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                              <Image className="w-8 h-8 mb-3 text-gray-400" />
+                              <p className="mb-2 text-sm text-gray-500">
+                                <span className="font-semibold">Click to upload</span> or drag and drop
+                              </p>
+                              <p className="text-xs text-gray-500">
+                                PNG, JPG, GIF (MAX. 5MB)
+                              </p>
+                            </div>
+                            <input 
+                              type="file" 
+                              className="hidden" 
+                              accept="image/*"
+                              onChange={handleThumbnailChange}
+                            />
+                          </label>
+                        </div>
+                      )}
+                      
+                      <input
+                        type="hidden"
+                        {...register("thumbnail")}
+                      />
                     </div>
 
                     {/* Card Points Section */}

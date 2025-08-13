@@ -102,7 +102,7 @@ const UpcomingSessions = ({ id, modal }) => {
       Date: "Sept 7, 2025",
       Location: "San Diego, CA",
       capacity: "6 Seats",
-      organisedby: "Dr Sonia Gupte's",
+      organisedby: "Dr Sonia Gupte",
       organiserEmail: "Sonia@enso-nia.com",
       status: "Open",
     },

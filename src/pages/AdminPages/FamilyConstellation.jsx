@@ -18,9 +18,9 @@ import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 
 const FamilyConstellationPage = () => {
-  const navigate = useNavigate(); // Added for redirection
+  const navigate = useNavigate();
   const [authChecked, setAuthChecked] = useState(false);
-  const [user, setUser] = useState(null); // Track user authentication state
+  const [user, setUser] = useState(null);
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -37,22 +37,19 @@ const FamilyConstellationPage = () => {
 
   const itemsPerPage = 5;
 
-  // Check for user authentication on component mount
   useEffect(() => {
     const token = localStorage.getItem("adminToken");
     if (token) {
-      setUser({ token }); // Set user as authenticated
+      setUser({ token });
     }
   }, []);
 
-  // React Hook Form setup
   const {
     register,
     handleSubmit,
     reset,
     formState: { errors, isSubmitting },
     setValue,
-    watch,
   } = useForm({
     defaultValues: {
       event: "Family Constellation",
@@ -64,10 +61,11 @@ const FamilyConstellationPage = () => {
       price: "",
       paymentLink: "",
       status: "Open",
+      facilitator: "",
+      externalLink: "",
     },
   });
 
-  // Fetch events
   const fetchEvents = async () => {
     setLoading(true);
     setError(null);
@@ -90,18 +88,15 @@ const FamilyConstellationPage = () => {
     }
   };
 
-  // Load events on component mount and when search/page changes
   useEffect(() => {
     fetchEvents();
   }, [searchTerm, currentPage]);
 
-  // Handle search
   const handleSearch = () => {
-    setCurrentPage(1); // Reset to first page when searching
+    setCurrentPage(1);
     fetchEvents();
   };
 
-  // Handle form submit (add/edit event)
   const onSubmit = async (data) => {
     try {
       const token = localStorage.getItem("adminToken");
@@ -118,7 +113,7 @@ const FamilyConstellationPage = () => {
         toast.success("Event updated successfully");
       }
 
-      fetchEvents(); // Refresh the list
+      fetchEvents();
       reset();
       setShowAddModal(false);
       setShowEditModal(false);
@@ -128,7 +123,6 @@ const FamilyConstellationPage = () => {
     }
   };
 
-  // Handle delete event
   const handleDeleteEvent = async () => {
     setIsDeleting(true);
     try {
@@ -140,7 +134,7 @@ const FamilyConstellationPage = () => {
 
       await familyEventService.deleteEvent(eventToDelete._id, token);
       toast.success("Event deleted successfully");
-      fetchEvents(); // Refresh the list
+      fetchEvents();
       setShowDeleteModal(false);
     } catch (error) {
       toast.error(error.message || "Failed to delete event");
@@ -150,7 +144,6 @@ const FamilyConstellationPage = () => {
     }
   };
 
-  // Open edit modal with event data
   const openEditModal = (event) => {
     setCurrentEvent(event);
     setValue("event", event.event);
@@ -162,16 +155,16 @@ const FamilyConstellationPage = () => {
     setValue("price", event.price);
     setValue("paymentLink", event.paymentLink);
     setValue("status", event.status);
+    setValue("facilitator", event.facilitator || "");
+    setValue("externalLink", event.externalLink || "");
     setShowEditModal(true);
   };
 
-  // Open add modal with empty form
   const openAddModal = () => {
     reset();
     setShowAddModal(true);
   };
 
-  // Status badge color
   const getStatusColor = (status) => {
     switch (status.toLowerCase()) {
       case "open":
@@ -183,7 +176,6 @@ const FamilyConstellationPage = () => {
     }
   };
 
-  // Date validation function
   const validateDate = (value) => {
     const dateRegex =
       /^(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s\d{1,2},\s\d{4}$/;
@@ -193,7 +185,6 @@ const FamilyConstellationPage = () => {
     );
   };
 
-  // Price validation function
   const validatePrice = (value) => {
     const priceRegex = /^\$\s?\d+(,\d{3})*(\.\d{2})?$/;
     return (
@@ -201,6 +192,7 @@ const FamilyConstellationPage = () => {
       "Price must be in currency format (e.g., $375 or $375.00)"
     );
   };
+
   useEffect(() => {
     const adminToken = localStorage.getItem("adminToken");
     if (!adminToken) {
@@ -209,7 +201,7 @@ const FamilyConstellationPage = () => {
       setAuthChecked(true);
     }
   }, [navigate]);
-  // Loading state
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-64">
@@ -221,7 +213,6 @@ const FamilyConstellationPage = () => {
     );
   }
 
-  // Error state
   if (error) {
     return (
       <div className="bg-red-50 border border-red-200 rounded-lg p-6">
@@ -240,6 +231,7 @@ const FamilyConstellationPage = () => {
       </div>
     );
   }
+
   if (!authChecked) {
     return (
       <Layout>
@@ -254,6 +246,7 @@ const FamilyConstellationPage = () => {
       </Layout>
     );
   }
+
   return (
     <Layout>
       <div className="w-full max-w-7xl mx-auto p-4 space-y-6">
@@ -335,6 +328,9 @@ const FamilyConstellationPage = () => {
                     Location
                   </th>
                   <th className="px-4 py-4 text-left text-sm font-semibold">
+                    Facilitator
+                  </th>
+                  <th className="px-4 py-4 text-left text-sm font-semibold">
                     Capacity
                   </th>
                   <th className="px-4 py-4 text-left text-sm font-semibold">
@@ -364,6 +360,9 @@ const FamilyConstellationPage = () => {
                     </td>
                     <td className="px-4 py-4 text-sm text-gray-900">
                       {event.location}
+                    </td>
+                    <td className="px-4 py-4 text-sm text-gray-900">
+                      {event.facilitator || "N/A"}
                     </td>
                     <td className="px-4 py-4 text-sm text-gray-900">
                       {event.capacity}
@@ -558,6 +557,18 @@ const FamilyConstellationPage = () => {
                       )}
                     </div>
 
+                    {/* Facilitator (Optional) */}
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Facilitator (Optional)
+                      </label>
+                      <input
+                        {...register("facilitator")}
+                        placeholder="Enter facilitator name"
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#6E2D79] focus:border-transparent outline-none"
+                      />
+                    </div>
+
                     {/* Capacity */}
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -710,6 +721,32 @@ const FamilyConstellationPage = () => {
                     </div>
                   </div>
 
+                  <div className="md:col-span-2">
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      External Link (Optional)
+                    </label>
+                    <input
+                      type="url"
+                      {...register("externalLink", {
+                        pattern: {
+                          value:
+                            /^(https?:\/\/)?([\da-z.-]+)\.([a-z]{2,})([\/\w \.\-?=&%\[\]]*)*\/?$/,
+                          message: "Invalid URL format",
+                        },
+                      })}
+                      placeholder="https://example.com"
+                      className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#6E2D79] focus:border-transparent outline-none ${
+                        errors.externalLink
+                          ? "border-red-500"
+                          : "border-gray-300"
+                      }`}
+                    />
+                    {errors.externalLink && (
+                      <p className="mt-1 text-sm text-red-600">
+                        {errors.externalLink.message}
+                      </p>
+                    )}
+                  </div>
                   <div className="flex justify-end space-x-3 mt-6">
                     <button
                       type="button"

@@ -13,7 +13,7 @@ import Layout from "../components/layout/Layout";
 import { useNavigate } from "react-router-dom";
 
 const FamilyConsultationTable = () => {
-  const navigate = useNavigate(); // Added for redirection
+  const navigate = useNavigate();
   const [authChecked, setAuthChecked] = useState(false);
   const [consultations, setConsultations] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -49,7 +49,6 @@ const FamilyConsultationTable = () => {
       url.searchParams.append("page", page);
       url.searchParams.append("limit", itemsPerPage);
 
-      // Add search and date filters if they exist
       if (searchTerm) url.searchParams.append("search", searchTerm);
       if (startDate) url.searchParams.append("startDate", startDate);
       if (endDate) url.searchParams.append("endDate", endDate);
@@ -75,7 +74,6 @@ const FamilyConsultationTable = () => {
     fetchConsultations();
   }, []);
 
-  // Format date with time
   const formatDateTime = (dateString) => {
     return new Date(dateString).toLocaleString("en-US", {
       year: "numeric",
@@ -86,18 +84,15 @@ const FamilyConsultationTable = () => {
     });
   };
 
-  // View consultation details
   const viewDetails = (consultation) => {
     setSelectedConsultation(consultation);
     setShowModal(true);
   };
 
-  // Handle download initiation
   const handleDownloadInitiate = () => {
     setShowDownloadModal(true);
   };
 
-  // Handle actual download
   const handleDownloadCSV = async () => {
     try {
       const params = new URLSearchParams();
@@ -122,7 +117,7 @@ const FamilyConsultationTable = () => {
       setError(`Download failed: ${error.message}`);
     }
   };
-  // Add this function near your other handler functions
+
   const handleDeleteConsultation = async () => {
     if (!consultationToDelete) return;
 
@@ -146,7 +141,6 @@ const FamilyConsultationTable = () => {
 
       const data = await response.json();
       if (data.success) {
-        // Refresh the data after successful deletion
         fetchConsultations(pagination.currentPage);
         setShowDeleteModal(false);
       } else {
@@ -159,7 +153,7 @@ const FamilyConsultationTable = () => {
       setIsDeleting(false);
     }
   };
-  // Clear filters
+
   const clearDateFilters = () => {
     setStartDate("");
     setEndDate("");
@@ -171,6 +165,7 @@ const FamilyConsultationTable = () => {
     setDownloadStartDate("");
     setDownloadEndDate("");
   };
+
   useEffect(() => {
     const adminToken = localStorage.getItem("adminToken");
     if (!adminToken) {
@@ -179,6 +174,7 @@ const FamilyConsultationTable = () => {
       setAuthChecked(true);
     }
   }, [navigate]);
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-64">
@@ -210,6 +206,7 @@ const FamilyConsultationTable = () => {
       </div>
     );
   }
+
   if (!authChecked) {
     return (
       <Layout>
@@ -224,6 +221,7 @@ const FamilyConsultationTable = () => {
       </Layout>
     );
   }
+
   return (
     <Layout>
       <div className="w-full max-w-7xl mx-auto p-4 space-y-6">
@@ -638,6 +636,10 @@ const FamilyConsultationTable = () => {
                       <p>
                         <span className="font-medium">Organizer Email:</span>{" "}
                         {selectedConsultation.organiserEmail}
+                      </p>
+                      <p>
+                        <span className="font-medium">Facilitator:</span>{" "}
+                        {selectedConsultation.facilitator || "Not specified"}
                       </p>
                     </div>
                   </div>

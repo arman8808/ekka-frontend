@@ -21,6 +21,8 @@ import {
   Link as LinkIcon,
   RefreshCw,
   AlertCircle,
+  Image as ImageIcon,
+  Video,
 } from "lucide-react";
 import Layout from "../../components/layout/Layout";
 import hypnotherapyService from "../../components/services/hypnotherapyService";
@@ -28,7 +30,7 @@ import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 
 const HypnotherapyPage = () => {
-   const navigate = useNavigate(); // Added for redirection
+  const navigate = useNavigate();
   const [authChecked, setAuthChecked] = useState(false);
   const [programs, setPrograms] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -43,6 +45,8 @@ const HypnotherapyPage = () => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [expandedProgram, setExpandedProgram] = useState(null);
+  const [thumbnailPreview, setThumbnailPreview] = useState(null);
+  const [thumbnailFile, setThumbnailFile] = useState(null);
 
   const itemsPerPage = 10;
 
@@ -60,7 +64,9 @@ const HypnotherapyPage = () => {
       title: "",
       subtitle: "",
       duration: "",
-      cardPoints: [""], // NEW: Added card points for card display
+      videoUrl: "",
+      thumbnail: "",
+      cardPoints: [""],
       learningSections: [{ title: "", points: [""] }],
       upcomingEvents: [{
         date: "",
@@ -116,6 +122,16 @@ const HypnotherapyPage = () => {
     }
   };
 
+  const validateVideoUrl = (value) => {
+    if (!value) return true; // Optional field
+    try {
+      new URL(value);
+      return true;
+    } catch {
+      return "Invalid URL format";
+    }
+  };
+
   // Fetch programs
   const fetchPrograms = async () => {
     setLoading(true);
@@ -148,20 +164,56 @@ const HypnotherapyPage = () => {
     fetchPrograms();
   };
 
+  // Handle thumbnail file change
+  const handleThumbnailChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setThumbnailFile(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setThumbnailPreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   // Handle form submit
   const onSubmit = async (data) => {
     try {
       setLoading(true);
+      
+      // Create FormData if we have a thumbnail file
+      let formData;
+      if (thumbnailFile) {
+        formData = new FormData();
+        formData.append('thumbnail', thumbnailFile);
+        
+        // Append all other fields
+        Object.keys(data).forEach(key => {
+          if (key !== 'thumbnail') {
+            if (Array.isArray(data[key])) {
+              formData.append(key, JSON.stringify(data[key]));
+            } else {
+              formData.append(key, data[key]);
+            }
+          }
+        });
+      }
+
       if (currentProgram) {
-        await hypnotherapyService.updateProgram(currentProgram._id, data);
+        const updateData = thumbnailFile ? formData : data;
+        await hypnotherapyService.updateProgram(currentProgram._id, updateData, thumbnailFile ? true : false);
         toast.success("Program updated successfully");
       } else {
-        await hypnotherapyService.createProgram(data);
+        const createData = thumbnailFile ? formData : data;
+        await hypnotherapyService.createProgram(createData, thumbnailFile ? true : false);
         toast.success("Program created successfully");
       }
       
       fetchPrograms();
       reset();
+      setThumbnailPreview(null);
+      setThumbnailFile(null);
       setShowModal(false);
     } catch (error) {
       toast.error(error || "Failed to save program");
@@ -193,10 +245,21 @@ const HypnotherapyPage = () => {
     setValue("title", program.title);
     setValue("subtitle", program.subtitle);
     setValue("duration", program.duration);
-    setValue("cardPoints", program.cardPoints || [""]); // NEW: Set card points
+    setValue("videoUrl", program.videoUrl || "");
+    setValue("thumbnail", program.thumbnail || "");
+    setValue("cardPoints", program.cardPoints || [""]);
     setValue("learningSections", program.learningSections);
     setValue("upcomingEvents", program.upcomingEvents);
     setValue("status", program.status);
+    
+    // Set thumbnail preview if exists
+    if (program.thumbnail) {
+      setThumbnailPreview(`https://api.ekaausa.com/uploads/${program.thumbnail}`);
+    } else {
+      setThumbnailPreview(null);
+    }
+    setThumbnailFile(null);
+    
     setShowModal(true);
   };
 
@@ -207,7 +270,9 @@ const HypnotherapyPage = () => {
       title: "",
       subtitle: "",
       duration: "",
-      cardPoints: [""], // NEW: Initialize card points
+      videoUrl: "",
+      thumbnail: "",
+      cardPoints: [""],
       learningSections: [{ title: "", points: [""] }],
       upcomingEvents: [
         {
@@ -221,6 +286,8 @@ const HypnotherapyPage = () => {
       ],
       status: "Open",
     });
+    setThumbnailPreview(null);
+    setThumbnailFile(null);
     setShowModal(true);
   };
 
@@ -241,13 +308,13 @@ const HypnotherapyPage = () => {
     }
   };
 
-  // NEW: Add a new card point
+  // Add a new card point
   const addCardPoint = () => {
     const currentPoints = watch("cardPoints") || [];
     setValue("cardPoints", [...currentPoints, ""]);
   };
 
-  // NEW: Remove a card point
+  // Remove a card point
   const removeCardPoint = (index) => {
     const currentPoints = watch("cardPoints") || [];
     if (currentPoints.length > 1) {
@@ -323,6 +390,7 @@ const HypnotherapyPage = () => {
       setValue("upcomingEvents", newEvents);
     }
   };
+
   useEffect(() => {
     const adminToken = localStorage.getItem('adminToken');
     if (!adminToken) {
@@ -331,6 +399,7 @@ const HypnotherapyPage = () => {
       setAuthChecked(true);
     }
   }, [navigate]);
+
   // Loading state
   if (loading) {
     return (
@@ -364,6 +433,7 @@ const HypnotherapyPage = () => {
       </div>
     );
   }
+
   if (!authChecked) {
     return (
       <Layout>
@@ -378,6 +448,7 @@ const HypnotherapyPage = () => {
       </Layout>
     );
   }
+
   return (
     <Layout>
       <div className="w-full max-w-7xl mx-auto p-4 space-y-6">
@@ -455,28 +526,38 @@ const HypnotherapyPage = () => {
                 className="p-5 cursor-pointer flex justify-between items-center bg-gray-50"
                 onClick={() => toggleExpand(program._id)}
               >
-                <div>
-                  <div className="flex items-center">
-                    <Star className="text-yellow-500 mr-2 w-5 h-5" />
-                    <h3 className="text-xl font-bold text-[#6E2D79]">
-                      {program.title}
-                    </h3>
-                  </div>
-                  <p className="text-gray-600 mt-1">{program.subtitle}</p>
-                  
-                  {/* NEW: Display card points in collapsed view */}
-                  {expandedProgram !== program._id && program.cardPoints && (
-                    <ul className="mt-3 space-y-1">
-                      {program.cardPoints.map((point, index) => (
-                        <li key={index} className="flex items-start text-gray-700">
-                          <span className="bg-gray-200 text-[#6E2D79] p-1 rounded-full mr-2 mt-1">
-                            <Check className="w-3 h-3" />
-                          </span>
-                          <span>{point}</span>
-                        </li>
-                      ))}
-                    </ul>
+                <div className="flex items-start space-x-4">
+                  {program.thumbnail && (
+                    <div className="flex-shrink-0">
+                      <img
+                        src={`https://api.ekaausa.com/uploads/${program.thumbnail}`}
+                        alt="Program thumbnail"
+                        className="w-16 h-16 object-cover rounded-lg"
+                      />
+                    </div>
                   )}
+                  <div>
+                    <div className="flex items-center">
+                      <Star className="text-yellow-500 mr-2 w-5 h-5" />
+                      <h3 className="text-xl font-bold text-[#6E2D79]">
+                        {program.title}
+                      </h3>
+                    </div>
+                    <p className="text-gray-600 mt-1">{program.subtitle}</p>
+                    
+                    {expandedProgram !== program._id && program.cardPoints && (
+                      <ul className="mt-3 space-y-1">
+                        {program.cardPoints.map((point, index) => (
+                          <li key={index} className="flex items-start text-gray-700">
+                            <span className="bg-gray-200 text-[#6E2D79] p-1 rounded-full mr-2 mt-1">
+                              <Check className="w-3 h-3" />
+                            </span>
+                            <span>{point}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
                 </div>
                 <div className="flex items-center space-x-4">
                   <span
@@ -526,6 +607,29 @@ const HypnotherapyPage = () => {
                           </span>
                         </p>
                       </div>
+                      
+                      {/* Video URL */}
+                      {program.videoUrl && (
+                        <div className="flex items-center">
+                          <span className="bg-gray-100 text-[#6E2D79] p-2 rounded-lg mr-3">
+                            <Video className="w-5 h-5" />
+                          </span>
+                          <p>
+                            <span className="font-medium text-gray-700">
+                              Video URL:
+                            </span>{" "}
+                            <a
+                              href={program.videoUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-[#6E2D79] hover:underline"
+                            >
+                              Watch Video
+                            </a>
+                          </p>
+                        </div>
+                      )}
+                      
                       <div>
                         <div className="flex items-center mb-2">
                           <span className="bg-gray-100 text-[#6E2D79] p-2 rounded-lg mr-3">
@@ -804,7 +908,75 @@ const HypnotherapyPage = () => {
                       )}
                     </div>
 
-                    {/* NEW: Card Points Section */}
+                    {/* Video URL */}
+                    <div className="md:col-span-2">
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Video URL (Optional)
+                      </label>
+                      <div className="relative">
+                        <Video className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-500" />
+                        <input
+                          {...register("videoUrl", {
+                            validate: validateVideoUrl
+                          })}
+                          className={`w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#6E2D79] focus:border-transparent outline-none ${
+                            errors.videoUrl ? "border-red-500" : "border-gray-300"
+                          }`}
+                          placeholder="https://youtube.com/example"
+                        />
+                      </div>
+                      {errors.videoUrl && (
+                        <p className="mt-1 text-sm text-red-600">
+                          {errors.videoUrl.message}
+                        </p>
+                      )}
+                    </div>
+
+                    {/* Thumbnail Upload */}
+                    <div className="md:col-span-2">
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Thumbnail Image
+                      </label>
+                      <div className="flex items-center space-x-4">
+                        <div className="relative">
+                          <label className="cursor-pointer">
+                            <div className="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors">
+                              <ImageIcon className="w-5 h-5" />
+                              <span>Choose File</span>
+                            </div>
+                            <input
+                              type="file"
+                              accept="image/*"
+                              onChange={handleThumbnailChange}
+                              className="hidden"
+                            />
+                          </label>
+                        </div>
+                        {thumbnailPreview && (
+                          <div className="flex-shrink-0">
+                            <img
+                              src={thumbnailPreview}
+                              alt="Thumbnail preview"
+                              className="w-16 h-16 object-cover rounded-lg"
+                            />
+                          </div>
+                        )}
+                        {!thumbnailPreview && currentProgram?.thumbnail && (
+                          <div className="flex-shrink-0">
+                            <img
+                              src={`https://api.ekaausa.com/uploads/${currentProgram.thumbnail}`}
+                              alt="Current thumbnail"
+                              className="w-16 h-16 object-cover rounded-lg"
+                            />
+                          </div>
+                        )}
+                      </div>
+                      <p className="mt-2 text-sm text-gray-500">
+                        Upload a thumbnail image for this program (optional)
+                      </p>
+                    </div>
+
+                    {/* Card Points Section */}
                     <div className="md:col-span-2">
                       <div className="flex items-center justify-between mb-1">
                         <label className="block text-sm font-medium text-gray-700">

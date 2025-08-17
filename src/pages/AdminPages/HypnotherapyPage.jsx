@@ -28,6 +28,8 @@ import Layout from "../../components/layout/Layout";
 import hypnotherapyService from "../../components/services/hypnotherapyService";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
+import RichTextEditor from "../../components/utils/RichTextEditor";
+
 
 const HypnotherapyPage = () => {
   const navigate = useNavigate();
@@ -63,21 +65,14 @@ const HypnotherapyPage = () => {
     defaultValues: {
       title: "",
       subtitle: "",
-      duration: "",
       videoUrl: "",
-      thumbnail: "",
+      thumbnail: null,
+      duration: "",
       cardPoints: [""],
-      learningSections: [{ title: "", points: [""] }],
-      upcomingEvents: [{
-        date: "",
-        eventName: "",
-        location: "",
-        organiser: "",
-        price: "",
-        paymentLink: "",
-      }],
+      learningSections: [{ title: "", content: "" }],
+      upcomingEvents: [],
       status: "Open",
-    }
+    },
   });
   
   // Validation functions
@@ -86,19 +81,60 @@ const HypnotherapyPage = () => {
     return sections[sectionIndex].title.trim() !== "" || "Section title is required";
   };
   
-  const validateSectionPoint = (value, sectionIndex, pointIndex) => {
+  const validateSectionContent = (value, sectionIndex) => {
     const sections = watch("learningSections");
-    return sections[sectionIndex].points[pointIndex].trim() !== "" || "Learning point is required";
+    return sections[sectionIndex].content.trim() !== "" || "Content is required";
   };
 
-  const validateCardPoint = (value, index) => {
-    const points = watch("cardPoints");
-    return points[index].trim() !== "" || "Card point is required";
+  const validateCardPoint = (value) => {
+    const cardPoint = watch("cardPoints.0");
+    // Remove HTML tags and check if content exists
+    const textContent = cardPoint?.replace(/<[^>]*>/g, '').trim();
+    return textContent !== "" || "Card point is required";
   };
 
-  const validateEventDate = (value, eventIndex) => {
+  const validateEventStartDate = (value, eventIndex) => {
     const events = watch("upcomingEvents");
-    return events[eventIndex].date.trim() !== "" || "Date is required";
+    const event = events[eventIndex];
+    
+    // If any other field in this event has content, start date becomes required
+    if (event.eventName || event.location || event.organiser || event.price || event.paymentLink || event.endDate) {
+      return value.trim() !== "" || "Start date and time is required when adding an event";
+    }
+    
+    // If no other fields have content, start date is optional
+    return true;
+  };
+
+  const validateEventEndDate = (value, eventIndex) => {
+    const events = watch("upcomingEvents");
+    const event = events[eventIndex];
+    
+    // If any other field in this event has content, end date becomes required
+    if (event.startDate || event.eventName || event.location || event.organiser || event.price || event.paymentLink) {
+      if (!event.startDate) {
+        return "Start date is required before setting end date";
+      }
+      
+      if (!value) {
+        return "End date and time is required when adding an event";
+      }
+      
+      const startDate = new Date(event.startDate);
+      const endDate = new Date(value);
+      
+      if (endDate <= startDate) {
+        return "End date must be after start date";
+      }
+    }
+    
+    // If no other fields have content, end date is optional
+    return true;
+  };
+
+  // Helper function to check if an event has any content
+  const hasEventContent = (event) => {
+    return !!(event.startDate || event.endDate || event.eventName || event.location || event.organiser || event.price || event.paymentLink);
   };
 
   const validatePrice = (value, eventIndex) => {
@@ -192,12 +228,26 @@ const HypnotherapyPage = () => {
         Object.keys(data).forEach(key => {
           if (key !== 'thumbnail') {
             if (Array.isArray(data[key])) {
-              formData.append(key, JSON.stringify(data[key]));
+              if (key === 'upcomingEvents') {
+                // Filter out empty events before sending
+                const filteredEvents = data[key].filter(event => hasEventContent(event));
+                formData.append(key, JSON.stringify(filteredEvents));
+              } else if (key === 'cardPoints') {
+                // For cardPoints, we need to handle HTML content properly
+                formData.append(key, JSON.stringify(data[key]));
+              } else {
+                formData.append(key, JSON.stringify(data[key]));
+              }
             } else {
               formData.append(key, data[key]);
             }
           }
         });
+      }
+
+      // Filter out empty events if no thumbnail file
+      if (!thumbnailFile && data.upcomingEvents) {
+        data.upcomingEvents = data.upcomingEvents.filter(event => hasEventContent(event));
       }
 
       if (currentProgram) {
@@ -241,26 +291,204 @@ const HypnotherapyPage = () => {
 
   // Open edit modal with program data
   const openEditModal = (program) => {
-    setCurrentProgram(program);
-    setValue("title", program.title);
-    setValue("subtitle", program.subtitle);
-    setValue("duration", program.duration);
-    setValue("videoUrl", program.videoUrl || "");
-    setValue("thumbnail", program.thumbnail || "");
-    setValue("cardPoints", program.cardPoints || [""]);
-    setValue("learningSections", program.learningSections);
-    setValue("upcomingEvents", program.upcomingEvents);
-    setValue("status", program.status);
-    
-    // Set thumbnail preview if exists
-    if (program.thumbnail) {
-      setThumbnailPreview(`https://api.ekaausa.com/uploads/${program.thumbnail}`);
-    } else {
-      setThumbnailPreview(null);
+    try {
+      console.log("=== openEditModal called ===");
+      console.log("Program data:", program);
+      console.log("Current showModal state:", showModal);
+      console.log("Current currentProgram state:", currentProgram);
+      
+      // Set current program first
+      setCurrentProgram(program);
+      console.log("setCurrentProgram called");
+      
+      // Set basic form values with error handling
+      try {
+        setValue("title", program.title || "");
+        setValue("subtitle", program.subtitle || "");
+        setValue("videoUrl", program.videoUrl || "");
+        setValue("duration", program.duration || "");
+        setValue("status", program.status || "Open");
+      } catch (error) {
+        console.error("Error setting basic form values:", error);
+      }
+      
+      // Handle card points with error handling
+      try {
+        if (Array.isArray(program.cardPoints) && program.cardPoints.length > 0) {
+          const cardPointsHtml = program.cardPoints.map(point => `<li>${point}</li>`).join('');
+          setValue("cardPoints", [`<ul>${cardPointsHtml}</ul>`]);
+        } else {
+          setValue("cardPoints", [""]);
+        }
+      } catch (error) {
+        console.error("Error setting card points:", error);
+        setValue("cardPoints", [""]);
+      }
+      
+      // Handle learning sections with error handling
+      try {
+        const convertedSections = program.learningSections?.map(section => {
+          if (section.points && Array.isArray(section.points)) {
+            return {
+              title: section.title || "",
+              content: `<ul>${section.points.map(point => `<li>${point}</li>`).join('')}</ul>`
+            };
+          }
+          return {
+            title: section.title || "",
+            content: section.content || ""
+          };
+        }) || [{ title: "", content: "" }];
+        
+        setValue("learningSections", convertedSections);
+      } catch (error) {
+        console.error("Error setting learning sections:", error);
+        setValue("learningSections", [{ title: "", content: "" }]);
+      }
+      
+      // Handle upcoming events with error handling
+      try {
+        const convertedEvents = program.upcomingEvents?.map(event => {
+          console.log("Processing event:", event);
+          
+          // If event already has startDate and endDate, convert them to datetime-local format
+          if (event.startDate && event.endDate) {
+            try {
+              console.log("Event has startDate/endDate:", event.startDate, event.endDate);
+              
+              // Convert to datetime-local format (YYYY-MM-DDTHH:MM)
+              const startDate = new Date(event.startDate);
+              const endDate = new Date(event.endDate);
+              
+              const formattedStartDate = startDate.toISOString().slice(0, 16);
+              const formattedEndDate = endDate.toISOString().slice(0, 16);
+              
+              console.log("Formatted dates:", formattedStartDate, formattedEndDate);
+              
+              return {
+                ...event,
+                startDate: formattedStartDate,
+                endDate: formattedEndDate
+              };
+            } catch (dateError) {
+              console.error("Error formatting existing dates:", dateError);
+              return {
+                ...event,
+                startDate: "",
+                endDate: ""
+              };
+            }
+          }
+          
+          // If event has old date format, convert it
+          if (event.date && !event.startDate) {
+            try {
+              console.log("Converting old date format:", event.date);
+              const eventDate = new Date(event.date);
+              const endDate = new Date(eventDate);
+              endDate.setHours(eventDate.getHours() + 2);
+              
+              const formattedStartDate = eventDate.toISOString().slice(0, 16);
+              const formattedEndDate = endDate.toISOString().slice(0, 16);
+              
+              console.log("Converted old format dates:", formattedStartDate, formattedEndDate);
+              
+              const convertedEvent = {
+                ...event,
+                startDate: formattedStartDate,
+                endDate: formattedEndDate,
+                date: undefined
+              };
+              console.log("Converted event:", convertedEvent);
+              return convertedEvent;
+            } catch (dateError) {
+              console.error("Error converting date:", dateError);
+              return {
+                ...event,
+                startDate: "",
+                endDate: ""
+              };
+            }
+          }
+          
+          // If event has no dates, create empty ones
+          if (!event.startDate && !event.endDate && !event.date) {
+            console.log("Event has no dates, creating empty ones");
+            return {
+              ...event,
+              startDate: "",
+              endDate: ""
+            };
+          }
+          
+          // If event has partial dates, ensure both are set
+          if (event.startDate && !event.endDate) {
+            try {
+              const startDate = new Date(event.startDate);
+              const endDate = new Date(startDate);
+              endDate.setHours(startDate.getHours() + 2);
+              
+              return {
+                ...event,
+                startDate: startDate.toISOString().slice(0, 16),
+                endDate: endDate.toISOString().slice(0, 16)
+              };
+            } catch (dateError) {
+              console.error("Error handling partial dates:", dateError);
+              return {
+                ...event,
+                startDate: "",
+                endDate: ""
+              };
+            }
+          }
+          
+          return event;
+        }) || [];
+        
+        console.log("Final converted events:", convertedEvents);
+        setValue("upcomingEvents", convertedEvents);
+        
+        // Debug: Check what was actually set in the form
+        setTimeout(() => {
+          const formEvents = watch("upcomingEvents");
+          console.log("Form events after setValue:", formEvents);
+          console.log("Form events startDate values:", formEvents?.map(e => e.startDate));
+          console.log("Form events endDate values:", formEvents?.map(e => e.endDate));
+        }, 100);
+      } catch (error) {
+        console.error("Error setting upcoming events:", error);
+        setValue("upcomingEvents", []);
+      }
+      
+      // Handle thumbnail with error handling
+      try {
+        if (program.thumbnail) {
+          setThumbnailPreview(getThumbnailUrl(program.thumbnail));
+        } else {
+          setThumbnailPreview(null);
+        }
+      } catch (error) {
+        console.error("Error setting thumbnail:", error);
+        setThumbnailPreview(null);
+      }
+      
+      console.log("About to set showModal to true");
+      setShowModal(true);
+      console.log("setShowModal(true) called");
+      
+      // Check state after a short delay
+      setTimeout(() => {
+        console.log("After timeout - showModal should be true");
+        console.log("Current showModal state:", showModal);
+      }, 100);
+      
+    } catch (error) {
+      console.error("Critical error in openEditModal:", error);
+      // Even if there's an error, try to open the modal with basic data
+      setCurrentProgram(program);
+      setShowModal(true);
     }
-    setThumbnailFile(null);
-    
-    setShowModal(true);
   };
 
   // Open add modal
@@ -273,17 +501,8 @@ const HypnotherapyPage = () => {
       videoUrl: "",
       thumbnail: "",
       cardPoints: [""],
-      learningSections: [{ title: "", points: [""] }],
-      upcomingEvents: [
-        {
-          date: "",
-          eventName: "",
-          location: "",
-          organiser: "",
-          price: "",
-          paymentLink: "",
-        },
-      ],
+      learningSections: [{ title: "", content: "" }],
+      upcomingEvents: [],
       status: "Open",
     });
     setThumbnailPreview(null);
@@ -294,6 +513,18 @@ const HypnotherapyPage = () => {
   // Toggle program expansion
   const toggleExpand = (id) => {
     setExpandedProgram(expandedProgram === id ? null : id);
+  };
+
+  // Helper function to strip HTML tags
+  const stripHtmlTags = (html) => {
+    if (!html) return "";
+    return html.replace(/<[^>]*>/g, '').trim();
+  };
+
+  // Helper function to get thumbnail URL
+  const getThumbnailUrl = (thumbnail) => {
+    if (!thumbnail) return null;
+    return `https://api.ekaausa.com/uploads/${thumbnail}`;
   };
 
   // Status badge color
@@ -308,34 +539,18 @@ const HypnotherapyPage = () => {
     }
   };
 
-  // Add a new card point
-  const addCardPoint = () => {
-    const currentPoints = watch("cardPoints") || [];
-    setValue("cardPoints", [...currentPoints, ""]);
-  };
-
-  // Remove a card point
-  const removeCardPoint = (index) => {
-    const currentPoints = watch("cardPoints") || [];
-    if (currentPoints.length > 1) {
-      const newPoints = [...currentPoints];
-      newPoints.splice(index, 1);
-      setValue("cardPoints", newPoints);
-    }
-  };
-
   // Add a new learning section
   const addLearningSection = async () => {
     const currentSections = watch("learningSections") || [];
     setValue("learningSections", [
       ...currentSections,
-      { title: "", points: [""] },
+      { title: "", content: "" },
     ]);
-    
+
     // Trigger validation for new section
     setTimeout(() => {
       trigger(`learningSections.${currentSections.length}.title`);
-      trigger(`learningSections.${currentSections.length}.points.0`);
+      trigger(`learningSections.${currentSections.length}.content`);
     }, 100);
   };
 
@@ -349,29 +564,14 @@ const HypnotherapyPage = () => {
     }
   };
 
-  // Add a new learning point to a section
-  const addLearningPoint = (sectionIndex) => {
-    const currentSections = [...watch("learningSections")];
-    currentSections[sectionIndex].points.push("");
-    setValue("learningSections", currentSections);
-  };
-
-  // Remove a learning point from a section
-  const removeLearningPoint = (sectionIndex, pointIndex) => {
-    const currentSections = [...watch("learningSections")];
-    if (currentSections[sectionIndex].points.length > 1) {
-      currentSections[sectionIndex].points.splice(pointIndex, 1);
-      setValue("learningSections", currentSections);
-    }
-  };
-
   // Add a new upcoming event
   const addUpcomingEvent = () => {
     const currentEvents = watch("upcomingEvents") || [];
     setValue("upcomingEvents", [
       ...currentEvents,
       {
-        date: "",
+        startDate: "",
+        endDate: "",
         eventName: "",
         location: "",
         organiser: "",
@@ -384,7 +584,7 @@ const HypnotherapyPage = () => {
   // Remove an upcoming event
   const removeUpcomingEvent = (index) => {
     const currentEvents = watch("upcomingEvents") || [];
-    if (currentEvents.length > 1) {
+    if (currentEvents.length > 0) {
       const newEvents = [...currentEvents];
       newEvents.splice(index, 1);
       setValue("upcomingEvents", newEvents);
@@ -399,6 +599,12 @@ const HypnotherapyPage = () => {
       setAuthChecked(true);
     }
   }, [navigate]);
+
+  // Monitor modal state changes for debugging
+  useEffect(() => {
+    console.log("Modal state changed - showModal:", showModal);
+    console.log("Current program:", currentProgram);
+  }, [showModal, currentProgram]);
 
   // Loading state
   if (loading) {
@@ -425,7 +631,7 @@ const HypnotherapyPage = () => {
         <p className="text-red-700 mb-4">{error}</p>
         <button
           onClick={fetchPrograms}
-          className="bg-[#6E2D79] text-white px-4 py-2 rounded-lg hover:bg-[#5C2166] transition-colors flex items-center space-x-2"
+          className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors flex items-center space-x-2"
         >
           <RefreshCw className="w-4 h-4" />
           <span>Retry</span>
@@ -451,6 +657,29 @@ const HypnotherapyPage = () => {
 
   return (
     <Layout>
+      {/* Custom CSS for lists and modal */}
+      <style jsx>{`
+        .prose ul {
+          list-style-type: disc !important;
+          margin-left: 20px !important;
+          margin-top: 8px !important;
+          margin-bottom: 8px !important;
+        }
+        .prose ol {
+          list-style-type: decimal !important;
+          margin-left: 20px !important;
+          margin-top: 8px !important;
+          margin-bottom: 8px !important;
+        }
+        .prose li {
+          margin-bottom: 4px !important;
+          padding-left: 4px !important;
+        }
+        .prose p {
+          margin-bottom: 8px !important;
+        }
+      `}</style>
+      
       <div className="w-full max-w-7xl mx-auto p-4 space-y-6">
         {/* Header */}
         <div className="bg-white rounded-lg shadow-lg p-6">
@@ -515,6 +744,8 @@ const HypnotherapyPage = () => {
           </div>
         </div>
 
+      
+
         {/* Programs List */}
         <div className="space-y-6">
           {programs.map((program) => (
@@ -545,17 +776,18 @@ const HypnotherapyPage = () => {
                     </div>
                     <p className="text-gray-600 mt-1">{program.subtitle}</p>
                     
+                    {/* Display card points in collapsed view */}
                     {expandedProgram !== program._id && program.cardPoints && (
-                      <ul className="mt-3 space-y-1">
-                        {program.cardPoints.map((point, index) => (
-                          <li key={index} className="flex items-start text-gray-700">
-                            <span className="bg-gray-200 text-[#6E2D79] p-1 rounded-full mr-2 mt-1">
-                              <Check className="w-3 h-3" />
-                            </span>
-                            <span>{point}</span>
-                          </li>
-                        ))}
-                      </ul>
+                      <div className="mt-3">
+                        <div 
+                          className="prose max-w-none text-gray-700"
+                          dangerouslySetInnerHTML={{ 
+                            __html: Array.isArray(program.cardPoints) 
+                              ? program.cardPoints[0] || '' 
+                              : program.cardPoints || '' 
+                          }} 
+                        />
+                      </div>
                     )}
                   </div>
                 </div>
@@ -639,23 +871,48 @@ const HypnotherapyPage = () => {
                             Learning Objectives:
                           </p>
                         </div>
-                        <ul className="ml-9 space-y-2">
+                        <div className="ml-9 space-y-4">
                           {program.learningSections.map((section, sectionIdx) => (
-                            <React.Fragment key={sectionIdx}>
-                              <li className="font-semibold text-[#6E2D79]">
+                            <div key={sectionIdx}>
+                              <h5 className="font-semibold text-[#6E2D79] mb-2">
                                 {section.title}
-                              </li>
-                              {section.points.map((point, pointIdx) => (
-                                <li key={pointIdx} className="flex items-start ml-4">
-                                  <span className="bg-gray-200 text-[#6E2D79] p-1 rounded-full mr-2 mt-1">
-                                    <Check className="w-4 h-4" />
-                                  </span>
-                                  <span className="text-gray-700">{point}</span>
-                                </li>
-                              ))}
-                            </React.Fragment>
+                              </h5>
+                              <div 
+                                className="prose max-w-none text-gray-700"
+                                dangerouslySetInnerHTML={{ __html: section.content }} 
+                              />
+                            </div>
                           ))}
-                        </ul>
+                        </div>
+                      </div>
+                      
+                      {/* Card Points Display */}
+                      <div>
+                        <div className="flex items-center mb-2">
+                          <span className="bg-gray-100 text-[#6E2D79] p-2 rounded-lg mr-3">
+                            <Check className="w-5 h-5" />
+                          </span>
+                          <p className="font-medium text-gray-700">
+                            Key Points:
+                          </p>
+                        </div>
+                        <div className="ml-9 space-y-3">
+                          {program.cardPoints.map((point, pointIdx) => {
+                            console.log(`Card Point ${pointIdx}:`, point);
+                            console.log(`Card Point ${pointIdx} HTML:`, point);
+                            return (
+                              <div key={pointIdx} className="bg-gray-50 p-3 rounded-lg">
+                                                              <div 
+                                className="prose max-w-none text-gray-700"
+                                style={{
+                                  lineHeight: '1.6'
+                                }}
+                                dangerouslySetInnerHTML={{ __html: point }} 
+                              />
+                              </div>
+                            );
+                          })}
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -680,9 +937,24 @@ const HypnotherapyPage = () => {
                               <h5 className="font-bold text-[#6E2D79]">
                                 {upcoming.eventName}
                               </h5>
-                              <span className="bg-gray-100 text-[#6E2D79] px-3 py-1 rounded-lg text-sm font-medium">
-                                {upcoming.date}
-                              </span>
+                                                             <div className="flex flex-col space-y-1">
+                                 <span className="bg-gray-100 text-[#6E2D79] px-3 py-1 rounded-lg text-sm font-medium">
+                                   {new Date(upcoming.startDate).toLocaleDateString('en-US', { 
+                                     month: 'short', 
+                                     day: 'numeric', 
+                                     year: 'numeric' 
+                                   })}
+                                 </span>
+                                 <span className="text-xs text-gray-600">
+                                   {new Date(upcoming.startDate).toLocaleTimeString('en-US', { 
+                                     hour: '2-digit', 
+                                     minute: '2-digit' 
+                                   })} - {new Date(upcoming.endDate).toLocaleTimeString('en-US', { 
+                                     hour: '2-digit', 
+                                     minute: '2-digit' 
+                                   })}
+                                 </span>
+                               </div>
                             </div>
                             <div className="mt-4 space-y-3">
                               <div className="flex items-center">
@@ -752,7 +1024,15 @@ const HypnotherapyPage = () => {
                   {/* Actions */}
                   <div className="flex justify-end space-x-4 pt-6 border-t border-gray-200">
                     <button
-                      onClick={() => openEditModal(program)}
+                      onClick={() => {
+                        console.log("=== Edit button clicked ===");
+                        console.log("Program being edited:", program);
+                        console.log("Program ID:", program._id);
+                        console.log("Program title:", program.title);
+                        console.log("About to call openEditModal");
+                        openEditModal(program);
+                        console.log("openEditModal called");
+                      }}
                       className="bg-[#6E2D79] text-white px-4 py-2 rounded-lg hover:bg-[#5C2166] transition-colors flex items-center space-x-2"
                     >
                       <Edit className="w-4 h-4" />
@@ -839,8 +1119,8 @@ const HypnotherapyPage = () => {
         {/* Add/Edit Program Modal */}
         {showModal && (
           <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-            <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-              <div className="sticky top-0 bg-[#6E2D79] text-white p-6 rounded-t-lg">
+            <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] flex flex-col">
+              <div className="bg-[#6E2D79] text-white p-6 rounded-t-lg flex-shrink-0">
                 <div className="flex items-center justify-between">
                   <h2 className="text-xl font-bold">
                     {currentProgram
@@ -848,16 +1128,19 @@ const HypnotherapyPage = () => {
                       : "Add New Hypnotherapy Program"}
                   </h2>
                   <button
-                    onClick={() => setShowModal(false)}
+                    onClick={() => {
+                      console.log("Closing modal");
+                      setShowModal(false);
+                    }}
                     className="text-white hover:text-gray-200 text-2xl"
                   >
                     ×
                   </button>
                 </div>
               </div>
-
-              <div className="p-6 space-y-6">
-                <form onSubmit={handleSubmit(onSubmit)}>
+              
+              <div className="flex-1 overflow-y-auto">
+                <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-6">
                   {/* Program Title and Subtitle */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="md:col-span-2">
@@ -978,59 +1261,22 @@ const HypnotherapyPage = () => {
 
                     {/* Card Points Section */}
                     <div className="md:col-span-2">
-                      <div className="flex items-center justify-between mb-1">
-                        <label className="block text-sm font-medium text-gray-700">
-                          Card Points (For Display) *
-                        </label>
-                        <button
-                          type="button"
-                          onClick={addCardPoint}
-                          className="text-sm bg-gray-100 text-gray-700 px-3 py-1 rounded-lg hover:bg-gray-200"
-                        >
-                          Add Point
-                        </button>
-                      </div>
-                      
-                      <div className="space-y-3">
-                        {watch("cardPoints")?.map((_, index) => (
-                          <div key={index} className="flex items-start space-x-3">
-                            <div className="flex-1">
-                              <div className="flex items-center">
-                                <div className="bg-gray-100 text-[#6E2D79] p-2 rounded-lg mr-3">
-                                  <Check className="w-4 h-4" />
-                                </div>
-                                <input
-                                  {...register(`cardPoints.${index}`, {
-                                    required: "Card point is required",
-                                    minLength: {
-                                      value: 5,
-                                      message: "Point must be at least 5 characters"
-                                    },
-                                    validate: (value) => validateCardPoint(value, index)
-                                  })}
-                                  className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#6E2D79] focus:border-transparent outline-none ${
-                                    errors.cardPoints?.[index] ? "border-red-500" : "border-gray-300"
-                                  }`}
-                                  placeholder="Short point for card display..."
-                                />
-                              </div>
-                              {errors.cardPoints?.[index] && (
-                                <p className="mt-1 text-sm text-red-600 ml-10">
-                                  {errors.cardPoints[index].message}
-                                </p>
-                              )}
-                            </div>
-                            <button
-                              type="button"
-                              onClick={() => removeCardPoint(index)}
-                              className="mt-3 text-red-500 hover:text-red-700"
-                              disabled={watch("cardPoints")?.length <= 1}
-                            >
-                              <X className="w-5 h-5" />
-                            </button>
-                          </div>
-                        ))}
-                      </div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Card Points (For Display) *
+                      </label>
+                      <RichTextEditor
+                        value={watch("cardPoints.0") || ""}
+                        onChange={(html) => {
+                          setValue("cardPoints.0", html);
+                          trigger("cardPoints.0");
+                        }}
+                        placeholder="Enter card points for display (you can create bullet points, numbered lists, etc.)"
+                      />
+                      {errors.cardPoints?.[0] && (
+                        <p className="mt-1 text-sm text-red-600">
+                          {errors.cardPoints[0].message}
+                        </p>
+                      )}
                     </div>
 
                     <div>
@@ -1151,73 +1397,23 @@ const HypnotherapyPage = () => {
                               </button>
                             </div>
 
-                            <div className="space-y-4 ml-4">
-                              <div className="flex items-center justify-between">
-                                <h4 className="text-sm font-medium text-gray-700">
-                                  Learning Points *
-                                </h4>
-                                <button
-                                  type="button"
-                                  onClick={() => addLearningPoint(sectionIndex)}
-                                  className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded hover:bg-gray-200"
-                                >
-                                  Add Point
-                                </button>
-                              </div>
-
-                              {section.points?.map((_, pointIndex) => (
-                                <div
-                                  key={pointIndex}
-                                  className="flex items-start space-x-3"
-                                >
-                                  <div className="flex-1">
-                                    <div className="flex items-center">
-                                      <div className="bg-gray-100 text-[#6E2D79] p-2 rounded-lg mr-3">
-                                        <Check className="w-4 h-4" />
-                                      </div>
-                                      <input
-                                        {...register(
-                                          `learningSections.${sectionIndex}.points.${pointIndex}`,
-                                          {
-                                            required: "Learning point is required",
-                                            minLength: {
-                                              value: 5,
-                                              message: "Point must be at least 5 characters"
-                                            },
-                                            validate: (value) => 
-                                              validateSectionPoint(value, sectionIndex, pointIndex)
-                                          }
-                                        )}
-                                        className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#6E2D79] focus:border-transparent outline-none ${
-                                          errors.learningSections?.[
-                                            sectionIndex
-                                          ]?.points?.[pointIndex]
-                                            ? "border-red-500"
-                                            : "border-gray-300"
-                                        }`}
-                                        placeholder="What participants will learn..."
-                                      />
-                                    </div>
-                                    {errors.learningSections?.[sectionIndex]
-                                      ?.points?.[pointIndex] && (
-                                      <p className="mt-1 text-sm text-red-600 ml-10">
-                                        {
-                                          errors.learningSections[sectionIndex]
-                                            .points[pointIndex].message
-                                        }
-                                      </p>
-                                    )}
-                                  </div>
-                                  <button
-                                    type="button"
-                                    onClick={() => removeLearningPoint(sectionIndex, pointIndex)}
-                                    className="mt-3 text-red-500 hover:text-red-700"
-                                    disabled={section.points.length <= 1}
-                                  >
-                                    <X className="w-5 h-5" />
-                                  </button>
-                                </div>
-                              ))}
+                            <div className="mt-4">
+                              <label className="block text-sm font-medium text-gray-700 mb-1">
+                                Content *
+                              </label>
+                              <RichTextEditor
+                                value={section.content || ""}
+                                onChange={(html) => {
+                                  setValue(`learningSections.${sectionIndex}.content`, html);
+                                  trigger(`learningSections.${sectionIndex}.content`);
+                                }}
+                                placeholder="Enter section content..."
+                              />
+                              {errors.learningSections?.[sectionIndex]?.content && (
+                                <p className="mt-1 text-sm text-red-600">
+                                  {errors.learningSections[sectionIndex].content.message}
+                                </p>
+                              )}
                             </div>
                           </div>
                         )
@@ -1230,7 +1426,7 @@ const HypnotherapyPage = () => {
                     <div className="flex items-center justify-between border-b border-gray-200 pb-3">
                       <h3 className="text-lg font-semibold text-[#6E2D79] flex items-center">
                         <Calendar className="mr-2 w-5 h-5 text-[#6E2D79]" />
-                        Upcoming Events
+                        Upcoming Events (Optional)
                       </h3>
                       <button
                         type="button"
@@ -1241,8 +1437,19 @@ const HypnotherapyPage = () => {
                       </button>
                     </div>
 
-                    <div className="space-y-6">
-                      {watch("upcomingEvents")?.map((_, index) => (
+                    {watch("upcomingEvents")?.length === 0 ? (
+                      <div className="text-center py-8 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300">
+                        <Calendar className="w-12 h-12 text-gray-400 mx-auto mb-3" />
+                        <p className="text-gray-500 text-sm">
+                          No upcoming events scheduled
+                        </p>
+                        <p className="text-gray-400 text-xs mt-1">
+                          Click "Add Event" to schedule an event for this program
+                        </p>
+                      </div>
+                    ) : (
+                      <div className="space-y-6">
+                        {watch("upcomingEvents")?.map((_, index) => (
                         <div
                           key={index}
                           className="bg-gray-50 p-5 rounded-lg border border-gray-200"
@@ -1255,7 +1462,7 @@ const HypnotherapyPage = () => {
                               type="button"
                               onClick={() => removeUpcomingEvent(index)}
                               className="text-red-500 hover:text-red-700"
-                              disabled={watch("upcomingEvents")?.length <= 1}
+                              disabled={watch("upcomingEvents")?.length === 0}
                             >
                               <X className="w-5 h-5" />
                             </button>
@@ -1264,46 +1471,89 @@ const HypnotherapyPage = () => {
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                             <div>
                               <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Event Date *
+                                Start Date & Time *
                               </label>
                               <div className="relative">
                                 <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-500" />
                                 <input
-                                  {...register(`upcomingEvents.${index}.date`, {
-                                    required: "Date is required",
+                                  type="datetime-local"
+                                  {...register(`upcomingEvents.${index}.startDate`, {
+                                    required: false, // Not required by default
                                     validate: (value) => 
-                                      validateEventDate(value, index)
+                                      validateEventStartDate(value, index)
                                   })}
                                   className={`w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#6E2D79] focus:border-transparent outline-none ${
-                                    errors.upcomingEvents?.[index]?.date
+                                    errors.upcomingEvents?.[index]?.startDate
                                       ? "border-red-500"
                                       : "border-gray-300"
                                   }`}
-                                  placeholder="Aug 15, 2025"
                                 />
                               </div>
-                              {errors.upcomingEvents?.[index]?.date && (
+                              <div className="text-xs text-gray-500 mt-1">
+                                Debug: {watch(`upcomingEvents.${index}.startDate`) || 'No value'}
+                              </div>
+                              {errors.upcomingEvents?.[index]?.startDate && (
                                 <p className="mt-1 text-sm text-red-600">
-                                  {errors.upcomingEvents[index].date.message}
+                                  {errors.upcomingEvents[index].startDate.message}
                                 </p>
                               )}
                             </div>
 
                             <div>
                               <label className="block text-sm font-medium text-gray-700 mb-1">
+                                End Date & Time *
+                              </label>
+                              <div className="relative">
+                                <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-500" />
+                                <input
+                                  type="datetime-local"
+                                  {...register(`upcomingEvents.${index}.endDate`, {
+                                    required: false, // Not required by default
+                                    validate: (value) => 
+                                      validateEventEndDate(value, index)
+                                  })}
+                                  className={`w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#6E2D79] focus:border-transparent outline-none ${
+                                    errors.upcomingEvents?.[index]?.endDate
+                                      ? "border-red-500"
+                                      : "border-gray-300"
+                                  }`}
+                                />
+                              </div>
+                              <div className="text-xs text-gray-500 mt-1">
+                                Debug: {watch(`upcomingEvents.${index}.endDate`) || 'No value'}
+                              </div>
+                              {errors.upcomingEvents?.[index]?.endDate && (
+                                <p className="mt-1 text-sm text-red-600">
+                                  {errors.upcomingEvents[index].endDate.message}
+                                </p>
+                              )}
+                            </div>
+
+                            <div className="md:col-span-2">
+                              <label className="block text-sm font-medium text-gray-700 mb-1">
                                 Event Name *
                               </label>
                               <input
-                                {...register(
-                                  `upcomingEvents.${index}.eventName`,
-                                  {
-                                    required: "Event name is required",
-                                    minLength: {
-                                      value: 5,
-                                      message: "Name must be at least 5 characters"
+                                                                  {...register(
+                                    `upcomingEvents.${index}.eventName`,
+                                    {
+                                      required: false, // Not required by default
+                                      minLength: {
+                                        value: 5,
+                                        message: "Name must be at least 5 characters"
+                                      },
+                                      validate: (value) => {
+                                        const event = watch(`upcomingEvents.${index}`);
+                                        // If any other field has content, event name becomes required
+                                        if (event.startDate || event.endDate || event.location || event.organiser || event.price || event.paymentLink) {
+                                          if (!value || value.trim().length < 5) {
+                                            return "Event name is required and must be at least 5 characters when adding an event";
+                                          }
+                                        }
+                                        return true;
+                                      }
                                     }
-                                  }
-                                )}
+                                  )}
                                 className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#6E2D79] focus:border-transparent outline-none ${
                                   errors.upcomingEvents?.[index]?.eventName
                                     ? "border-red-500"
@@ -1331,10 +1581,20 @@ const HypnotherapyPage = () => {
                                   {...register(
                                     `upcomingEvents.${index}.location`,
                                     {
-                                      required: "Location is required",
+                                      required: false, // Not required by default
                                       minLength: {
                                         value: 3,
                                         message: "Location must be at least 3 characters"
+                                      },
+                                      validate: (value) => {
+                                        const event = watch(`upcomingEvents.${index}`);
+                                        // If any other field has content, location becomes required
+                                        if (event.startDate || event.endDate || event.eventName || event.organiser || event.price || event.paymentLink) {
+                                          if (!value || value.trim().length < 3) {
+                                            return "Location is required and must be at least 3 characters when adding an event";
+                                          }
+                                        }
+                                        return true;
                                       }
                                     }
                                   )}
@@ -1366,10 +1626,20 @@ const HypnotherapyPage = () => {
                                   {...register(
                                     `upcomingEvents.${index}.organiser`,
                                     {
-                                      required: "Organizer is required",
+                                      required: false, // Not required by default
                                       minLength: {
                                         value: 3,
                                         message: "Organizer must be at least 3 characters"
+                                      },
+                                      validate: (value) => {
+                                        const event = watch(`upcomingEvents.${index}`);
+                                        // If any other field has content, organizer becomes required
+                                        if (event.startDate || event.endDate || event.eventName || event.location || event.price || event.paymentLink) {
+                                          if (!value || value.trim().length < 3) {
+                                            return "Organizer is required and must be at least 3 characters when adding an event";
+                                          }
+                                        }
+                                        return true;
                                       }
                                     }
                                   )}
@@ -1401,9 +1671,18 @@ const HypnotherapyPage = () => {
                                   {...register(
                                     `upcomingEvents.${index}.price`,
                                     {
-                                      required: "Price is required",
-                                      validate: (value) => 
-                                        validatePrice(value, index)
+                                      required: false, // Not required by default
+                                      validate: (value) => {
+                                        const event = watch(`upcomingEvents.${index}`);
+                                        // If any other field has content, price becomes required
+                                        if (event.startDate || event.endDate || event.eventName || event.location || event.organiser || event.paymentLink) {
+                                          if (!value) {
+                                            return "Price is required when adding an event";
+                                          }
+                                          return validatePrice(value, index);
+                                        }
+                                        return true;
+                                      }
                                     }
                                   )}
                                   className={`w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#6E2D79] focus:border-transparent outline-none ${
@@ -1432,9 +1711,18 @@ const HypnotherapyPage = () => {
                                   {...register(
                                     `upcomingEvents.${index}.paymentLink`,
                                     {
-                                      required: "Payment link is required",
-                                      validate: (value) => 
-                                        validatePaymentLink(value, index)
+                                      required: false, // Not required by default
+                                      validate: (value) => {
+                                        const event = watch(`upcomingEvents.${index}`);
+                                        // If any other field has content, payment link becomes required
+                                        if (event.startDate || event.endDate || event.eventName || event.location || event.organiser || event.price) {
+                                          if (!value) {
+                                            return "Payment link is required when adding an event";
+                                          }
+                                          return validatePaymentLink(value, index);
+                                        }
+                                        return true;
+                                      }
                                     }
                                   )}
                                   className={`w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#6E2D79] focus:border-transparent outline-none ${
@@ -1456,8 +1744,9 @@ const HypnotherapyPage = () => {
                             </div>
                           </div>
                         </div>
-                      ))}
-                    </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
 
                   {/* Form Actions */}
@@ -1498,9 +1787,9 @@ const HypnotherapyPage = () => {
 
         {/* Delete Confirmation Modal */}
         {showDeleteModal && programToDelete && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-            <div className="bg-white rounded-lg max-w-md w-full">
-              <div className="bg-red-600 text-white p-6 rounded-t-lg">
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 modal-overlay">
+            <div className="bg-white rounded-lg max-w-md w-full modal-content">
+              <div className="bg-red-600 text-white p-6 rounded-t-lg modal-header">
                 <div className="flex items-center justify-between">
                   <h2 className="text-xl font-bold">Confirm Deletion</h2>
                   <button

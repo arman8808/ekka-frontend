@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 import Layout from "../components/layout/Layout";
 import { useNavigate } from "react-router-dom";
-
+import Cookies from "js-cookie"; 
 const IchRegistration = () => {
   const navigate = useNavigate(); // Added for redirection
   const [authChecked, setAuthChecked] = useState(false);
@@ -189,7 +189,7 @@ const IchRegistration = () => {
     }
   };
   useEffect(() => {
-    const adminToken = localStorage.getItem("adminToken");
+    const adminToken = Cookies.get("adminToken");
     if (!adminToken) {
       navigate("/admin/login");
     } else {

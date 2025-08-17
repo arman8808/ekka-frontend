@@ -1,294 +1,137 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import TestimonialCarousel from "../components/home/Testimonials";
+import ScheduleSkeleton from "../components/utils/ScheduleSkeleton";
+import scheduleService from "../components/services/scheduleService";
 import { useNavigate } from "react-router-dom";
 
-const events = [
-  {
-    id: 13,
-    name: "Family Constellation",
-    seats: 10,
-    date: "9th Aug",
-    location: "Cold Spring, TX",
-    trainer: "Dr. Alyasowmy's A/C",
-    type: "Family Constellations",
-    price: "$ 375",
-    currency: "USD",
-    priceValue: 15999,
-    facilitator: "Yuvraj Kapadia",
-    link: "/family-constellation?id=8&modal=true",
-    participants: "10 Seats",
-    pagelink: "/family-constellation",
-  },
-  {
-    id: 9,
-    name: "DECODE The Child",
-    seats: "Not Limited",
-    date: "10th Aug",
-    location: "Houston, TX",
-    trainer: "Dr. Alyasowmy's A/C",
-    type: "Family Constellations",
-    price: "$ 35",
-    currency: "USD",
-    priceValue: 15999,
-    facilitator: "Yuvraj Kapadia",
-    link: "/level/5?modal=true",
-    participants: "10 Seats",
-    pagelink: "/decode",
-  },
-  {
-    id: 10,
-    name: "Masterclass for HealthCare Practitioner",
-    seats: 10,
-    date: "11th Aug",
-    location: "Houston, TX",
-    trainer: "",
-    type: "Family Constellations",
-    price: "$ 375",
-    currency: "USD",
-    priceValue: 25999,
-    facilitator: "Yuvraj Kapadia",
-    link: "/family-constellation?id=5&modal=true",
-    participants: "10 Seats",
-    noenroll: true,
-    pagelink: "/family-constellation",
-  },
-  {
-    id: 11,
-    name: "Level 1 of Hypnotherapy Training, Basic Course in Integrated Clinical Hypnotherapy Certification",
-    seats: "Not Limited",
-    date: "11th Aug-12th Aug",
-    location: "Houston, TX",
-    trainer: "",
-    type: "Family Constellations",
-    price: "$ 600",
-    currency: "USD",
-    priceValue: 25999,
-    facilitator: "Dr Manoj Bhardwaj",
-    link: "/ich/levels?level=1&modal=true&date=11th Aug-12th Aug",
-    participants: "10 Seats",
-    noenroll: false,
-    pagelink: "/ich",
-  },
-
-  {
-    id: 2,
-    name: "Family Constellation",
-    seats: 10,
-    date: "12th Aug",
-    location: "Houston, TX",
-    trainer: "Dr. Alyasowmy's A/C",
-    type: "Family Constellations",
-    price: "$ 375",
-    currency: "USD",
-    priceValue: 15999,
-    facilitator: "Yuvraj Kapadia",
-    link: "/family-constellation?id=1&modal=true",
-    participants: "10 Seats",
-    pagelink: "/family-constellation",
-  },
-  {
-    id: 12,
-    name: "Level 2 of Hypnotherapy Training, Course in Integrated Hypnotic Modalities for Behavioral Resolutions.",
-    seats: "Not Limited",
-    date: "13th–17th Aug",
-    location: " Houston, TX",
-    trainer: "Dr.Sonia Gupte",
-    type: "CH",
-    price: "$ 1500",
-    currency: "USD",
-    priceValue: 12999,
-    facilitator: "Dr Sonia Gupte",
-    link: "/ich/levels?level=2&modal=true&date=13th–17th Aug",
-    participants: "10 Seats",
-    pagelink: "/ich",
-  },
-  {
-    id: 3,
-    name: "Level 3 of Hypnotherapy Training, Advanced Course in Integrated Hypnotic Modalities for Health Resolutions",
-    seats: "Not Limited",
-    date: "13th–17th Aug",
-    location: "Houston, TX",
-    trainer: "Dr. Alyasowmy's A/C",
-    type: "CH",
-    price: "$ 1500",
-    currency: "USD",
-    priceValue: 12999,
-    facilitator: "Yuvraj Kapadia",
-    link: "/ich/levels?level=3&modal=true&date=13th–17th Aug",
-    participants: "10 Seats",
-    pagelink: "/ich",
-  },
-  {
-    id: 4,
-    name: "Family Constellation",
-    seats: 10,
-    date: "18th Aug",
-    location: "Houston, TX",
-    trainer: "Dr. Alyasowmy's A/C",
-    type: "Family Constellations",
-    price: "$ 375",
-    currency: "USD",
-    priceValue: 12999,
-    facilitator: "Yuvraj Kapadia",
-    link: "/family-constellation?id=2&modal=true",
-    participants: "10 Seats",
-    pagelink: "/family-constellation",
-  },
-  {
-    id: 4,
-    name: "Family Constellation",
-    seats: 10,
-    date: "20th Aug",
-    location: "San Francisco, CA",
-    trainer: "Sonia Gupte",
-    type: "Family Constellations",
-    price: "$ 375",
-    currency: "USD",
-    priceValue: 12999,
-    facilitator: "Yuvraj Kapadia",
-    link: "/family-constellation?id=9&modal=true",
-    participants: "10 Seats",
-    pagelink: "/family-constellation",
-  },
-  // {
-  //   id: 1,
-  //   name: "Level 1 of Hypnotherapy Training, Basic Course in Integrated Clinical Hypnotherapy Certification",
-  //   seats: "Not Limited",
-  //   date: "20th–21st Aug",
-  //   location: "Austin, USA",
-  //   trainer: "Dr. Monoj's A/C",
-  //   type: "CH",
-  //   price: "USD 600",
-  //   currency: "USD",
-  //   priceValue: 600,
-  //   facilitator: "Yuvraj Kapadia",
-  //   link: "/ich/levels?level=1&modal=true&date=20th–21st Aug",
-  //   participants: "10 Seats",
-  // },
-  {
-    id: 5,
-    name: "Family Constellation",
-    seats: 10,
-    date: "22nd Aug",
-    location: "Austin, TX",
-    trainer: "Dr. Monoj's A/C",
-    type: "Family Constellations",
-    price: "$ 375",
-    currency: "USD",
-    priceValue: 5999,
-    facilitator: "Yuvraj Kapadia",
-    link: "https://brooke-schwab.as.me/schedule/3ceac482/?appointmentTypeIds[]=60696639",
-    participants: "10 Seats",
-    pagelink: "/family-constellation",
-  },
-
-  {
-    id: 6,
-    name: "Family Constellation",
-    seats: 10,
-    date: "23rd Aug",
-    location: "Austin, TX",
-    trainer: "Dr. Monoj's A/C",
-    type: "Family Constellations",
-    price: "$ 375",
-    currency: "USD",
-    priceValue: 6500,
-    facilitator: "Yuvraj Kapadia",
-    link: "https://brooke-schwab.as.me/schedule/3ceac482/?appointmentTypeIds[]=60696639",
-    participants: "10 Seats",
-    pagelink: "/family-constellation",
-  },
-  {
-    id: 8,
-    name: "Masterclass for Executives",
-    seats: 10,
-    date: "27th Aug",
-    location: "Houston, TX",
-    trainer: "",
-    type: "Family Constellations",
-    price: "$ 375",
-    currency: "USD",
-    priceValue: 25999,
-    facilitator: "Yuvraj Kapadia",
-    link: "/family-constellation?id=6&modal=true",
-    participants: "10 Seats",
-    noenroll: true,
-    pagelink: "/family-constellation",
-  },
-  {
-    id: 7,
-    name: "Family Constellation",
-    seats: 10,
-    date: "28th Aug",
-    location: "Woodlands, TX",
-    trainer: "Dr. Monoj's A/C",
-    type: "Family Constellations",
-    price: "$ 375",
-    currency: "USD",
-    priceValue: 349,
-    facilitator: "Yuvraj Kapadia",
-    link: "https://constellations.chakrablisscenter.com/family-constellation-optin-page",
-    participants: "10 Seats",
-    pagelink: "/family-constellation",
-  },
-  {
-    id: 13,
-    name: "Family Constellation",
-    seats: 10,
-    date: "29th Aug",
-    location: "Woodlands, TX",
-    trainer: "Dr. Alyasowmy's A/C",
-    type: "Family Constellations",
-    price: "$ 375",
-    currency: "USD",
-    priceValue: 15999,
-    facilitator: "Yuvraj Kapadia",
-    link: "https://constellations.chakrablisscenter.com/family-constellation-optin-page",
-    participants: "10 Seats",
-    pagelink: "/family-constellation",
-  },
-  {
-    id: 8,
-    name: "Level 1 of Hypnotherapy Training, Basic Course in Integrated Clinical Hypnotherapy Certification",
-    seats: "Not Limited",
-    date: "31th Aug-1st sept",
-    location: "San Diego, CA",
-    trainer: "Dr. Sonia Gupte's A/C",
-    type: "decode",
-    price: "$ 600",
-    currency: "USD",
-    priceValue: 349,
-    facilitator: "Yuvraj Kapadia",
-    link: "/ich/levels?level=1&modal=true&date=31th Aug-1st sept",
-    participants: "10 Seats",
-    pagelink: "/ich",
-  },
-  {
-    id: 10,
-    name: "Family Constellation",
-    seats: 6,
-    date: "7th Sept",
-    location: "San Diego, CA",
-    trainer: "Dr. Sonia Gupte's A/C",
-    type: "Family Constellations",
-    price: "$ 375",
-    currency: "USD",
-    priceValue: 6500,
-    facilitator: "Yuvraj Kapadia",
-    link: "/family-constellation?id=7&modal=true",
-    participants: "10 Seats",
-    pagelink: "/family-constellation",
-  },
-];
 function Schedule() {
   const navigate = useNavigate();
+  const [events, setEvents] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    fetchScheduleEvents();
+  }, []);
+
+  const fetchScheduleEvents = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const response = await scheduleService.getScheduleEvents();
+      setEvents(response.events || response || []);
+    } catch (err) {
+      console.error("Error fetching schedule events:", err);
+      setError(err.message || "Failed to fetch schedule events");
+      // Fallback to empty array if API fails
+      setEvents([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleRegister = (event) => {
     // Navigate to registration page with event ID
     navigate(`${event}`);
   };
+
+  // Helper function to format date range
+  const formatDateRange = (event) => {
+    if (event.startDate && event.endDate) {
+      const startDate = new Date(event.startDate);
+      const endDate = new Date(event.endDate);
+      
+      // Check if same day
+      if (startDate.toDateString() === endDate.toDateString()) {
+        return startDate.toLocaleDateString('en-US', { 
+          month: 'short', 
+          day: 'numeric', 
+          year: 'numeric' 
+        });
+      } else {
+        // Different days - show range
+        const startFormatted = startDate.toLocaleDateString('en-US', { 
+          month: 'short', 
+          day: 'numeric' 
+        });
+        const endFormatted = endDate.toLocaleDateString('en-US', { 
+          month: 'short', 
+          day: 'numeric', 
+          year: 'numeric' 
+        });
+        return `${startFormatted} - ${endFormatted}`;
+      }
+    }
+    
+    // Fallback to legacy date field
+    if (event.date) {
+      return event.date;
+    }
+    
+    return "TBD";
+  };
+
+  // Helper function to get event name
+  const getEventName = (event) => {
+    if (event.eventName) return event.eventName;
+    if (event.event) return event.event;
+    if (event.programTitle) return event.programTitle;
+    return "Event";
+  };
+
+  // Helper function to get facilitator
+  const getFacilitator = (event) => {
+    if (event.facilitator) return event.facilitator;
+    if (event.organisedby) return event.organisedby;
+    if (event.organiser) return event.organiser;
+    return "-";
+  };
+
+  // Helper function to get location
+  const getLocation = (event) => {
+    if (event.location) return event.location;
+    return "-";
+  };
+
+  // Helper function to get capacity
+  const getCapacity = (event) => {
+    if (event.capacity) return event.capacity;
+    return "TBD";
+  };
+
+  // Helper function to get price
+  const getPrice = (event) => {
+    if (event.price) return event.price;
+    return "-";
+  };
+
+  // Helper function to get payment link
+  const getPaymentLink = (event) => {
+    if (event.paymentLink) return event.paymentLink;
+    if (event.externalLink) return event.externalLink;
+    return null;
+  };
+
+  // Helper function to determine if event is enrollable
+  const isEnrollable = (event) => {
+    return getPaymentLink(event) && event.status === "Open";
+  };
+
+  // Helper function to get navigation link
+  const getNavigationLink = (event) => {
+    if (event.programType === "family") {
+      return "/family-constellation";
+    } else if (event.programType === "hypnotherapy") {
+      return "/decode";
+    } else if (event.programType === "ich") {
+      return "/ich/levels";
+    }
+    return "/";
+  };
+
   return (
     <div
       className="relative w-full flex flex-col overflow-x-hidden"
@@ -422,136 +265,178 @@ function Schedule() {
           />
         ))}
       </motion.section>
-      <div className="px-4 py-8">
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.5 }}
-          className="bg-white rounded-lg shadow-md overflow-hidden"
-        >
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-[#6E2D79]">
-                <tr>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider whitespace-nowrap">
-                    Event
-                  </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider whitespace-nowrap">
-                    Date
-                  </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider whitespace-nowrap">
-                    Location
-                  </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider whitespace-nowrap">
-                    Facilitator
-                  </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider whitespace-nowrap">
-                    Total Participants
-                  </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider whitespace-nowrap">
-                    Program Fees
-                  </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider whitespace-nowrap">
-                    Action
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {events.map((event, index) => (
-                  <motion.tr
-                    key={event.id}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.3, delay: index * 0.05 }}
-                    whileHover={{ backgroundColor: "rgba(249, 250, 251, 1)" }}
-                    className="group"
-                  >
-                    <td className="px-4 py-4">
-                      <div
-                        className="flex flex-col max-w-[250px] cursor-pointer"
-                        onClick={() => navigate(event.pagelink)}
-                      >
-                        <span className="text-sm font-bold text-[#2D2D2D] break-words">
-                          {event.name.includes("Training,") ? (
-                            <>
-                              {event.name.split("Training,")[0]}Training,
-                              <br />
-                              <span className="text-sm font-bold text-[#2D2D2D] break-words">
-                                {event.name.split("Training,")[1]}
-                              </span>
-                            </>
-                          ) : (
-                            event.name
-                          )}
-                        </span>
-                      </div>
-                    </td>
 
-                    <td className="px-4 py-4">
-                      <div className="text-sm text-[#2D2D2D] whitespace-nowrap">
-                        {event.date}
-                      </div>
-                    </td>
-                    <td className="px-4 py-4">
-                      <div className="text-sm text-[#2D2D2D]">
-                        {event.location}
-                      </div>
-                    </td>
-                    <td className="px-4 py-4">
-                      <div className="text-sm text-[#2D2D2D]">
-                        {event.facilitator || "-"}
-                      </div>
-                    </td>
-                    <td className="px-4 py-4">
-                      <div className="text-sm">
-                        <span className={`px-2 py-1 rounded-full`}>
-                          {event.seats}
-                        </span>
-                      </div>
-                    </td>
-                    <td className="px-4 py-4">
-                      {event.noenroll ? (
-                        <span className="text-sm text-[#2D2D2D]">-</span>
-                      ) : (
-                        <span
-                          className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                            event.currency === "AED"
-                              ? "bg-blue-100 text-blue-800"
-                              : event.currency === "USD"
-                              ? "bg-green-100 text-green-800"
-                              : "bg-yellow-100 text-yellow-800"
-                          }`}
+      <div className="px-4 py-8">
+        {/* Error Message */}
+        {error && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6"
+          >
+            <div className="flex items-center">
+              <div className="flex-shrink-0">
+                <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                </svg>
+              </div>
+              <div className="ml-3">
+                <h3 className="text-sm font-medium text-red-800">Error loading events</h3>
+                <p className="text-sm text-red-700 mt-1">{error}</p>
+                <button
+                  onClick={fetchScheduleEvents}
+                  className="mt-2 text-sm text-red-600 hover:text-red-500 underline"
+                >
+                  Try again
+                </button>
+              </div>
+            </div>
+          </motion.div>
+        )}
+
+        {/* Loading State */}
+        {loading && <ScheduleSkeleton rows={8} />}
+
+        {/* Events Table */}
+        {!loading && events.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5 }}
+            className="bg-white rounded-lg shadow-md overflow-hidden"
+          >
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-[#6E2D79]">
+                  <tr>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider whitespace-nowrap">
+                      Event
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider whitespace-nowrap">
+                      Date
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider whitespace-nowrap">
+                      Location
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider whitespace-nowrap">
+                      Facilitator
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider whitespace-nowrap">
+                      Total Participants
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider whitespace-nowrap">
+                      Program Fees
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider whitespace-nowrap">
+                      Action
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {events.map((event, index) => (
+                    <motion.tr
+                      key={event._id || index}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.3, delay: index * 0.05 }}
+                      whileHover={{ backgroundColor: "rgba(249, 250, 251, 1)" }}
+                      className="group"
+                    >
+                      <td className="px-4 py-4">
+                        <div
+                          className="flex flex-col max-w-[250px] cursor-pointer"
+                          onClick={() => navigate(getNavigationLink(event))}
                         >
-                          {event.price}
-                        </span>
-                      )}
-                    </td>
-                    <td className="px-4 py-4">
-                      {event.noenroll ? (
-                        <span className="text-sm text-[#2D2D2D]">-</span>
-                      ) : (
-                        <motion.button
-                          whileHover={{ scale: 1.05 }}
-                          whileTap={{ scale: 0.95 }}
-                          onClick={() => {
-                            if (event.link.startsWith("/")) {
-                              handleRegister(event.link);
-                            } else {
-                              window.location.href = event.link;
-                            }
-                          }}
-                          className="px-3 py-2 bg-[#6E2D79] text-white text-xs rounded-md hover:bg-[#5a2465] transition-colors cursor-pointer"
-                        >
-                          Enroll Now
-                        </motion.button>
-                      )}
-                    </td>
-                  </motion.tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </motion.div>
+                          <span className="text-sm font-bold text-[#2D2D2D] break-words">
+                            {getEventName(event).includes("Training,") ? (
+                              <>
+                                {getEventName(event).split("Training,")[0]}Training,
+                                <br />
+                                <span className="text-sm font-bold text-[#2D2D2D] break-words">
+                                  {getEventName(event).split("Training,")[1]}
+                                </span>
+                              </>
+                            ) : (
+                              getEventName(event)
+                            )}
+                          </span>
+                        </div>
+                      </td>
+
+                      <td className="px-4 py-4">
+                        <div className="text-sm text-[#2D2D2D] whitespace-nowrap">
+                          {formatDateRange(event)}
+                        </div>
+                      </td>
+                      <td className="px-4 py-4">
+                        <div className="text-sm text-[#2D2D2D]">
+                          {getLocation(event)}
+                        </div>
+                      </td>
+                      <td className="px-4 py-4">
+                        <div className="text-sm text-[#2D2D2D]">
+                          {getFacilitator(event)}
+                        </div>
+                      </td>
+                      <td className="px-4 py-4">
+                        <div className="text-sm">
+                          <span className={`px-2 py-1 rounded-full`}>
+                            {getCapacity(event)}
+                          </span>
+                        </div>
+                      </td>
+                      <td className="px-4 py-4">
+                        {!isEnrollable(event) ? (
+                          <span className="text-sm text-[#2D2D2D]">-</span>
+                        ) : (
+                          <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                            {getPrice(event)}
+                          </span>
+                        )}
+                      </td>
+                      <td className="px-4 py-4">
+                        {!isEnrollable(event) ? (
+                          <span className="text-sm text-[#2D2D2D]">-</span>
+                        ) : (
+                          <motion.button
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                            onClick={() => {
+                              const paymentLink = getPaymentLink(event);
+                              if (paymentLink && paymentLink.startsWith("/")) {
+                                handleRegister(paymentLink);
+                              } else if (paymentLink) {
+                                window.open(paymentLink, "_blank");
+                              }
+                            }}
+                            className="px-3 py-2 bg-[#6E2D79] text-white text-xs rounded-md hover:bg-[#5a2465] transition-colors cursor-pointer"
+                          >
+                            Enroll Now
+                          </motion.button>
+                        )}
+                      </td>
+                    </motion.tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </motion.div>
+        )}
+
+        {/* No Events State */}
+        {!loading && events.length === 0 && !error && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="text-center py-12 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300"
+          >
+            <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+            <h3 className="mt-2 text-sm font-medium text-gray-900">No events scheduled</h3>
+            <p className="mt-1 text-sm text-gray-500">Check back later for upcoming events.</p>
+          </motion.div>
+        )}
       </div>
       <TestimonialCarousel />
       <Footer />

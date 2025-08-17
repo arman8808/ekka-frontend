@@ -1,5 +1,5 @@
 import axios from 'axios';
-
+import Cookies from "js-cookie";
 const API_URL = `${import.meta.env.VITE_API_BASE_URL}decode`;
 
 // Create axios instance
@@ -9,7 +9,7 @@ const api = axios.create({
 
 // Add request interceptor to include token
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('adminToken');
+   const token = Cookies.get("adminToken");
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }

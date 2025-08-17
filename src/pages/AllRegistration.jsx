@@ -395,7 +395,7 @@ import {
 } from "lucide-react";
 import Layout from "../components/layout/Layout";
 import { useNavigate } from "react-router-dom";
-
+import Cookies from "js-cookie"; 
 const AllRegistration = () => {
   const navigate = useNavigate();
   const [authChecked, setAuthChecked] = useState(false);
@@ -539,7 +539,7 @@ const AllRegistration = () => {
     window.URL.revokeObjectURL(url);
   };
   useEffect(() => {
-    const adminToken = localStorage.getItem("adminToken");
+    const adminToken = Cookies.get("adminToken");
     if (!adminToken) {
       navigate("/admin/login");
     } else {

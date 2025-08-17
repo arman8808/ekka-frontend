@@ -7,15 +7,17 @@ import ProfileCard from "../components/utils/ProfileCard";
 import UpcomingSessions from "../components/utils/UpcomingSessions";
 import HeroSection from "../components/utils/HeroSection";
 import { useLocation, useNavigate } from "react-router-dom";
+
 function FamilyConstellation() {
   const location = useLocation();
+  const navigate = useNavigate();
 
   const searchParams = new URLSearchParams(location.search);
   const id = searchParams.get("id") || "1";
   const modal = searchParams.get("modal");
+
   return (
     <div>
-      {" "}
       <Header />
       <HeroSection
         content={

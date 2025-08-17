@@ -11,12 +11,13 @@ import {
   Edit,
   Plus,
   Trash2,
+  Calendar,
 } from "lucide-react";
 import Layout from "../../components/layout/Layout";
 import familyEventService from "../../components/services/familyEventService.js";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
-
+import Cookies from "js-cookie"; 
 const FamilyConstellationPage = () => {
   const navigate = useNavigate();
   const [authChecked, setAuthChecked] = useState(false);
@@ -38,7 +39,7 @@ const FamilyConstellationPage = () => {
   const itemsPerPage = 5;
 
   useEffect(() => {
-    const token = localStorage.getItem("adminToken");
+    const token = Cookies.get("adminToken");;
     if (token) {
       setUser({ token });
     }
@@ -50,10 +51,14 @@ const FamilyConstellationPage = () => {
     reset,
     formState: { errors, isSubmitting },
     setValue,
+    watch,
+    getValues,
+    trigger,
   } = useForm({
     defaultValues: {
       event: "Family Constellation",
-      date: "",
+      startDate: "",
+      endDate: "",
       location: "",
       capacity: "",
       organisedby: "",
@@ -66,11 +71,53 @@ const FamilyConstellationPage = () => {
     },
   });
 
+  // Watch start date to trigger end date validation
+  const startDate = watch("startDate");
+  
+  // Helper function to get current date/time in datetime-local format
+  const getCurrentDateTime = () => {
+    const now = new Date();
+    return now.toISOString().slice(0, 16);
+  };
+  
+  // Helper function to get today's date at 00:00 for start date validation
+  const getTodayStartTime = () => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    return today.toISOString().slice(0, 16);
+  };
+  
+  // Helper function to set end date automatically when start date changes
+  const handleStartDateChange = (e) => {
+    const startDate = e.target.value;
+    if (startDate) {
+      const start = new Date(startDate);
+      const end = new Date(start);
+      end.setHours(end.getHours() + 2); // Default 2-hour event
+      
+      setValue("endDate", end.toISOString().slice(0, 16));
+      // Trigger validation for end date
+      setTimeout(() => {
+        trigger("endDate");
+      }, 100);
+    }
+  };
+  
+  // Trigger end date validation when start date changes
+  useEffect(() => {
+    if (startDate) {
+      // Small delay to ensure the form state is updated
+      setTimeout(() => {
+        trigger("endDate");
+      }, 100);
+    }
+  }, [startDate, trigger]);
+
   const fetchEvents = async () => {
     setLoading(true);
     setError(null);
     try {
-      const token = localStorage.getItem("adminToken");
+      const token = Cookies.get("adminToken");
       const data = await familyEventService.getEvents(
         searchTerm,
         currentPage,
@@ -99,7 +146,7 @@ const FamilyConstellationPage = () => {
 
   const onSubmit = async (data) => {
     try {
-      const token = localStorage.getItem("adminToken");
+      const token = Cookies.get("adminToken");
       if (!token) {
         toast.error("Authentication required");
         return;
@@ -126,7 +173,7 @@ const FamilyConstellationPage = () => {
   const handleDeleteEvent = async () => {
     setIsDeleting(true);
     try {
-      const token = localStorage.getItem("adminToken");
+      const token =Cookies.get("adminToken");
       if (!token) {
         toast.error("Authentication required");
         return;
@@ -147,7 +194,26 @@ const FamilyConstellationPage = () => {
   const openEditModal = (event) => {
     setCurrentEvent(event);
     setValue("event", event.event);
-    setValue("date", event.date);
+    
+    // Handle date conversion - prioritize new format over legacy
+    if (event.startDate && event.endDate) {
+      // Use the new startDate/endDate format
+      setValue("startDate", event.startDate.slice(0, 16)); // Format for datetime-local input
+      setValue("endDate", event.endDate.slice(0, 16));
+    } else if (event.date && !event.startDate) {
+      // Convert legacy date format to start/end dates
+      const eventDate = new Date(event.date);
+      const endDate = new Date(eventDate);
+      endDate.setHours(eventDate.getHours() + 2); // Default 2-hour event
+      
+      setValue("startDate", eventDate.toISOString().slice(0, 16)); // Format for datetime-local input
+      setValue("endDate", endDate.toISOString().slice(0, 16));
+    } else {
+      // Fallback - set empty values
+      setValue("startDate", "");
+      setValue("endDate", "");
+    }
+    
     setValue("location", event.location);
     setValue("capacity", event.capacity);
     setValue("organisedby", event.organisedby);
@@ -161,7 +227,20 @@ const FamilyConstellationPage = () => {
   };
 
   const openAddModal = () => {
-    reset();
+    reset({
+      event: "Family Constellation",
+      startDate: "",
+      endDate: "",
+      location: "",
+      capacity: "",
+      organisedby: "",
+      organiserEmail: "",
+      price: "",
+      paymentLink: "",
+      status: "Open",
+      facilitator: "",
+      externalLink: "",
+    });
     setShowAddModal(true);
   };
 
@@ -176,15 +255,6 @@ const FamilyConstellationPage = () => {
     }
   };
 
-  const validateDate = (value) => {
-    const dateRegex =
-      /^(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s\d{1,2},\s\d{4}$/;
-    return (
-      dateRegex.test(value) ||
-      "Date must be in 'MMM DD, YYYY' format (e.g., Aug 9, 2025)"
-    );
-  };
-
   const validatePrice = (value) => {
     const priceRegex = /^\$\s?\d+(,\d{3})*(\.\d{2})?$/;
     return (
@@ -194,7 +264,7 @@ const FamilyConstellationPage = () => {
   };
 
   useEffect(() => {
-    const adminToken = localStorage.getItem("adminToken");
+    const adminToken = Cookies.get("adminToken");
     if (!adminToken) {
       navigate("/admin/login");
     } else {
@@ -322,7 +392,7 @@ const FamilyConstellationPage = () => {
                     Event
                   </th>
                   <th className="px-4 py-4 text-left text-sm font-semibold">
-                    Date
+                    Date & Time
                   </th>
                   <th className="px-4 py-4 text-left text-sm font-semibold">
                     Location
@@ -356,7 +426,32 @@ const FamilyConstellationPage = () => {
                       {event.event}
                     </td>
                     <td className="px-4 py-4 text-sm text-gray-900">
-                      {event.date}
+                      {event.startDate && event.endDate ? (
+                        <div className="space-y-1">
+                          <div className="font-medium">
+                            {new Date(event.startDate).toLocaleDateString('en-US', { 
+                              month: 'short', 
+                              day: 'numeric', 
+                              year: 'numeric' 
+                            })}
+                          </div>
+                          <div className="text-xs text-gray-500">
+                            {new Date(event.startDate).toLocaleTimeString('en-US', { 
+                              hour: '2-digit', 
+                              minute: '2-digit' 
+                            })} - {new Date(event.endDate).toLocaleTimeString('en-US', { 
+                              hour: '2-digit', 
+                              minute: '2-digit' 
+                            })}
+                          </div>
+                        </div>
+                      ) : event.date ? (
+                        <div className="text-gray-500 italic">
+                          {event.date} (Legacy format)
+                        </div>
+                      ) : (
+                        <div className="text-gray-400 italic">No date set</div>
+                      )}
                     </td>
                     <td className="px-4 py-4 text-sm text-gray-900">
                       {event.location}
@@ -468,9 +563,9 @@ const FamilyConstellationPage = () => {
 
         {/* Add/Edit Event Modal */}
         {(showAddModal || showEditModal) && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-            <div className="bg-white rounded-lg max-w-2xl w-full">
-              <div className="sticky top-0 bg-[#6E2D79] text-white p-6 rounded-t-lg">
+          <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4 modal-overlay">
+            <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] flex flex-col modal-content">
+              <div className="flex-shrink-0 bg-[#6E2D79] text-white p-6 rounded-t-lg modal-header">
                 <div className="flex items-center justify-between">
                   <h2 className="text-xl font-bold">
                     {showAddModal ? "Add New Event" : "Edit Event"}
@@ -487,7 +582,7 @@ const FamilyConstellationPage = () => {
                 </div>
               </div>
 
-              <div className="p-6 space-y-6">
+              <div className="flex-1 overflow-y-auto p-6 modal-body">
                 <form onSubmit={handleSubmit(onSubmit)}>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {/* Event Name */}
@@ -511,24 +606,86 @@ const FamilyConstellationPage = () => {
                       )}
                     </div>
 
-                    {/* Date */}
+                    {/* Start Date */}
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Date (MMM DD, YYYY)
+                        Start Date & Time *
                       </label>
-                      <input
-                        {...register("date", {
-                          required: "Date is required",
-                          validate: validateDate,
-                        })}
-                        placeholder="Aug 9, 2025"
-                        className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#6E2D79] focus:border-transparent outline-none ${
-                          errors.date ? "border-red-500" : "border-gray-300"
-                        }`}
-                      />
-                      {errors.date && (
+                      <div className="relative">
+                        <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-500" />
+                        <input
+                          type="datetime-local"
+                          {...register("startDate", {
+                            required: "Start date and time is required",
+                            min: getTodayStartTime(), // Allow any time from today onwards
+                          })}
+                          onChange={handleStartDateChange}
+                          min={getTodayStartTime()}
+                          className={`w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#6E2D79] focus:border-transparent outline-none ${
+                            errors.startDate ? "border-red-500" : "border-gray-300"
+                          }`}
+                        />
+                      </div>
+                      <p className="mt-1 text-xs text-gray-500">
+                        You can select any time from today onwards (00:00 to 23:59)
+                      </p>
+                      {errors.startDate && (
                         <p className="mt-1 text-sm text-red-600">
-                          {errors.date.message}
+                          {errors.startDate.message}
+                        </p>
+                      )}
+                    </div>
+
+                    {/* End Date */}
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        End Date & Time *
+                      </label>
+                      <div className="relative">
+                        <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-500" />
+                        <input
+                          type="datetime-local"
+                          {...register("endDate", {
+                            required: "End date and time is required",
+                            validate: (value) => {
+                              const startDate = getValues("startDate");
+                              if (!startDate || !value) {
+                                return true; // Let required validation handle empty values
+                              }
+                              
+                              const start = new Date(startDate);
+                              const end = new Date(value);
+                              
+                              // Debug logging
+                              console.log("Validation - Start Date:", startDate, "Parsed:", start);
+                              console.log("Validation - End Date:", value, "Parsed:", end);
+                              console.log("Comparison:", end <= start, "End <= Start");
+                              
+                              // Check if dates are valid
+                              if (isNaN(start.getTime()) || isNaN(end.getTime())) {
+                                return "Invalid date format";
+                              }
+                              
+                              // Check if end date is after start date
+                              if (end <= start) {
+                                return "End date must be after start date";
+                              }
+                              
+                              return true;
+                            }
+                          })}
+                          min={startDate || getTodayStartTime()}
+                          className={`w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#6E2D79] focus:border-transparent outline-none ${
+                            errors.endDate ? "border-red-500" : "border-gray-300"
+                          }`}
+                        />
+                      </div>
+                      <p className="mt-1 text-xs text-gray-500">
+                        End time must be after start time
+                      </p>
+                      {errors.endDate && (
+                        <p className="mt-1 text-sm text-red-600">
+                          {errors.endDate.message}
                         </p>
                       )}
                     </div>
@@ -747,7 +904,7 @@ const FamilyConstellationPage = () => {
                       </p>
                     )}
                   </div>
-                  <div className="flex justify-end space-x-3 mt-6">
+                  <div className="flex justify-end space-x-3 mt-6 pt-4 border-t border-gray-200">
                     <button
                       type="button"
                       onClick={() => {
@@ -814,7 +971,33 @@ const FamilyConstellationPage = () => {
                 <div className="space-y-4">
                   <p className="text-gray-700">
                     Are you sure you want to delete the event on{" "}
-                    <span className="font-semibold">{eventToDelete.date}</span>{" "}
+                    {eventToDelete.startDate && eventToDelete.endDate ? (
+                      <>
+                        <span className="font-semibold">
+                          {new Date(eventToDelete.startDate).toLocaleDateString('en-US', { 
+                            month: 'short', 
+                            day: 'numeric', 
+                            year: 'numeric' 
+                          })}
+                        </span>{" "}
+                        from{" "}
+                        <span className="font-semibold">
+                          {new Date(eventToDelete.startDate).toLocaleTimeString('en-US', { 
+                            hour: '2-digit', 
+                            minute: '2-digit' 
+                          })}
+                        </span>{" "}
+                        to{" "}
+                        <span className="font-semibold">
+                          {new Date(eventToDelete.endDate).toLocaleTimeString('en-US', { 
+                            hour: '2-digit', 
+                            minute: '2-digit' 
+                          })}
+                        </span>
+                      </>
+                    ) : (
+                      <span className="font-semibold">{eventToDelete.date}</span>
+                    )}{" "}
                     at{" "}
                     <span className="font-semibold">
                       {eventToDelete.location}
@@ -859,3 +1042,44 @@ const FamilyConstellationPage = () => {
 };
 
 export default FamilyConstellationPage;
+
+<style jsx>{`
+  .modal-overlay {
+    z-index: 50;
+  }
+  
+  .modal-content {
+    max-height: 90vh;
+    overflow: hidden;
+  }
+  
+  .modal-header {
+    flex-shrink: 0;
+    z-index: 10;
+  }
+  
+  .modal-body {
+    flex: 1;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: #cbd5e0 #f7fafc;
+  }
+  
+  .modal-body::-webkit-scrollbar {
+    width: 6px;
+  }
+  
+  .modal-body::-webkit-scrollbar-track {
+    background: #f7fafc;
+    border-radius: 3px;
+  }
+  
+  .modal-body::-webkit-scrollbar-thumb {
+    background: #cbd5e0;
+    border-radius: 3px;
+  }
+  
+  .modal-body::-webkit-scrollbar-thumb:hover {
+    background: #a0aec0;
+  }
+`}</style>

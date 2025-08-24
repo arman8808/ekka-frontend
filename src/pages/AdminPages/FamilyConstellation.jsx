@@ -90,14 +90,14 @@ const FamilyConstellationPage = () => {
   // Helper function to set end date automatically when start date changes
   const handleStartDateChange = (e) => {
     const startDate = e.target.value;
-    console.log("Start date changed to:", startDate);
+            // Debug info removed
     
     if (startDate) {
       const start = new Date(startDate);
       const end = new Date(start);
       end.setHours(end.getHours() + 2); // Default 2-hour event
       
-      console.log("Setting end date to:", end.toISOString().slice(0, 16));
+              // Debug info removed
       setValue("endDate", end.toISOString().slice(0, 16));
       
       // Clear any existing end date errors and trigger validation
@@ -106,7 +106,7 @@ const FamilyConstellationPage = () => {
       }, 100);
     } else {
       // If start date is cleared, also clear end date
-      console.log("Clearing end date");
+              // Debug info removed
       setValue("endDate", "");
     }
   };
@@ -710,12 +710,7 @@ const FamilyConstellationPage = () => {
                               const end = new Date(value);
                               
                               // Debug logging
-                              console.log("Validation - Start Date:", startDate, "Parsed:", start);
-                              console.log("Validation - End Date:", value, "Parsed:", end);
-                              console.log("Start timestamp:", start.getTime());
-                              console.log("End timestamp:", end.getTime());
-                              console.log("Comparison:", end < start, "End < Start (should be false for valid dates)");
-                              console.log("Same day check:", start.toDateString() === end.toDateString());
+                                      // Debug info removed
                               
                               // Check if dates are valid
                               if (isNaN(start.getTime()) || isNaN(end.getTime())) {
@@ -725,11 +720,11 @@ const FamilyConstellationPage = () => {
                               // Check if end date is after start date
                               // Allow same day events (end time can be after start time on same day)
                               if (end < start) {
-                                console.log("Validation failed: End date is before start date");
+                                // Debug info removed
                                 return "End date must be after or equal to start date";
                               }
                               
-                              console.log("Validation passed: End date is valid");
+                              // Debug info removed
                               
                               return true;
                             }

@@ -381,7 +381,7 @@ const Card = ({ programs = [], loading = false, error = null, onRetry }) => {
                <div className="relative w-full lg:w-2/5 h-64 sm:h-72 md:h-80 lg:h-96 mt-4 lg:mt-0">
                  <VideoPlayer
                    videoSrc={course.videoUrl || course.videoSrc || course.video || ""}
-                   thumbnailSrc={course.thumbnail || course.thumbnailSrc || course.image || "/default.png"}
+                   thumbnailSrc={course.thumbnail && course.thumbnail !== "null" ? `${import.meta.env.VITE_API_Image_Url}${course.thumbnail}` : (course.thumbnailSrc || course.image || "/default.png")}
                    overlayText={course.title || "Program"}
                    overlaySubtext={course.duration || "Duration"}
                  />

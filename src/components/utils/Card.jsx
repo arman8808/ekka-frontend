@@ -505,12 +505,7 @@ const Card = () => {
     return `${import.meta.env.VITE_API_Cloud_Front_URL}ICH/L${level}.mp4`;
   };
 
-  // Helper function to get thumbnail source
-  const getThumbnailSrc = (program, level) => {
-    if (program.thumbnail) return program.thumbnail;
-    // Fallback to static thumbnails based on level
-    return `/ich/level${level}.JPG`;
-  };
+
 
   // Helper function to get overlay text
   const getOverlayText = (program, level) => {
@@ -606,7 +601,7 @@ const Card = () => {
                 <div className="relative w-full lg:w-2/5 h-64 sm:h-72 md:h-80 lg:h-96 mt-4 lg:mt-0">
                   <VideoPlayer
                     videoSrc={getVideoSrc(course, levelNumber)}
-                    thumbnailSrc={getThumbnailSrc(course, levelNumber)}
+                    thumbnailSrc={course.thumbnail && course.thumbnail !== "null" ? `${import.meta.env.VITE_API_Image_Url}${course.thumbnail}` : `/ich/level${levelNumber}.JPG`}
                     overlayText={getOverlayText(course, levelNumber)}
                     overlaySubtext="15 mins"
                   />

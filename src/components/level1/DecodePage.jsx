@@ -10,7 +10,7 @@ export default function DynamicDecodePage({ levelData, modal, programId }) {
   };
 
   useEffect(() => {
-    console.log("modal", modal);
+    // Debug info removed
     
     if (modal) {
       setIsModalOpen(true);

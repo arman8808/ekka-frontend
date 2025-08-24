@@ -49,25 +49,6 @@ const DecodeAdminPage = () => {
 
   const itemsPerPage = 10;
 
-  // Helper function to get thumbnail URL
-  const getThumbnailUrl = (thumbnail) => {
-    if (!thumbnail) return null;
-    
-    // Check if it's a data URL (local preview)
-    if (thumbnail.startsWith('data:')) {
-      return thumbnail;
-    }
-    
-    // Check if it's a full URL
-    if (thumbnail.startsWith('http')) {
-      return thumbnail;
-    }
-    
-    // Prepend base URL for server images
-    const baseUrl = 'https://api.ekaausa.com/uploads' || '';
-    return `${baseUrl}/${thumbnail.replace(/^\//, '')}`;
-  };
-
   // React Hook Form setup
   const {
     register,
@@ -250,14 +231,28 @@ const DecodeAdminPage = () => {
       // Create FormData to handle file upload
       const formData = new FormData();
       
-      // Append all form data to FormData
+      // Handle thumbnail separately to ensure we only send new file, not old value
+      // Only append thumbnail if it's actually a File object (new upload)
+      if (data.thumbnail && data.thumbnail instanceof File) {
+        formData.append('thumbnail', data.thumbnail);
+        console.log("✅ Sending new thumbnail file:", data.thumbnail.name);
+      } else {
+        console.log("❌ No new thumbnail file found. data.thumbnail:", data.thumbnail);
+      }
+      // If no new thumbnail is uploaded, don't send any thumbnail data
+      // This ensures the backend keeps the existing thumbnail
+      
+      // Append all other form data to FormData (excluding thumbnail)
+      console.log("📋 Form data keys:", Object.keys(data));
+      console.log("📋 Thumbnail value in form data:", data.thumbnail);
+      
       Object.keys(data).forEach(key => {
-        if (key === 'thumbnail' && data[key]) {
-          formData.append('thumbnail', data[key]);
-        } else if (Array.isArray(data[key])) {
-          formData.append(key, JSON.stringify(data[key]));
-        } else {
-          formData.append(key, data[key]);
+        if (key !== 'thumbnail') { // Skip thumbnail as it's handled above
+          if (Array.isArray(data[key])) {
+            formData.append(key, JSON.stringify(data[key]));
+          } else {
+            formData.append(key, data[key]);
+          }
         }
       });
 
@@ -392,19 +387,22 @@ const DecodeAdminPage = () => {
       };
     });
     
-         console.log("🔍 Original upcoming events:", program.upcomingEvents);
-     console.log("🔍 Converted upcoming events:", convertedEvents);
-     console.log("🌍 Your timezone offset:", new Date().getTimezoneOffset(), "minutes");
-     console.log("🌍 Current local time:", new Date().toLocaleString());
+         // Debug info removed
     
     setValue("upcomingEvents", convertedEvents);
     setValue("status", program.status);
     
-    // Set thumbnail preview using helper function
-    if (program.thumbnail) {
-      setThumbnailPreview(getThumbnailUrl(program.thumbnail));
+    // Set thumbnail preview and clear form thumbnail field for editing
+    if (program.thumbnail && program.thumbnail !== "null") {
+      console.log("🖼️ Setting thumbnail preview for:", program.thumbnail);
+      setThumbnailPreview(program.thumbnail);
+      // Clear the form thumbnail field so user can upload new image
+      setValue("thumbnail", null);
+      console.log("🧹 Cleared form thumbnail field");
     } else {
+      console.log("🖼️ No existing thumbnail found");
       setThumbnailPreview(null);
+      setValue("thumbnail", null);
     }
     
     setShowModal(true);
@@ -502,6 +500,7 @@ const DecodeAdminPage = () => {
   const handleThumbnailChange = (e) => {
     const file = e.target.files[0];
     if (file) {
+      console.log("📁 New thumbnail file selected:", file.name, "Type:", file.type);
       setValue("thumbnail", file);
       
       // Create preview for UI
@@ -515,8 +514,14 @@ const DecodeAdminPage = () => {
 
   // Remove thumbnail
   const removeThumbnail = () => {
+    console.log("🗑️ Removing thumbnail - clearing form field");
     setValue("thumbnail", null);
     setThumbnailPreview(null);
+    // Force clear the form field to ensure no old value remains
+    setTimeout(() => {
+      setValue("thumbnail", null);
+      console.log("🗑️ Thumbnail field cleared again after timeout");
+    }, 100);
   };
 
   useEffect(() => {
@@ -1146,7 +1151,7 @@ const DecodeAdminPage = () => {
                         <div className="space-y-4">
                           <div className="relative">
                             <img
-                              src={getThumbnailUrl(thumbnailPreview)}
+                              src={thumbnailPreview ? `${import.meta.env.VITE_API_Image_Url}${thumbnailPreview}` : "/default.png"}
                               alt="Thumbnail preview"
                               className="max-w-xs rounded-lg border border-gray-300"
                             />
@@ -1182,10 +1187,7 @@ const DecodeAdminPage = () => {
                         </div>
                       )}
                       
-                      <input
-                        type="hidden"
-                        {...register("thumbnail")}
-                      />
+                      {/* Removed hidden input - thumbnail is handled by file input */}
                     </div>
 
                     {/* Card Points Section */}

@@ -63,32 +63,8 @@ const ICHLevels = () => {
           processedData.upcomingEvents = processedData.sessions;
         }
         
-        // If still no upcoming events, try to fetch from schedule service
-        if (!processedData.upcomingEvents || processedData.upcomingEvents.length === 0) {
-          try {
-            const scheduleResponse = await scheduleService.getScheduleEvents();
-            
-            // Filter events by program type and level
-            let scheduleEvents = [];
-            if (scheduleResponse && scheduleResponse.data) {
-              scheduleEvents = scheduleResponse.data;
-            } else if (Array.isArray(scheduleResponse)) {
-              scheduleEvents = scheduleResponse;
-            }
-            
-            // Filter for hypnotherapy events
-            const hypnotherapyEvents = scheduleEvents.filter(event => 
-              event.programType === 'hypnotherapy' || 
-              (event.eventName && event.eventName.toLowerCase().includes('hypnotherapy'))
-            );
-            
-            if (hypnotherapyEvents.length > 0) {
-              processedData.upcomingEvents = hypnotherapyEvents;
-            }
-          } catch (scheduleErr) {
-            // Schedule service fallback failed
-          }
-        }
+        // Only use the program's own upcoming events - don't fetch from schedule service
+        // Each program should only show its own events, not events from other programs
         
         setProgramData(processedData);
       } catch (err) {
@@ -113,15 +89,21 @@ const ICHLevels = () => {
   };
 
   const handleEnrollClick = () => {
-    // Get ALL upcoming events data (not just the first one)
+    // Check if there are any upcoming events available
     const allEvents = (programData?.upcomingEvents && programData.upcomingEvents.length > 0) ||
                      (programData?.events && programData.events.length > 0) ||
                      (programData?.sessions && programData.sessions.length > 0) ||
                      [];
 
+    if (allEvents.length === 0) {
+      // No events available - show alert or handle appropriately
+      alert("No upcoming sessions available at the moment. Please check back later or contact us for more information.");
+      return;
+    }
+
     // Pass the FIRST event as selectedEvent so upcomingEventId gets set correctly
     // This ensures the form has a valid upcomingEventId when submitting
-    const firstEvent = allEvents.length > 0 ? allEvents[0] : null;
+    const firstEvent = allEvents[0];
     setSelectedEvent(firstEvent);
     setIsModalOpen(true);
   };
@@ -688,12 +670,28 @@ const ICHLevels = () => {
 
               <button
                 onClick={handleEnrollClick}
-                className="font-semibold transition-colors text-center mt-auto w-full py-3 sm:py-4 px-6 text-white hover:opacity-90 cursor-pointer bg-[#C183B2]"
+                className={`font-semibold transition-colors text-center mt-auto w-full py-3 sm:py-4 px-6 text-white cursor-pointer ${
+                  (programData?.upcomingEvents && programData.upcomingEvents.length > 0) ||
+                  (programData?.events && programData.events.length > 0) ||
+                  (programData?.sessions && programData.sessions.length > 0)
+                    ? "bg-[#C183B2] hover:opacity-90"
+                    : "bg-gray-400 cursor-not-allowed"
+                }`}
                 style={{
                   borderRadius: "30px",
                 }}
+                disabled={
+                  !(programData?.upcomingEvents && programData.upcomingEvents.length > 0) &&
+                  !(programData?.events && programData.events.length > 0) &&
+                  !(programData?.sessions && programData.sessions.length > 0)
+                }
               >
-                Enroll Now
+                {(programData?.upcomingEvents && programData.upcomingEvents.length > 0) ||
+                 (programData?.events && programData.events.length > 0) ||
+                 (programData?.sessions && programData.sessions.length > 0)
+                  ? "Enroll Now"
+                  : "No Sessions Available"
+                }
               </button>
               
 

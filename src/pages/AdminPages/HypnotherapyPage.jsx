@@ -307,14 +307,11 @@ const HypnotherapyPage = () => {
   // Open edit modal with program data
   const openEditModal = (program) => {
     try {
-      console.log("=== openEditModal called ===");
-      console.log("Program data:", program);
-      console.log("Current showModal state:", showModal);
-      console.log("Current currentProgram state:", currentProgram);
+          // Debug info removed
       
       // Set current program first
       setCurrentProgram(program);
-      console.log("setCurrentProgram called");
+      // Debug info removed
       
       // Set basic form values with error handling
       try {
@@ -375,12 +372,12 @@ const HypnotherapyPage = () => {
       // Handle upcoming events with error handling
       try {
         const convertedEvents = program.upcomingEvents?.map(event => {
-          console.log("Processing event:", event);
+          // Debug info removed
           
           // If event already has startDate and endDate, convert them to datetime-local format
           if (event.startDate && event.endDate) {
             try {
-              console.log("Event has startDate/endDate:", event.startDate, event.endDate);
+              // Debug info removed
               
               // Convert to datetime-local format (YYYY-MM-DDTHH:MM)
               const startDate = new Date(event.startDate);
@@ -393,7 +390,7 @@ const HypnotherapyPage = () => {
               const formattedStartDate = localStartDate.toISOString().slice(0, 16);
               const formattedEndDate = localEndDate.toISOString().slice(0, 16);
               
-              console.log("Formatted dates (local timezone):", formattedStartDate, formattedEndDate);
+                              // Debug info removed
               
               return {
                 ...event,
@@ -413,7 +410,7 @@ const HypnotherapyPage = () => {
           // If event has old date format, convert it
           if (event.date && !event.startDate) {
             try {
-              console.log("Converting old date format:", event.date);
+              // Debug info removed
               const eventDate = new Date(event.date);
               const endDate = new Date(eventDate);
               endDate.setHours(eventDate.getHours() + 2);
@@ -425,7 +422,7 @@ const HypnotherapyPage = () => {
               const formattedStartDate = localStartDate.toISOString().slice(0, 16);
               const formattedEndDate = localEndDate.toISOString().slice(0, 16);
               
-              console.log("Converted old format dates (local timezone):", formattedStartDate, formattedEndDate);
+                              // Debug info removed
               
               const convertedEvent = {
                 ...event,
@@ -433,7 +430,7 @@ const HypnotherapyPage = () => {
                 endDate: formattedEndDate,
                 date: undefined
               };
-              console.log("Converted event:", convertedEvent);
+              // Debug info removed
               return convertedEvent;
             } catch (dateError) {
               console.error("Error converting date:", dateError);
@@ -447,7 +444,7 @@ const HypnotherapyPage = () => {
           
           // If event has no dates, create empty ones
           if (!event.startDate && !event.endDate && !event.date) {
-            console.log("Event has no dates, creating empty ones");
+            // Debug info removed
             return {
               ...event,
               startDate: "",
@@ -485,15 +482,13 @@ const HypnotherapyPage = () => {
           return event;
         }) || [];
         
-        console.log("Final converted events:", convertedEvents);
+        // Debug info removed
         setValue("upcomingEvents", convertedEvents);
         
         // Debug: Check what was actually set in the form
         setTimeout(() => {
           const formEvents = watch("upcomingEvents");
-          console.log("Form events after setValue:", formEvents);
-          console.log("Form events startDate values:", formEvents?.map(e => e.startDate));
-          console.log("Form events endDate values:", formEvents?.map(e => e.endDate));
+                  // Debug info removed
         }, 100);
       } catch (error) {
         console.error("Error setting upcoming events:", error);
@@ -502,25 +497,22 @@ const HypnotherapyPage = () => {
       
       // Handle thumbnail with error handling
       try {
-        if (program.thumbnail) {
-          setThumbnailPreview(getThumbnailUrl(program.thumbnail));
+        if (program.thumbnail && program.thumbnail !== "null") {
+          setThumbnailPreview(program.thumbnail);
+          // Clear the form thumbnail field so user can upload new image
+          setValue("thumbnail", null);
         } else {
           setThumbnailPreview(null);
+          setValue("thumbnail", null);
         }
       } catch (error) {
         console.error("Error setting thumbnail:", error);
         setThumbnailPreview(null);
+        setValue("thumbnail", null);
       }
       
-      console.log("About to set showModal to true");
+      // Debug info removed
       setShowModal(true);
-      console.log("setShowModal(true) called");
-      
-      // Check state after a short delay
-      setTimeout(() => {
-        console.log("After timeout - showModal should be true");
-        console.log("Current showModal state:", showModal);
-      }, 100);
       
     } catch (error) {
       console.error("Critical error in openEditModal:", error);
@@ -560,11 +552,7 @@ const HypnotherapyPage = () => {
     return html.replace(/<[^>]*>/g, '').trim();
   };
 
-  // Helper function to get thumbnail URL
-  const getThumbnailUrl = (thumbnail) => {
-    if (!thumbnail) return null;
-    return `https://api.ekaausa.com/uploads/${thumbnail}`;
-  };
+
 
   // Status badge color
   const getStatusColor = (status) => {
@@ -642,8 +630,7 @@ const HypnotherapyPage = () => {
 
   // Monitor modal state changes for debugging
   useEffect(() => {
-    console.log("Modal state changed - showModal:", showModal);
-    console.log("Current program:", currentProgram);
+    // Debug info removed
   }, [showModal, currentProgram]);
 
   // Loading state
@@ -798,10 +785,10 @@ const HypnotherapyPage = () => {
                 onClick={() => toggleExpand(program._id)}
               >
                 <div className="flex items-start space-x-4">
-                  {program.thumbnail && (
+                  {program.thumbnail && program.thumbnail !== "null" && (
                     <div className="flex-shrink-0">
                       <img
-                        src={`https://api.ekaausa.com/uploads/${program.thumbnail}`}
+                        src={`${import.meta.env.VITE_API_Image_Url}${program.thumbnail}`}
                         alt="Program thumbnail"
                         className="w-16 h-16 object-cover rounded-lg"
                       />
@@ -938,8 +925,7 @@ const HypnotherapyPage = () => {
                         </div>
                         <div className="ml-9 space-y-3">
                           {program.cardPoints.map((point, pointIdx) => {
-                            console.log(`Card Point ${pointIdx}:`, point);
-                            console.log(`Card Point ${pointIdx} HTML:`, point);
+                                    // Debug info removed
                             return (
                               <div key={pointIdx} className="bg-gray-50 p-3 rounded-lg">
                                                               <div 
@@ -1083,13 +1069,9 @@ const HypnotherapyPage = () => {
                   <div className="flex justify-end space-x-4 pt-6 border-t border-gray-200">
                     <button
                       onClick={() => {
-                        console.log("=== Edit button clicked ===");
-                        console.log("Program being edited:", program);
-                        console.log("Program ID:", program._id);
-                        console.log("Program title:", program.title);
-                        console.log("About to call openEditModal");
+                              // Debug info removed
                         openEditModal(program);
-                        console.log("openEditModal called");
+                                                  // Debug info removed
                       }}
                       className="bg-[#6E2D79] text-white px-4 py-2 rounded-lg hover:bg-[#5C2166] transition-colors flex items-center space-x-2"
                     >
@@ -1187,7 +1169,7 @@ const HypnotherapyPage = () => {
                   </h2>
                   <button
                     onClick={() => {
-                      console.log("Closing modal");
+                      // Debug info removed
                       setShowModal(false);
                     }}
                     className="text-white hover:text-gray-200 text-2xl"
@@ -1302,10 +1284,10 @@ const HypnotherapyPage = () => {
                             />
                           </div>
                         )}
-                        {!thumbnailPreview && currentProgram?.thumbnail && (
+                        {!thumbnailPreview && currentProgram?.thumbnail && currentProgram.thumbnail !== "null" && (
                           <div className="flex-shrink-0">
                             <img
-                              src={`https://api.ekaausa.com/uploads/${currentProgram.thumbnail}`}
+                              src={`${import.meta.env.VITE_API_Image_Url}${currentProgram.thumbnail}`}
                               alt="Current thumbnail"
                               className="w-16 h-16 object-cover rounded-lg"
                             />

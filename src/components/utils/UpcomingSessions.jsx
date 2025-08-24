@@ -5,14 +5,17 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import familyEventService from "../services/familyEventService";
 
-const UpcomingSessions = ({ id, modal }) => {
+const UpcomingSessions = ({ id, modal, selectedEventFromSchedule, fromSchedule }) => {
   const [showModal, setShowModal] = useState(false);
-  const [selectedSession, setSelectedSession] = useState(null);
+  const [selectedEvent, setSelectedEvent] = useState(null);
   const [selectedWorkshop, setSelectedWorkshop] = useState(null);
   const [sessions, setSessions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
+  
+  // Extract program ID from the id prop (this will be passed from FamilyConstellation)
+  const programId = id;
 
   // Fetch family events from API
   useEffect(() => {
@@ -23,7 +26,7 @@ const UpcomingSessions = ({ id, modal }) => {
     try {
       setLoading(true);
       setError(null);
-      const response = await familyEventService.getEvents();
+      const response = await familyEventService.getUserEvents();
       // Handle different response structures
       const events = response.events || response || [];
       setSessions(events);
@@ -36,13 +39,30 @@ const UpcomingSessions = ({ id, modal }) => {
     }
   };
 
+  // Handle event from Schedule page
+  useEffect(() => {
+    if (fromSchedule && selectedEventFromSchedule && sessions.length > 0) {
+      // Find the matching session from our local sessions
+      const matchingSession = sessions.find(
+        (session) => session._id === selectedEventFromSchedule._id
+      );
+      if (matchingSession) {
+        setSelectedEvent(matchingSession);
+        setSelectedWorkshop(matchingSession);
+        setShowModal(true);
+        // Update URL to reflect the modal state
+        navigate(`?id=${matchingSession._id}&modal=true`, { replace: true });
+      }
+    }
+  }, [fromSchedule, selectedEventFromSchedule, sessions, navigate]);
+
   useEffect(() => {
     if (id && modal === "true" && sessions.length > 0) {
       const matchingSession = sessions.find(
         (session) => session._id?.toString() === id.toString() || session.id?.toString() === id.toString()
       );
       if (matchingSession) {
-        setSelectedSession(matchingSession);
+        setSelectedEvent(matchingSession);
         setSelectedWorkshop(matchingSession);
         setShowModal(true);
       }
@@ -51,7 +71,7 @@ const UpcomingSessions = ({ id, modal }) => {
 
   const handleEnroll = (session) => {
     setSelectedWorkshop(session);
-    setSelectedSession(session);
+    setSelectedEvent(session);
     setShowModal(true);
     // Update URL when opening modal
     navigate(`?id=${session._id || session.id}&modal=true`, { replace: true });
@@ -59,6 +79,8 @@ const UpcomingSessions = ({ id, modal }) => {
 
   const handleCloseModal = () => {
     setShowModal(false);
+    setSelectedEvent(null);
+    setSelectedWorkshop(null);
 
     if (modal === "true") {
       navigate("/schedule");
@@ -131,7 +153,8 @@ const UpcomingSessions = ({ id, modal }) => {
 
   // Helper function to determine if event is enrollable
   const isEnrollable = (event) => {
-    return getPaymentLink(event) && event.status === "Open";
+    // All events are enrollable if status is Open, regardless of payment link
+    return event.status === "Open";
   };
 
   // Skeleton loader component
@@ -290,16 +313,16 @@ const UpcomingSessions = ({ id, modal }) => {
                       <td className="px-6 py-4 whitespace-nowrap text-base">
                         <button
                           onClick={() => {
-                            const paymentLink = getPaymentLink(session);
-                            if (!paymentLink) {
-                              handleEnroll(session);
-                            } else if (paymentLink.startsWith("/")) {
-                              handleEnroll(session);
+                            // Check if there's an external link (like Brooke Schwab scheduling)
+                            if (session.externalLink) {
+                              window.open(session.externalLink, "_blank");
                             } else {
-                              window.open(paymentLink, "_blank");
+                              // Always open the registration modal for Family Constellation sessions
+                              handleEnroll(session);
                             }
                           }}
                           className="px-4 py-2 bg-[#6E2D79] text-white rounded-lg hover:bg-[#8a3c97] transition-colors shadow-sm text-base cursor-pointer"
+                          title={session.externalLink ? "Click to schedule with external provider" : "Click to enroll in this session"}
                         >
                           Enroll Now
                         </button>
@@ -338,7 +361,8 @@ const UpcomingSessions = ({ id, modal }) => {
           >
             <FamilySessionForm
               onClose={handleCloseModal}
-              selectedSession={selectedSession}
+              selectedSession={selectedEvent}
+              programId={programId}
             />
           </motion.div>
         </motion.div>

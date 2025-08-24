@@ -4,8 +4,8 @@ import Header from "../components/Header";
 import Footer from "../components/Footer";
 import TestimonialCarousel from "../components/home/Testimonials";
 import ScheduleSkeleton from "../components/utils/ScheduleSkeleton";
-import scheduleService from "../components/services/scheduleService";
 import { useNavigate } from "react-router-dom";
+import scheduleService from "../components/services/scheduleService";
 
 function Schedule() {
   const navigate = useNavigate();
@@ -14,18 +14,30 @@ function Schedule() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetchScheduleEvents();
+    fetchEvents();
   }, []);
 
-  const fetchScheduleEvents = async () => {
+  const fetchEvents = async () => {
     try {
       setLoading(true);
       setError(null);
       const response = await scheduleService.getScheduleEvents();
-      setEvents(response.events || response || []);
+
+      
+      // Handle different response structures
+      let eventsData = [];
+      if (response && response.data) {
+        eventsData = response.data;
+      } else if (Array.isArray(response)) {
+        eventsData = response;
+      } else if (response && Array.isArray(response.events)) {
+        eventsData = response.events;
+      }
+      
+      setEvents(eventsData);
     } catch (err) {
-      console.error("Error fetching schedule events:", err);
-      setError(err.message || "Failed to fetch schedule events");
+      console.error("Error fetching events:", err);
+      setError(err.message || "Failed to fetch events");
       // Fallback to empty array if API fails
       setEvents([]);
     } finally {
@@ -33,105 +45,12 @@ function Schedule() {
     }
   };
 
+
+
   const handleRegister = (event) => {
     // Navigate to registration page with event ID
     navigate(`${event}`);
   };
-
-  // Helper function to format date range
-  const formatDateRange = (event) => {
-    if (event.startDate && event.endDate) {
-      const startDate = new Date(event.startDate);
-      const endDate = new Date(event.endDate);
-      
-      // Check if same day
-      if (startDate.toDateString() === endDate.toDateString()) {
-        return startDate.toLocaleDateString('en-US', { 
-          month: 'short', 
-          day: 'numeric', 
-          year: 'numeric' 
-        });
-      } else {
-        // Different days - show range
-        const startFormatted = startDate.toLocaleDateString('en-US', { 
-          month: 'short', 
-          day: 'numeric' 
-        });
-        const endFormatted = endDate.toLocaleDateString('en-US', { 
-          month: 'short', 
-          day: 'numeric', 
-          year: 'numeric' 
-        });
-        return `${startFormatted} - ${endFormatted}`;
-      }
-    }
-    
-    // Fallback to legacy date field
-    if (event.date) {
-      return event.date;
-    }
-    
-    return "TBD";
-  };
-
-  // Helper function to get event name
-  const getEventName = (event) => {
-    if (event.eventName) return event.eventName;
-    if (event.event) return event.event;
-    if (event.programTitle) return event.programTitle;
-    return "Event";
-  };
-
-  // Helper function to get facilitator
-  const getFacilitator = (event) => {
-    if (event.facilitator) return event.facilitator;
-    if (event.organisedby) return event.organisedby;
-    if (event.organiser) return event.organiser;
-    return "-";
-  };
-
-  // Helper function to get location
-  const getLocation = (event) => {
-    if (event.location) return event.location;
-    return "-";
-  };
-
-  // Helper function to get capacity
-  const getCapacity = (event) => {
-    if (event.capacity) return event.capacity;
-    return "TBD";
-  };
-
-  // Helper function to get price
-  const getPrice = (event) => {
-    if (event.price) return event.price;
-    return "-";
-  };
-
-  // Helper function to get payment link
-  const getPaymentLink = (event) => {
-    if (event.paymentLink) return event.paymentLink;
-    if (event.externalLink) return event.externalLink;
-    return null;
-  };
-
-  // Helper function to determine if event is enrollable
-  const isEnrollable = (event) => {
-    return getPaymentLink(event) && event.status === "Open";
-  };
-
-  // Helper function to get navigation link
-  const getNavigationLink = (event) => {
-    if (event.programType === "family") {
-      return "/family-constellation";
-    } else if (event.programType === "hypnotherapy") {
-      return "/decode";
-    } else if (event.programType === "ich") {
-      return "/ich/levels";
-    }
-    return "/";
-  };
-
   return (
     <div
       className="relative w-full flex flex-col overflow-x-hidden"
@@ -186,7 +105,7 @@ function Schedule() {
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.8, delay: 0.4 }}
           >
-            Explore the upcoming programs and reserve your spot today.
+            {loading ? "Loading events..." : "Explore the upcoming programs and reserve your spot today."}
           </motion.p>
 
           <motion.div
@@ -205,7 +124,7 @@ function Schedule() {
             whileHover={{ scale: 1.05 }}
           >
             <p className="text-sm mb-2 text-[#6E2D79] font-medium tracking-wider">
-              SCROLL TO EXPLORE
+              {loading ? "LOADING EVENTS..." : "SCROLL TO EXPLORE"}
             </p>
 
             <motion.div
@@ -235,7 +154,7 @@ function Schedule() {
             </motion.div>
 
             <p className="text-xs mt-3 opacity-70 text-[#6E2D79] font-light">
-              0
+              {loading ? "..." : events.length}
             </p>
           </motion.div>
         </div>
@@ -265,77 +184,110 @@ function Schedule() {
           />
         ))}
       </motion.section>
-
       <div className="px-4 py-8">
-        {/* Error Message */}
+        {/* Error Display */}
         {error && (
           <motion.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6"
+            className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg"
           >
-            <div className="flex items-center">
-              <div className="flex-shrink-0">
-                <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center">
+                <svg className="w-5 h-5 text-red-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
                 </svg>
+                <span className="text-red-800 font-medium">{error}</span>
               </div>
-              <div className="ml-3">
-                <h3 className="text-sm font-medium text-red-800">Error loading events</h3>
-                <p className="text-sm text-red-700 mt-1">{error}</p>
-                <button
-                  onClick={fetchScheduleEvents}
-                  className="mt-2 text-sm text-red-600 hover:text-red-500 underline"
-                >
-                  Try again
-                </button>
-              </div>
+              <button
+                onClick={fetchEvents}
+                className="px-3 py-1 bg-red-100 text-red-700 rounded-md hover:bg-red-200 transition-colors text-sm"
+              >
+                Retry
+              </button>
             </div>
           </motion.div>
         )}
 
-        {/* Loading State */}
-        {loading && <ScheduleSkeleton rows={8} />}
-
-        {/* Events Table */}
-        {!loading && events.length > 0 && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.5 }}
-            className="bg-white rounded-lg shadow-md overflow-hidden"
+        {/* Header with Refresh Button */}
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-xl font-semibold text-gray-800">Upcoming Events</h2>
+          <button
+            onClick={fetchEvents}
+            disabled={loading}
+            className="px-4 py-2 bg-[#6E2D79] text-white rounded-md hover:bg-[#5a2465] transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
           >
-            <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-[#6E2D79]">
-                  <tr>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider whitespace-nowrap">
-                      Event
-                    </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider whitespace-nowrap">
-                      Date
-                    </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider whitespace-nowrap">
-                      Location
-                    </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider whitespace-nowrap">
-                      Facilitator
-                    </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider whitespace-nowrap">
-                      Total Participants
-                    </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider whitespace-nowrap">
-                      Program Fees
-                    </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider whitespace-nowrap">
-                      Action
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  {events.map((event, index) => (
+            {loading ? (
+              <>
+                <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Loading...
+              </>
+            ) : (
+              <>
+                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                </svg>
+                Refresh
+              </>
+            )}
+          </button>
+        </div>
+
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5 }}
+          className="bg-white rounded-lg shadow-md overflow-hidden"
+        >
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-[#6E2D79]">
+                <tr>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider whitespace-nowrap">
+                    Event
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider whitespace-nowrap">
+                    Date
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider whitespace-nowrap">
+                    Location
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider whitespace-nowrap">
+                    Facilitator
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider whitespace-nowrap">
+                    Total Participants
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider whitespace-nowrap">
+                    Program Fees
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider whitespace-nowrap">
+                    Action
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                                 {loading ? (
+                   <ScheduleSkeleton rows={8} />
+                 ) : error ? (
+                   <tr>
+                     <td colSpan="7" className="px-4 py-4 text-center text-red-600">
+                       {error}
+                     </td>
+                   </tr>
+                 ) : events.length === 0 ? (
+                   <tr>
+                     <td colSpan="7" className="px-4 py-4 text-center text-gray-500">
+                       No events found.
+                     </td>
+                   </tr>
+                 ) : (
+                  events.map((event, index) => (
                     <motion.tr
-                      key={event._id || index}
+                      key={event.id || index}
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.3, delay: index * 0.05 }}
@@ -345,19 +297,29 @@ function Schedule() {
                       <td className="px-4 py-4">
                         <div
                           className="flex flex-col max-w-[250px] cursor-pointer"
-                          onClick={() => navigate(getNavigationLink(event))}
+                          onClick={() => {
+                            // Navigate based on program type
+                            if (event.programType === 'hypnotherapy') {
+                              navigate('/ich/level/1');
+                            } else if (event.programType === 'family') {
+                              navigate('/family-constellation');
+                            } else {
+                              // Default fallback
+                              event.pagelink && navigate(event.pagelink);
+                            }
+                          }}
                         >
                           <span className="text-sm font-bold text-[#2D2D2D] break-words">
-                            {getEventName(event).includes("Training,") ? (
+                            {(event.event || event.eventName) && (event.event || event.eventName).includes("Training,") ? (
                               <>
-                                {getEventName(event).split("Training,")[0]}Training,
+                                {(event.event || event.eventName).split("Training,")[0]}Training,
                                 <br />
                                 <span className="text-sm font-bold text-[#2D2D2D] break-words">
-                                  {getEventName(event).split("Training,")[1]}
+                                  {(event.event || event.eventName).split("Training,")[1]}
                                 </span>
                               </>
                             ) : (
-                              getEventName(event)
+                              event.event || event.eventName || "Event Name Not Available"
                             )}
                           </span>
                         </div>
@@ -365,50 +327,89 @@ function Schedule() {
 
                       <td className="px-4 py-4">
                         <div className="text-sm text-[#2D2D2D] whitespace-nowrap">
-                          {formatDateRange(event)}
+                          {event.date || event.formattedStartDate || "Date Not Available"}
                         </div>
                       </td>
                       <td className="px-4 py-4">
                         <div className="text-sm text-[#2D2D2D]">
-                          {getLocation(event)}
+                          {event.location || "Location Not Available"}
                         </div>
                       </td>
                       <td className="px-4 py-4">
                         <div className="text-sm text-[#2D2D2D]">
-                          {getFacilitator(event)}
+                          {event.facilitator || event.organisedby || event.organiser || "-"}
                         </div>
                       </td>
                       <td className="px-4 py-4">
                         <div className="text-sm">
                           <span className={`px-2 py-1 rounded-full`}>
-                            {getCapacity(event)}
+                            {event.eventType === 'fc' ? (event.capacity || event.seats || "10 Seats") : "Not Limited"}
                           </span>
                         </div>
                       </td>
                       <td className="px-4 py-4">
-                        {!isEnrollable(event) ? (
+                        {event.noenroll ? (
                           <span className="text-sm text-[#2D2D2D]">-</span>
                         ) : (
-                          <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                            {getPrice(event)}
+                          <span
+                            className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                              (event.price && event.price.includes("AED")) || event.currency === "AED"
+                                ? "bg-blue-100 text-blue-800"
+                                : (event.price && event.price.includes("USD")) || event.currency === "USD"
+                                ? "bg-green-100 text-green-800"
+                                : "bg-yellow-100 text-yellow-800"
+                            }`}
+                          >
+                            {event.price || "Price Not Available"}
                           </span>
                         )}
                       </td>
                       <td className="px-4 py-4">
-                        {!isEnrollable(event) ? (
+                        {event.noenroll ? (
                           <span className="text-sm text-[#2D2D2D]">-</span>
                         ) : (
                           <motion.button
                             whileHover={{ scale: 1.05 }}
                             whileTap={{ scale: 0.95 }}
-                            onClick={() => {
-                              const paymentLink = getPaymentLink(event);
-                              if (paymentLink && paymentLink.startsWith("/")) {
-                                handleRegister(paymentLink);
-                              } else if (paymentLink) {
-                                window.open(paymentLink, "_blank");
-                              }
-                            }}
+                                                          onClick={() => {
+                                if (event.externalLink) {
+                                  window.open(event.externalLink, "_blank");
+                                } else {
+                                  // Navigate to appropriate detail page with event data
+                                  if (event.eventType === 'hyp') {
+                                    navigate(`/ich/level/${event.programId}`, { 
+                                      state: { 
+                                        openModal: true, 
+                                        selectedEvent: event,
+                                        fromSchedule: true 
+                                      } 
+                                    });
+                                  } else if (event.eventType === 'fc') {
+                                    navigate('/family-constellation', { 
+                                      state: { 
+                                        openModal: true, 
+                                        selectedEvent: event,
+                                        fromSchedule: true 
+                                      } 
+                                    });
+                                  } else if (event.eventType === 'decode') {
+                                    navigate(`/decode/level/${event.programId}`, { 
+                                      state: { 
+                                        openModal: true, 
+                                        selectedEvent: event,
+                                        fromSchedule: true 
+                                      } 
+                                    });
+                                  } else {
+                                    // Fallback to existing logic
+                                    if (event.link && event.link.startsWith("/")) {
+                                      handleRegister(event.link);
+                                    } else if (event.link) {
+                                      window.location.href = event.link;
+                                    }
+                                  }
+                                }
+                              }}
                             className="px-3 py-2 bg-[#6E2D79] text-white text-xs rounded-md hover:bg-[#5a2465] transition-colors cursor-pointer"
                           >
                             Enroll Now
@@ -416,27 +417,12 @@ function Schedule() {
                         )}
                       </td>
                     </motion.tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </motion.div>
-        )}
-
-        {/* No Events State */}
-        {!loading && events.length === 0 && !error && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="text-center py-12 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300"
-          >
-            <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-            </svg>
-            <h3 className="mt-2 text-sm font-medium text-gray-900">No events scheduled</h3>
-            <p className="mt-1 text-sm text-gray-500">Check back later for upcoming events.</p>
-          </motion.div>
-        )}
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        </motion.div>
       </div>
       <TestimonialCarousel />
       <Footer />

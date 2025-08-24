@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import Testimonials from "../components/home/Testimonials";
@@ -15,6 +15,14 @@ function FamilyConstellation() {
   const searchParams = new URLSearchParams(location.search);
   const id = searchParams.get("id") || "1";
   const modal = searchParams.get("modal");
+
+  // Handle location state from Schedule page
+  useEffect(() => {
+    if (location.state?.fromSchedule && location.state?.openModal && location.state?.selectedEvent) {
+      // Clear the state to prevent reopening on refresh
+      window.history.replaceState({}, document.title);
+    }
+  }, [location.state]);
 
   return (
     <div>
@@ -49,8 +57,13 @@ function FamilyConstellation() {
         </div>
       </div>
       <ProfileCard />
-      <UpcomingSessions id={id} modal={modal} />
-      <FAQ />
+      <UpcomingSessions 
+        id={id} 
+        modal={modal} 
+        selectedEventFromSchedule={location.state?.selectedEvent}
+        fromSchedule={location.state?.fromSchedule}
+      />
+      {/* <FAQ /> */}
       <Testimonials />
       <Footer />
     </div>

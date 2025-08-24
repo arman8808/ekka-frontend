@@ -4,11 +4,8 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import toast from "react-hot-toast";
 import {
-  Camera,
-  Upload,
   AlertCircle,
   CheckCircle,
-  User,
   X,
 } from "lucide-react";
 
@@ -41,43 +38,34 @@ const hearAboutOptions = [
   "Other",
 ];
 
-// City options for select dropdown
-const cityOptions = [
-  {
-    value: "Houston | Hypnotherapy L3 Training | 13th-17th Aug",
-    label:
-      "Houston | Advanced Course in Integrated Hypnotic Modalities for Health Resolutions | 13th-17th Aug",
-    level: 3,
-    levelName:
-      "Advanced Course in Integrated Hypnotic Modalities for Health Resolutions",
-    date: "13th–17th Aug",
-  },
-  {
-    value: "Houston | Hypnotherapy L2 Training | 13th–17th Aug",
-    label:
-      "Houston | Course in Integrated Hypnotic Modalities for Behavioral Resolutions. | 13th–17th Aug",
-    level: 2,
-    levelName:
-      "Course in Integrated Hypnotic Modalities for Behavioral Resolutions.",
-    date: "13th–17th Aug",
-  },
-  {
-    value: "Houston | Hypnotherapy L1 Training | 20th-21th Aug",
-    label:
-      "Houston | Basic Course in Integrated Clinical Hypnotherapy Certification | 20th-21th Aug",
-    level: 1,
-    levelName: "Basic Course in Integrated Clinical Hypnotherapy Certification",
-    date: "20th–21st Aug",
-  },
-  {
-    value: "Houston | Hypnotherapy L1 Training | 11th Aug-12th Aug",
-    label:
-      "Houston | Basic Course in Integrated Clinical Hypnotherapy Certification | 11th Aug-12th Aug",
-    level: 1,
-    levelName: "Basic Course in Integrated Clinical Hypnotherapy Certification",
-    date: "11th Aug-12th Aug",
-  },
-];
+// Date formatter function
+const formatDate = (dateString) => {
+  if (!dateString) return 'Date TBD';
+
+  try {
+    const date = new Date(dateString);
+    const day = date.getDate();
+    const month = date.toLocaleDateString('en-US', { month: 'short' });
+    const year = date.getFullYear();
+
+    // Add ordinal suffix to day
+    const getOrdinalSuffix = (day) => {
+      if (day > 3 && day < 21) return 'th';
+      switch (day % 10) {
+        case 1: return 'st';
+        case 2: return 'nd';
+        case 3: return 'rd';
+        default: return 'th';
+      }
+    };
+    return `${day}${getOrdinalSuffix(day)} ${month} ${year}`;
+  } catch (error) {
+    return 'Date TBD';
+  }
+};
+
+// City options for select dropdown - will be populated dynamically
+const cityOptions = [];
 
 // Validation Schema
 const schema = yup.object().shape({
@@ -94,8 +82,6 @@ const schema = yup.object().shape({
   city: yup.string().required("City is required"),
   dob: yup.date().required("Date of birth is required"),
   occupation: yup.string().required("Occupation is required"),
-  profileImage: yup.mixed().optional("Profile photo is required"),
-  frontImage: yup.mixed().optional("Front ID photo is required"),
   termsandcondition: yup
     .boolean()
     .oneOf([true], "You must accept the terms and conditions")
@@ -183,74 +169,7 @@ const ErrorAlert = ({ error, onClose }) => (
 //   );
 // };
 
-// Upload Box Component
-const UploadBox = ({ side, image, onUpload, error }) => {
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
 
-    // Create preview URL
-    const preview = URL.createObjectURL(file);
-    onUpload({ file, preview }); // Pass both file and preview
-  };
-  return (
-    <div className="flex flex-col items-center space-y-4">
-      <div className="relative">
-        <input
-          type="file"
-          accept="image/*"
-          onChange={handleFileChange}
-          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-          id={`upload-${side}`}
-        />
-        <label
-          htmlFor={`upload-${side}`}
-          className={`flex flex-col items-center justify-center w-32 h-24 border-2 border-dashed rounded-lg cursor-pointer transition-colors duration-200 ${
-            error
-              ? "border-red-300 hover:border-red-400 hover:bg-red-50"
-              : "border-gray-300 hover:border-[#9D4EDD] hover:bg-gray-50"
-          }`}
-        >
-          {image ? (
-            <img
-              src={image}
-              alt={`${side} side of document`}
-              className="w-full h-full object-cover rounded-lg"
-            />
-          ) : (
-            <>
-              <Camera
-                size={24}
-                className={error ? "text-red-400" : "text-gray-400"}
-              />
-              <Upload
-                size={16}
-                className={error ? "text-red-400" : "text-gray-400"}
-              />
-            </>
-          )}
-        </label>
-      </div>
-
-      <div className="text-center">
-        <p
-          className={`text-sm font-medium mb-1 ${
-            error ? "text-red-600" : "text-gray-700"
-          }`}
-        >
-          {side === "front" ? "Front ID" : "Back ID"} Photo
-        </p>
-        {error && <p className="text-xs text-red-500 mt-1">{error}</p>}
-      </div>
-
-      <p className="text-xs text-[#9D4EDD] text-center max-w-40 leading-relaxed">
-        {side === "front"
-          ? "Please write your name legibly on the reverse of your ID*"
-          : "Back side of ID (optional)"}
-      </p>
-    </div>
-  );
-};
 
 // Form Input Component
 const FormInput = ({
@@ -399,10 +318,12 @@ const FormCheckbox = ({ label, name, register, error, className = "" }) => (
   </div>
 );
 
-const RegistrationForm = ({ onClose = () => {}, level, date }) => {
+const RegistrationForm = ({ onClose = () => {}, level, date, eventData, allUpcomingEvents = [] }) => {
   const [showThankYou, setShowThankYou] = useState(false);
   const [apiError, setApiError] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+
 
   const {
     control,
@@ -417,10 +338,9 @@ const RegistrationForm = ({ onClose = () => {}, level, date }) => {
       levelName: localStorage.getItem("level") || "",
       communicationPreferences: false,
       isSameAddress: false,
-      profileImage:
-        "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=",
-      frontImage:
-        "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=",
+      upcomingEventId: eventData?._id || "",
+      programId: level || "",
+      city: eventData ? `${eventData.location || 'Location TBD'} | ${eventData.eventName || eventData.event || 'Session'} | ${eventData.startDate ? new Date(eventData.startDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'Date TBD'}` : "",
     },
   });
 
@@ -461,9 +381,39 @@ const RegistrationForm = ({ onClose = () => {}, level, date }) => {
     }
   }, [city, setValue]);
 
-  const handleFileUpload = (file, fieldName) => {
-    setValue(fieldName, file);
-  };
+  // Populate city options dynamically from allUpcomingEvents
+  useEffect(() => {
+    if (allUpcomingEvents && allUpcomingEvents.length > 0) {
+      // Create dynamic city options from ALL upcoming events
+      const dynamicCityOptions = allUpcomingEvents.map(event => ({
+        value: `${event.location || 'Location TBD'} | ${event.eventName || event.event || 'Session'} | ${formatDate(event.startDate || event.date)}`,
+        label: `${event.location || 'Location TBD'} | ${event.eventName || event.event || 'Session'} | ${formatDate(event.startDate || event.date)}`,
+        level: parseInt(level) || 1,
+        levelName: event.eventName || event.event || `Level ${level}`,
+        date: formatDate(event.startDate || event.date),
+        id: event._id
+      }));
+      
+      // Update the cityOptions array
+      cityOptions.length = 0;
+      cityOptions.push(...dynamicCityOptions);
+      
+      // Pre-select the city if eventData is provided (for specific event enrollment)
+      if (eventData) {
+        const cityValue = `${eventData.location || 'Location TBD'} | ${eventData.eventName || eventData.event || 'Session'} | ${formatDate(eventData.startDate || eventData.date)}`;
+        setValue("city", cityValue);
+        
+        // Also set the upcomingEventId when eventData is available
+        if (eventData._id) {
+          setValue("upcomingEventId", eventData._id);
+        }
+      }
+    } else {
+      cityOptions.length = 0;
+    }
+  }, [allUpcomingEvents, eventData, level, setValue]);
+
+
 
   const onSubmit = async (data) => {
     setIsSubmitting(true);
@@ -472,22 +422,9 @@ const RegistrationForm = ({ onClose = () => {}, level, date }) => {
     try {
       const formData = new FormData();
 
-      const dummyImageData = new Blob(
-        [
-          "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=",
-        ],
-        { type: "image/png" }
-      );
-      const dummyImage = new File([dummyImageData], "/default-profile.png", {
-        type: "image/png",
-      });
-
-      // Add dummy profile image
-      // formData.append("profileImage", dummyImage);
-
-      // Process other fields
+      // Process all fields except upcomingEventId, programId, and city (we'll handle them separately)
       Object.entries(data).forEach(([key, value]) => {
-       if (value !== null && value !== undefined) {
+        if (value !== null && value !== undefined && key !== 'upcomingEventId' && key !== 'programId' && key !== 'city') {
           formData.append(key, value);
         }
       });
@@ -496,9 +433,25 @@ const RegistrationForm = ({ onClose = () => {}, level, date }) => {
         formData.append("level", level);
       }
 
-      const loadingToast = toast.loading("Submitting registration...");
+      // Add the new required fields (only once)
+      if (data.upcomingEventId) {
+        formData.append("upcomingEventId", data.upcomingEventId);
+      } else {
+        // Fallback: try to get upcomingEventId from the selected city option
+        const selectedCityOption = cityOptions.find(option => option.value === data.city);
+        if (selectedCityOption && selectedCityOption.id) {
+          formData.append("upcomingEventId", selectedCityOption.id);
+        }
+      }
+      if (data.programId) {
+        formData.append("programId", data.programId);
+      }
+      if (data.city) {
+        formData.append("city", data.city);
+      }
+
+            const loadingToast = toast.loading("Submitting registration...");
       const response = await registrationService.submitRegistration(formData);
-console.log(response,'response');
 
       toast.dismiss(loadingToast);
       toast.success("Registration submitted successfully!");
@@ -578,26 +531,31 @@ console.log(response,'response');
             {apiError && (
               <ErrorAlert error={apiError} onClose={() => setApiError(null)} />
             )}
-
-            {/* Profile Image Section */}
-            {/* <div>
-              <div className="bg-[#F8F1FF] h-[2px] mb-6"></div>
-              <div className="flex justify-center">
-                <Controller
-                  name="profileImage"
-                  control={control}
-                  render={({ field }) => (
-                    <ProfileImageUpload
-                      image={field.value?.preview}
-                      onUpload={(uploadData) => {
-                        field.onChange(uploadData);
-                      }}
-                      error={errors.profileImage?.message}
-                    />
-                  )}
-                />
+            
+            {/* Debug form errors */}
+            {process.env.NODE_ENV === 'development' && Object.keys(errors).length > 0 && (
+              <div className="mb-4 p-4 bg-yellow-50 border border-yellow-200 rounded-md">
+                <div className="flex items-center">
+                  <AlertCircle className="h-5 w-5 text-yellow-400 mr-2" />
+                  <div className="flex-1">
+                    <h3 className="text-sm font-medium text-yellow-800">Form Validation Errors</h3>
+                    <div className="text-sm text-yellow-700 mt-1">
+                      {Object.entries(errors).map(([field, error]) => (
+                        <div key={field}>
+                          <strong>{field}:</strong> {error?.message || 'Invalid'}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
               </div>
-            </div> */}
+            )}
+
+
+
+            {/* Hidden fields for required data */}
+            <input type="hidden" {...register("upcomingEventId")} />
+            <input type="hidden" {...register("programId")} />
 
             {/* Personal Information */}
             <div>
@@ -700,11 +658,7 @@ console.log(response,'response');
                   <FormRadioGroup
                     label="City"
                     name="city"
-                    options={cityOptions.filter(
-                      (option) =>
-                        option.level.toString() === level &&
-                        option.date.toString() == date
-                    )}
+                    options={cityOptions}
                     control={control}
                     error={errors.city}
                     required
@@ -713,54 +667,7 @@ console.log(response,'response');
               </div>
             </div>
 
-            {/* ID Upload Section */}
-            {/* <div className="w-full max-w-4xl mx-auto p-6 bg-white">
-              <div className="mb-8">
-                <h2 className="text-lg font-medium text-gray-800 mb-2">
-                  Attach a Photo Proof.
-                  <span className="text-red-500">*</span>
-                </h2>
-              </div>
 
-              <div className="flex flex-col md:flex-row justify-center items-start gap-8 md:gap-16">
-                <Controller
-                  name="frontImage"
-                  control={control}
-                  render={({ field }) => (
-                    <UploadBox
-                      side="front"
-                      image={field.value?.preview}
-                      onUpload={(file) => {
-                        handleFileUpload(file, "frontImage");
-                        field.onChange(file);
-                      }}
-                      error={errors.frontImage?.message}
-                    />
-                  )}
-                />
-
-                <Controller
-                  name="backImage"
-                  control={control}
-                  render={({ field }) => (
-                    <UploadBox
-                      side="back"
-                      image={field.value?.preview}
-                      onUpload={(file) => {
-                        handleFileUpload(file, "backImage");
-                        field.onChange(file);
-                      }}
-                    />
-                  )}
-                />
-              </div>
-
-              <div className="mt-8 text-center">
-                <p className="text-sm text-gray-600">
-                  Accepted formats: JPG, PNG, PDF (Max size: 5MB)
-                </p>
-              </div>
-            </div> */}
 
             {/* How did you hear about us */}
             <div>

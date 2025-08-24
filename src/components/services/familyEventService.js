@@ -23,7 +23,27 @@ api.interceptors.request.use(
 );
 
 const familyEventService = {
-  // Get all events with pagination and search
+  // Get all events for users (no admin token required)
+  getUserEvents: async () => {
+    try {
+      const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}familyEvent/user`);
+      return response.data;
+    } catch (error) {
+      throw error.response?.data?.message || error.message;
+    }
+  },
+
+  // Get single event for users by ID
+  getUserEventById: async (id) => {
+    try {
+      const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}familyEvent/user/${id}`);
+      return response.data;
+    } catch (error) {
+      throw error.response?.data?.message || error.message;
+    }
+  },
+
+  // Get all events with pagination and search (admin only)
   getEvents: async (search = "", page = 1, limit = 50) => {
     try {
       const response = await api.get("", {

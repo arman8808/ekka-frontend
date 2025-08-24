@@ -1,7 +1,18 @@
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
 import familyService from "../services/familyConsitalation";
 import toast from "react-hot-toast";
+
+// Validation Schema
+const schema = yup.object().shape({
+  fullName: yup.string().required("Full name is required"),
+  email: yup.string().email("Please enter a valid email address").required("Email is required"),
+  phone: yup.string().required("Phone number is required"),
+  termsandcondition: yup.boolean().oneOf([true], "You must accept the terms and conditions").required(),
+});
+
 const FormCheckbox = ({ label, name, register, error, className = "" }) => (
   <div className={`flex items-start space-x-3 mt-4 ${className}`}>
     <input
@@ -18,7 +29,7 @@ const FormCheckbox = ({ label, name, register, error, className = "" }) => (
     {error && <p className="text-red-500 text-xs mt-1 ml-7">{error}</p>}
   </div>
 );
-const FamilySessionForm = ({ onClose, selectedSession }) => {
+const FamilySessionForm = ({ onClose, selectedSession, programId }) => {
   const [IsSubmitting, setIsSubmitting] = useState(false);
   const [showThankYou, setShowThankYou] = useState(false);
   const {
@@ -27,32 +38,26 @@ const FamilySessionForm = ({ onClose, selectedSession }) => {
     formState: { errors, isSubmitting },
     reset,
   } = useForm({
+    resolver: yupResolver(schema),
     defaultValues: {
       termsandcondition: false,
     },
   });
-  const onSubmit = async (data) => {
-    setIsSubmitting(true);
-    const loadingToast = toast.loading("Processing your registration...");
+     const onSubmit = async (data) => {
+     setIsSubmitting(true);
+     const loadingToast = toast.loading("Processing your registration...");
 
-    try {
-      const formData = {
-        session: {
-          id: selectedSession.id,
-          Event: selectedSession.Event,
-          Date: selectedSession.Date,
-          Location: selectedSession.Location,
-          organisedby: selectedSession.organisedby,
-          organiserEmail: selectedSession.organiserEmail,
-          capacity: selectedSession.capacity,
-          status: selectedSession.status,
-        },
-        fullName: data.fullName,
-        email: data.email,
-        phone: data.phone,
-        communicationPreferences: data.communicationPreferences || false,
-        termsAccepted: data.termsandcondition || false,
-      };
+           try {
+        const formData = {
+          programId: selectedSession._id, // Use the event's _id as programId
+          fullName: data.fullName,
+          email: data.email,
+          phone: data.phone,
+          termsAndCondition: data.termsandcondition || false, // Fixed field name
+          communicationPreferences: data.communicationPreferences || false,
+        };
+
+
 
       const response = await familyService.registerSession(formData);
 
@@ -166,40 +171,43 @@ const FamilySessionForm = ({ onClose, selectedSession }) => {
               <h2 className="text-2xl font-bold text-[#6E2D79] mb-2">
                 Book Your Session
               </h2>
-              <p className="text-gray-600 mb-2">
-                Selected Session: {selectedSession?.Event} on{" "}
-                {selectedSession?.Date}
-              </p>
+                             <p className="text-gray-600 mb-2">
+                 Selected Session: {selectedSession?.event} on{" "}
+                 {selectedSession?.date}
+               </p>
               <div className="w-16 h-1 bg-[#6E2D79] mx-auto"></div>
             </div>
 
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+              {/* Hidden field for program ID */}
+              <input type="hidden" value={programId} />
+              
               {/* Session Details Display - Purple Theme */}
               <div className="bg-[#F5EDF7] border border-[#C183B2] rounded-lg p-4">
                 <label className="block text-[#6E2D79] font-medium mb-3">
                   Session Details
                 </label>
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <p className="text-sm text-[#6E2D79] opacity-80">Event</p>
-                    <p className="font-medium text-[#6E2D79]">
-                      {selectedSession?.Event}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-[#6E2D79] opacity-80">Date</p>
-                    <p className="font-medium text-[#6E2D79]">
-                      {selectedSession?.Date}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-[#6E2D79] opacity-80">
-                      Location
-                    </p>
-                    <p className="font-medium text-[#6E2D79]">
-                      {selectedSession?.Location}
-                    </p>
-                  </div>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                                     <div>
+                     <p className="text-sm text-[#6E2D79] opacity-80">Event</p>
+                     <p className="font-medium text-[#6E2D79]">
+                       {selectedSession?.event}
+                     </p>
+                   </div>
+                   <div>
+                     <p className="text-sm text-[#6E2D79] opacity-80">Date</p>
+                     <p className="font-medium text-[#6E2D79]">
+                       {selectedSession?.date}
+                     </p>
+                   </div>
+                   <div>
+                     <p className="text-sm text-[#6E2D79] opacity-80">
+                       Location
+                     </p>
+                     <p className="font-medium text-[#6E2D79]">
+                       {selectedSession?.location}
+                     </p>
+                   </div>
                   {/* <div>
                 <p className="text-sm text-[#6E2D79] opacity-80">
                   Organized By
@@ -222,6 +230,14 @@ const FamilySessionForm = ({ onClose, selectedSession }) => {
                       {selectedSession?.status}
                     </p>
                   </div>
+                  {selectedSession?.price && (
+                    <div>
+                      <p className="text-sm text-[#6E2D79] opacity-80">Price</p>
+                      <p className="font-medium text-[#6E2D79]">
+                        {selectedSession?.price}
+                      </p>
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -236,13 +252,7 @@ const FamilySessionForm = ({ onClose, selectedSession }) => {
                   className={`w-full px-4 py-3 rounded-lg border border-[#E5D0E9] bg-white focus:outline-none focus:ring-1 focus:ring-[#6E2D79] text-gray-700 ${
                     errors.fullName ? "border-red-300" : ""
                   }`}
-                  {...register("fullName", {
-                    required: "Full name is required",
-                    minLength: {
-                      value: 2,
-                      message: "Name must be at least 2 characters",
-                    },
-                  })}
+                                     {...register("fullName")}
                 />
                 {errors.fullName && (
                   <p className="mt-2 text-red-500 text-sm">
@@ -261,13 +271,7 @@ const FamilySessionForm = ({ onClose, selectedSession }) => {
                     className={`w-full px-4 py-3 rounded-lg border border-[#E5D0E9] bg-white/90 focus:outline-none focus:ring-1 focus:ring-[#6E2D79] text-gray-700 ${
                       errors.email ? "border-red-300" : ""
                     }`}
-                    {...register("email", {
-                      required: "Email is required",
-                      pattern: {
-                        value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                        message: "Invalid email address",
-                      },
-                    })}
+                                       {...register("email")}
                   />
                   {errors.email && (
                     <p className="mt-2 text-red-500 text-sm">
@@ -297,13 +301,7 @@ const FamilySessionForm = ({ onClose, selectedSession }) => {
                         className={`w-full px-4 py-3 rounded-lg border border-[#E5D0E9] bg-white/90 focus:outline-none focus:ring-1 focus:ring-[#6E2D79] text-gray-700 ${
                           errors.phone ? "border-red-300" : ""
                         }`}
-                        {...register("phone", {
-                          required: "Phone number is required",
-                          pattern: {
-                            value: /^\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}$/,
-                            message: "Please enter a valid US phone number",
-                          },
-                        })}
+                        {...register("phone")}
                       />
                     </div>
                   </div>
@@ -356,10 +354,6 @@ const FamilySessionForm = ({ onClose, selectedSession }) => {
                     register={register}
                     error={errors.termsandcondition?.message}
                     className="mt-3"
-                    {...register("termsandcondition", {
-                      required:
-                        "You must accept the terms and conditions to proceed",
-                    })}
                   />
                   {errors.termsandcondition && (
                     <p className="text-red-500 text-xs mt-1">

@@ -1,5 +1,5 @@
 import React, { useRef, useState } from "react";
-import { Clock, GraduationCap } from "lucide-react";
+import { Clock, GraduationCap, RefreshCw, AlertCircle } from "lucide-react";
 import {
   FaPlay,
   FaPause,
@@ -10,103 +10,6 @@ import {
   FaCog,
 } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
-const courseData = [
-  {
-    id: 5,
-    title: "DECODE THE CHILD",
-    subtitle:
-      "A Masterclass to the DECODE Series",
-    tag: "This Level covers",
-    points: [
-      "A Transformational Workshop for Parents, Teachers, and Caregivers",
-      "Chakra stretches",
-      "Inner Right – A deep trance process to release cell memory programs",
-    ],
-    duration: "9 am to 1 pm",
-    skill: "All levels",
-    buttonText: "Enroll Now",
-    videoSrc:
-      "https://d2nxi4iq5glqsu.cloudfront.net/8-Decode+for+parents+%26+teacher.mp4",
-    thumbnailSrc: "/decode/decodethechild.jpeg",
-    overlayText: "DECODE YOUR BLUE PRINT",
-    overlaySubtext: "15 mins",
-  },
-  {
-    id: 1,
-    title: "LEVEL 1: Decode Your Mind",
-    subtitle: "Level 1: Decode Your Mind",
-    tag: "This Level Course",
-    points: [
-      "The Flip in self-perception – A logical model explaining how and why we must transform ourselves to change our reality",
-      "Theory of Mind and how it functions",
-      "Introduction to what a hypnotic/meditative/trance state is",
-    ],
-    duration: "1 Day",
-    skill: "All levels",
-    buttonText: "Enroll Now",
-    videoSrc: "https://d2nxi4iq5glqsu.cloudfront.net/4-Decode+your+Mind.mp4",
-    thumbnailSrc: "/level-1.jpeg",
-    overlayText: "DECODE YOUR MIND",
-    overlaySubtext: "15 mins",
-  },
-  {
-    id: 2,
-    title: "LEVEL 2: Decode Your Behaviour",
-    subtitle: "Level 2: Decode Your Behaviour",
-    tag: "This Level explains",
-    points: [
-      "The interaction of the different human bodies that constitute the human system",
-      "The interplay between thoughts & emotions as a prelude to our behaviour",
-      "Body syndromes – the association between repressed emotional pain and body breakdown",
-    ],
-    duration: "2 Day",
-    skill: "All levels",
-    buttonText: "Enroll Now",
-    videoSrc:
-      "https://d2nxi4iq5glqsu.cloudfront.net/5-Decode+your+Behaviour.mp4",
-    thumbnailSrc: "/level-2.jpeg",
-    overlayText: "DECODE YOUR BEHAVIOUR",
-    overlaySubtext: "15 mins",
-  },
-  {
-    id: 3,
-    title: "LEVEL 3: Decode Your Relationships",
-    subtitle: "Level 3: Decode Your Relationships",
-    tag: "This Level covers",
-    points: [
-      "The 'Why' of Relationships",
-      "The Paradigms of Human Behaviour Response – Physical & Emotional Sexuality",
-      "A blueprint to understand & heal our relationships with our partners",
-    ],
-    duration: "2 Day",
-    skill: "All levels",
-    buttonText: "Enroll Now",
-    videoSrc:
-      "https://d2nxi4iq5glqsu.cloudfront.net/6-Decode+your+Relationships.mp4",
-    thumbnailSrc: "/level-3.jpeg",
-    overlayText: "DECODE YOUR RELATIONSHIPS",
-    overlaySubtext: "15 mins",
-  },
-  {
-    id: 4,
-    title: "LEVEL 4: Decode Your Blue Print",
-    subtitle: "Level 4: Decode Your Blue Print",
-    tag: "This Level covers",
-    points: [
-      "Breath-work",
-      "Chakra stretches",
-      "Inner Right – A deep trance process to release cell memory programs",
-    ],
-    duration: "2 Day",
-    skill: "All levels",
-    buttonText: "Enroll Now",
-    videoSrc:
-      "https://d2nxi4iq5glqsu.cloudfront.net/7-Decode+your+Blueprint.mp4",
-    thumbnailSrc: "/level-4.jpeg",
-    overlayText: "DECODE YOUR BLUE PRINT",
-    overlaySubtext: "15 mins",
-  },
-];
 
 // Video Player Component
 const VideoPlayer = ({
@@ -316,76 +219,178 @@ const VideoPlayer = ({
   );
 };
 
-const Card = () => {
+const Card = ({ programs = [], loading = false, error = null, onRetry }) => {
   const [selectedLevel, setSelectedLevel] = useState(null);
   const navigate = useNavigate();
 
   const handleEnrollNow = (levelNumber) => {
-    const findLevel = courseData.find((data) => data.id === levelNumber);
+    const findLevel = programs.find((data) => data.id === levelNumber || data._id === levelNumber);
 
     if (findLevel) {
-      setSelectedLevel(findLevel.subtitle);
+      setSelectedLevel(findLevel.subtitle || findLevel.title);
       localStorage.setItem("level", findLevel.title);
-      navigate(`/level/${levelNumber}`);
+      navigate(`/decode/level/${levelNumber}`);
     } else {
-      console.log("Level not found");
+      // Level not found - handle gracefully
     }
   };
 
-  return (
-    <div className="flex flex-col items-center py-8 md:py-10 lg:py-14 px-4 sm:px-6 md:px-8">
-      {courseData.map((course, idx) => (
-        <div key={idx} className="relative w-full flex flex-col items-center">
+  // Loading state
+  if (loading) {
+    return (
+      <div className="flex flex-col items-center py-8 md:py-10 lg:py-14 px-4 sm:px-6 md:px-8">
+        <div className="w-full max-w-7xl">
+          <div className="flex items-center justify-center py-16">
+            <div className="flex items-center space-x-2">
+              <RefreshCw className="w-6 h-6 animate-spin text-[#6E2D79]" />
+              <span className="text-[#6E2D79] font-medium">Loading programs...</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Error state
+  if (error) {
+    return (
+      <div className="flex flex-col items-center py-8 md:py-10 lg:py-14 px-4 sm:px-6 md:px-8">
+        <div className="w-full max-w-7xl">
+          <div className="bg-red-50 border border-red-200 rounded-lg p-8 text-center">
+            <div className="flex items-center justify-center space-x-2 mb-4">
+              <AlertCircle className="w-6 h-6 text-red-600" />
+              <h3 className="text-red-800 font-semibold">Error Loading Programs</h3>
+            </div>
+            <p className="text-red-700 mb-4">{error}</p>
+            <button
+              onClick={onRetry}
+              className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors flex items-center space-x-2 mx-auto"
+            >
+              <RefreshCw className="w-4 h-4" />
+              <span>Try again</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Empty state
+  if (!programs || programs.length === 0) {
+    return (
+      <div className="flex flex-col items-center py-8 md:py-10 lg:py-14 px-4 sm:px-6 md:px-8">
+        <div className="w-full max-w-7xl">
+          <div className="bg-gray-50 border border-gray-200 rounded-lg p-8 text-center">
+            <div className="text-gray-500 text-lg">No programs found</div>
+            <p className="text-gray-400 mt-2">
+              Check back later for upcoming decode programs.
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+     return (
+     <div className="flex flex-col items-center py-8 md:py-10 lg:py-14 px-4 sm:px-6 md:px-8">
+       {[...programs].reverse().map((course, idx) => (
+        <div key={course.id || course._id || idx} className="relative w-full flex flex-col items-center">
           {/* Card */}
           <div className="w-full flex flex-col items-center">
             <div className="w-full max-w-7xl bg-white rounded-xl border border-[#ccc] flex flex-col lg:flex-row justify-between items-start p-5 sm:p-6 lg:p-10 gap-6 sm:gap-8 z-10">
               {/* Left Side */}
               <div className="flex-1 lg:w-3/5 space-y-1">
                 <h2 className="font-['Poppins'] font-medium text-2xl sm:text-3xl md:text-4xl leading-[1.2] sm:leading-[1.3] md:leading-[72px] text-[#6E2D79]">
-                  {course.title}
+                  {course.title || course.programTitle || "Program Title"}
                 </h2>
-<p className="text-[#6E2D79] font-semibold text-[18px]">{course?.subtitle}</p>
-                <ul className="w-full pt-2 pb-2 space-y-3 sm:space-y-[14px]">
-                  {course.points.map((point, pidx) => (
-                    <li key={pidx} className="flex items-start gap-2 sm:gap-3">
-                      <span className="w-2 h-2 bg-[#6E2D79] rounded-full mt-2 sm:mt-2.5 flex-shrink-0"></span>
-                      <span className="text-base sm:text-[17px] md:text-[18px] leading-normal sm:leading-relaxed font-normal font-['Poppins'] text-justify text-[#6E2D79] px-2 sm:px-3 py-1 rounded-md w-full">
-                        {point}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
+                <p className="text-[#6E2D79] font-semibold text-[18px]">
+                  {course.subtitle || course.description || course.title || "Program Description"}
+                </p>
+                                                   <ul className="w-full pt-2 pb-2 space-y-3 sm:space-y-[14px]">
+                    {/* Show cardPoints if available, otherwise show default points */}
+                    {course.cardPoints && course.cardPoints.length > 0 ? (
+                      course.cardPoints.map((point, pidx) => {
+                        // Extract text content from HTML if it's HTML
+                        if (typeof point === 'string' && point.includes('<ul>')) {
+                          // Remove HTML tags and extract list items
+                          const textContent = point
+                            .replace(/<ul>/g, '')
+                            .replace(/<\/ul>/g, '')
+                            .replace(/<li>/g, '')
+                            .replace(/<\/li>/g, '')
+                            .replace(/\r/g, '\n') // Replace \r with \n for proper line breaks
+                            .trim();
+                          
+                          // Split by line breaks and filter out empty lines
+                          const points = textContent.split('\n').filter(p => p.trim().length > 0);
+                          
+                          return points.map((text, idx) => (
+                            <li key={`${pidx}-${idx}`} className="flex items-start gap-2 sm:gap-3">
+                              <span className="w-2 h-2 bg-[#6E2D79] rounded-full mt-2 sm:mt-2.5 flex-shrink-0"></span>
+                              <span className="text-base sm:text-[17px] md:text-[18px] leading-normal sm:leading-relaxed font-normal font-['Poppins'] text-justify text-[#6E2D79] px-2 sm:px-3 py-1 rounded-md w-full">
+                                {text.trim()}
+                              </span>
+                            </li>
+                          ));
+                        } else {
+                          // If it's plain text, display as is
+                          return (
+                            <li key={pidx} className="flex items-start gap-2 sm:gap-3">
+                              <span className="w-2 h-2 bg-[#6E2D79] rounded-full mt-2 sm:mt-2.5 flex-shrink-0"></span>
+                              <span className="text-base sm:text-[17px] md:text-[18px] leading-normal sm:leading-relaxed font-normal font-['Poppins'] text-justify text-[#6E2D79] px-2 sm:px-3 py-1 rounded-md w-full">
+                                {point}
+                              </span>
+                            </li>
+                          );
+                        }
+                      })
+                    ) : (
+                      // Default points if none provided by API
+                      [
+                        "Transformational learning experience",
+                        "Expert-led sessions",
+                        "Comprehensive program content"
+                      ].map((point, pidx) => (
+                        <li key={pidx} className="flex items-start gap-2 sm:gap-3">
+                          <span className="w-2 h-2 bg-[#6E2D79] rounded-full mt-2 sm:mt-2.5 flex-shrink-0"></span>
+                          <span className="text-base sm:text-[17px] md:text-[18px] leading-normal sm:leading-relaxed font-normal font-['Poppins'] text-justify text-[#6E2D79] px-2 sm:px-3 py-1 rounded-md w-full">
+                            {point}
+                          </span>
+                        </li>
+                      ))
+                    )}
+                  </ul>
 
                 <div className="flex flex-col items-start gap-3 sm:gap-4 pt-3 sm:pt-4">
                   <div className="flex flex-wrap gap-4 sm:gap-6 text-[#6E2D79]">
                     <div className="flex text-base sm:text-[17px] md:text-[18px] items-center gap-2">
                       <Clock size={16} />
-                      <span>Duration: {course.duration}</span>
+                      <span>Duration: {course.duration || course.length || "TBD"}</span>
                     </div>
                   </div>
                   <button
                     className="bg-[#6E2D79] hover:bg-[#6E2D79] text-base sm:text-lg md:text-[22px] text-white px-6 py-2 sm:px-8 sm:py-3 rounded-full cursor-pointer font-medium transition-colors shadow-md hover:shadow-lg"
-                    onClick={() => handleEnrollNow(course.id)}
+                    onClick={() => handleEnrollNow(course.id || course._id)}
                   >
-                    {course.buttonText} →
+                    {course.buttonText || "Enroll Now"} →
                   </button>
                 </div>
               </div>
 
-              {/* Right Side - Video Player */}
-              <div className="relative w-full lg:w-2/5 h-64 sm:h-72 md:h-80 lg:h-96 mt-4 lg:mt-0">
-                <VideoPlayer
-                  videoSrc={course.videoSrc}
-                  thumbnailSrc={course.thumbnailSrc}
-                  overlayText={course.overlayText}
-                  overlaySubtext={course.overlaySubtext}
-                />
-              </div>
+                             {/* Right Side - Video Player */}
+               <div className="relative w-full lg:w-2/5 h-64 sm:h-72 md:h-80 lg:h-96 mt-4 lg:mt-0">
+                 <VideoPlayer
+                   videoSrc={course.videoUrl || course.videoSrc || course.video || ""}
+                   thumbnailSrc={course.thumbnail || course.thumbnailSrc || course.image || "/default.png"}
+                   overlayText={course.title || "Program"}
+                   overlaySubtext={course.duration || "Duration"}
+                 />
+               </div>
             </div>
           </div>
 
           {/* Middle Image between cards */}
-          {idx < courseData.length - 1 && (
+          {idx < programs.length - 1 && (
             <div className="relative my-[-60px] sm:my-[-70px] md:my-[-80px] lg:my-[-100px] z-20 flex justify-center">
               <img
                 src="/2.2.svg"

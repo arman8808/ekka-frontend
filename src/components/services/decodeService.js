@@ -19,10 +19,22 @@ api.interceptors.request.use((config) => {
 });
 
 const decodeService = {
-  // Get all programs with pagination and search
+  // Get all programs with pagination and search (admin)
   getPrograms: async (search = '', page = 1, limit = 10) => {
     try {
       const response = await api.get('', {
+        params: { search, page, limit }
+      });
+      return response.data;
+    } catch (error) {
+      throw error.response?.data?.message || error.message;
+    }
+  },
+
+  // Get all programs for users (with filters)
+  getUserPrograms: async (search = '', page = 1, limit = 10) => {
+    try {
+      const response = await api.get('/user', {
         params: { search, page, limit }
       });
       return response.data;
@@ -65,6 +77,16 @@ const decodeService = {
   getProgramById: async (id) => {
     try {
       const response = await api.get(`/${id}`);
+      return response.data;
+    } catch (error) {
+      throw error.response?.data?.message || error.message;
+    }
+  },
+
+  // Get single program for user (with filters)
+  getUserProgramById: async (id) => {
+    try {
+      const response = await api.get(`/user/${id}`);
       return response.data;
     } catch (error) {
       throw error.response?.data?.message || error.message;

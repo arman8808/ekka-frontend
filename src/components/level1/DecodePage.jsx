@@ -2,160 +2,101 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import FormPage from "./FormPage";
 
-export default function DynamicDecodePage({ levelData, modal }) {
+export default function DynamicDecodePage({ levelData, modal, programId }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
   };
+
   useEffect(() => {
+    console.log("modal", modal);
+    
     if (modal) {
       setIsModalOpen(true);
     }
   }, [modal]);
-  const scheduleData = [
-    {
-      city: "Houston",
-      date: "Aug 10th, 2025",
-      Facilitator: "Yuvraj Kapadia",
-      title: "Master Class For teachers",
-    },
-  ];
+
+  // Parse HTML content from API and extract list items
+  const parseContent = (content) => {
+    if (!content) return [];
+
+    // Remove HTML tags and clean content
+    const cleanContent = content
+      .replace(/<[^>]*>/g, "") // Remove HTML tags
+      .replace(/&amp;/g, "&") // Fix HTML entities
+      .replace(/\r/g, "\n") // Fix line breaks
+      .trim();
+
+    // Split by newlines and filter empty lines
+    return cleanContent
+      .split("\n")
+      .filter((line) => line.trim().length > 0)
+      .map((line) => line.trim());
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-50">
       <div className="mx-auto p-4 sm:p-6">
-        {/* <div className="mb-6 sm:mb-8 flex justify-center sm:justify-start">
-          <img
-            src="/decodelogo.png"
-            alt="Decode Logo"
-            className="w-[200px] sm:w-[264.375px] h-auto object-contain"
-          />
-        </div> */}
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 lg:gap-8">
           {/* Left Section - 3/4 width on large screens */}
           <div className="lg:col-span-3 min-h-screen px-2 sm:px-4 overflow-y-auto scroll-hide">
             <div className="w-full mx-auto">
               <div className="flex-1">
-                {/* What You'll Learn */}
-                <div className="bg-white rounded-t-xl p-4 sm:p-6 shadow-sm">
-                  <div className="flex items-center gap-2 mb-2">
-                    <div className="w-[40px] h-[40px] sm:w-[50px] sm:h-[50px] bg-[#C183B2] rounded-full flex items-center justify-center">
-                      <span className="text-white font-semibold text-sm sm:text-base">
-                        1
-                      </span>
-                    </div>
-                    <h2 className="text-[20px] sm:text-[24px] text-[#6E2D79] font-semibold">
-                      What You'll Learn
-                    </h2>
-                  </div>
-                  <div className="bg-[#C183B2] h-[2px] mb-4"></div>
-                  <div className="flex flex-col lg:flex-row">
-                    {/* Left Section with Image */}
-                    <div className="hidden lg:flex w-auto items-center justify-center mb-4 lg:mb-0">
-                      <div className="w-[40px] h-[200px] sm:w-[59px] sm:h-[343px] flex items-center">
-                        <img
-                          src="/2.2.svg"
-                          alt="Leaf"
-                          className="w-auto h-full object-contain"
-                        />
+                {/* Dynamic Sections based on API learningSections */}
+                {levelData.learningSections?.map((section, sectionIndex) => (
+                  <div
+                    key={section._id || sectionIndex}
+                    className={`bg-white ${
+                      sectionIndex === 0 ? "rounded-t-xl" : ""
+                    } ${
+                      sectionIndex === levelData.learningSections.length - 1
+                        ? "rounded-b-xl"
+                        : ""
+                    } p-4 sm:p-6 shadow-sm ${sectionIndex > 0 ? "mt-4" : ""}`}
+                  >
+                    <div className="flex items-center gap-2 mb-2">
+                      <div className="w-[40px] h-[40px] sm:w-[50px] sm:h-[50px] bg-[#C183B2] rounded-full flex items-center justify-center">
+                        <span className="text-white font-semibold text-sm sm:text-base">
+                          {sectionIndex + 1}
+                        </span>
                       </div>
+                      <h2 className="text-[20px] sm:text-[24px] text-[#6E2D79] font-semibold">
+                        {section.title}
+                      </h2>
                     </div>
+                    <div className="bg-[#C183B2] h-[2px] mb-4"></div>
 
-                    {/* Right Section with Content Boxes */}
-                    <div className="ml-0 lg:ml-6 w-full">
-                      {/* Description */}
-                      {/* <div className="mb-6 sm:mb-8">
-                        <p className='text-[14px] sm:text-[15px] text-[#6E2D79] leading-relaxed'>
-                          {levelData.description}
-                        </p>
-                      </div> */}
+                    <div className="flex flex-col lg:flex-row">
+                      {/* Left Section with Image */}
+                      <div className="hidden lg:flex w-auto items-center justify-center mb-4 lg:mb-0">
+                        <div className="w-[40px] h-[200px] sm:w-[59px] sm:h-[343px] flex items-center">
+                          <img
+                            src="/2.2.svg"
+                            alt="Leaf"
+                            className="w-auto h-full object-contain"
+                          />
+                        </div>
+                      </div>
 
-                      {/* Learning Points */}
-                      <div className="mb-6 sm:mb-8 p-3 sm:p-4">
-                        <h3 className="font-semibold text-[#6E2D79] text-[18px] sm:text-[21px] mb-4"></h3>
-                        <div className="space-y-3">
-                          {levelData.what_youll_learn.map((item, idx) => (
-                            <div key={idx} className="flex items-start gap-3">
-                              <div className="w-2 h-2 bg-[#C183B2] rounded-full mt-2 flex-shrink-0"></div>
-                              <span className="text-[#6E2D79] text-sm sm:text-base">
-                                <strong>{item.heading}</strong>{" "}
-                                {item.description}
-                              </span>
-                            </div>
-                          ))}
+                      {/* Right Section with Content */}
+                      <div className="ml-0 lg:ml-6 w-full">
+                        <div className="mb-6 sm:mb-8 p-3 sm:p-4">
+                          <div className="space-y-3">
+                            {parseContent(section.content).map((item, idx) => (
+                              <div key={idx} className="flex items-start gap-3">
+                                <div className="w-2 h-2 bg-[#C183B2] rounded-full mt-2 flex-shrink-0"></div>
+                                <span className="text-[#6E2D79] text-sm sm:text-base">
+                                  {item}
+                                </span>
+                              </div>
+                            ))}
+                          </div>
                         </div>
                       </div>
                     </div>
                   </div>
-                </div>
-
-                {/* Course Benefits */}
-                <div className="bg-white rounded-b-xl p-4 sm:p-6 shadow-sm">
-                  <div className="flex items-center gap-2 mb-2">
-                    <div className="w-[40px] h-[40px] sm:w-[50px] sm:h-[50px] bg-[#C183B2] rounded-full flex items-center justify-center">
-                      <span className="text-white font-semibold text-sm sm:text-base">
-                        2
-                      </span>
-                    </div>
-                    <h2 className="text-[20px] sm:text-[24px] text-[#6E2D79] font-semibold">
-                      Course Benefits
-                    </h2>
-                  </div>
-                  <div className="bg-[#C183B2] h-[2px] mb-4"></div>
-                  <div className="flex flex-col lg:flex-row">
-                    {/* Left Section with Image */}
-                    <div className="hidden lg:flex w-auto items-center justify-center mb-4 lg:mb-0">
-                      <div className="w-[40px] h-[200px] sm:w-[59px] sm:h-[343px] flex items-center">
-                        <img
-                          src="/2.2.svg"
-                          alt="Leaf"
-                          className="w-auto h-full object-contain"
-                        />
-                      </div>
-                    </div>
-
-                    {/* Right Section with Content Boxes */}
-                    <div className="ml-0 lg:ml-6 w-full">
-                      {/* Immediate Benefits */}
-                      <div className="mb-6 sm:mb-8  rounded-lg p-3 sm:p-4">
-                        <h3 className="font-semibold text-[#6E2D79] text-[18px] sm:text-[21px] mb-4">
-                          Immediate Practical Applications
-                        </h3>
-                        <div className="space-y-3">
-                          {levelData.immediate_benefits.map((item, idx) => (
-                            <div key={idx} className="flex items-start gap-3">
-                              <div className="w-2 h-2 bg-[#C183B2] rounded-full mt-2"></div>
-                              <span className="text-[#6E2D79] text-sm sm:text-base">
-                                {item}
-                              </span>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-
-                      {/* Long-term Benefits */}
-                      <div className="mb-6 sm:mb-8 p-3 sm:p-4">
-                        {levelData.long_term_benefits && (
-                          <h3 className="font-semibold text-[#6E2D79] text-[18px] sm:text-[21px] mb-4">
-                            Long-Term Transformational Outcomes
-                          </h3>
-                        )}
-
-                        <div className="space-y-3">
-                          {levelData.long_term_benefits?.map((item, idx) => (
-                            <div key={idx} className="flex items-start gap-3">
-                              <div className="w-2 h-2 bg-[#C183B2] rounded-full mt-2"></div>
-                              <span className="text-[#6E2D79] text-sm sm:text-base">
-                                {item}
-                              </span>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+                ))}
               </div>
             </div>
           </div>
@@ -163,7 +104,7 @@ export default function DynamicDecodePage({ levelData, modal }) {
           {/* Right Section - 1/4 width on large screens */}
           <div className="lg:col-span-1 w-full">
             <div
-              className="rounded-[10px] p-4 sm:p-6 text-white flex flex-col"
+              className="rounded-[10px] p-4 sm:p-6 text-white flex flex-col mb-6"
               style={{
                 minHeight: "400px",
                 height: "auto",
@@ -172,42 +113,103 @@ export default function DynamicDecodePage({ levelData, modal }) {
             >
               <div className="mb-6">
                 <div className="flex flex-col justify-center mb-2 text-[18px] sm:text-[22.225px] opacity-90">
-                  <p className="text-[16px]">
-                    {levelData.level === 5
-                      ? "Register for Decode The Child A masterclass to the DECODE Series "
-                      : ` Enroll in Level ${levelData.level}`}
-                  </p>
+                  {levelData.level === 5
+                    ? "Register for Decode The Child A masterclass to the DECODE Series "
+                    : ` Enroll Now In`}
                 </div>
 
-                <div className="font-normal mb-2 text-[20px] sm:text-[22.225px]">
-                  {levelData.price}
-                </div>
-                <div className="text-sm opacity-90 mt-4 sm:mt-6">
-                  Next session starts: {levelData.next_session}
-                </div>
+                {/* Show first upcoming event info if available */}
+                {levelData.upcomingEvents &&
+                levelData.upcomingEvents.length > 0 ? (
+                  <div className="mb-4 p-3 bg-white/10 rounded-lg">
+                    <h4 className="font-semibold text-sm mb-2">
+                      Next Session:
+                    </h4>
+                    <p className="text-sm mb-1 font-medium">
+                      {levelData.title || `Level ${levelData.level}`}
+                    </p>
+                    <p className="text-sm opacity-90">
+                      {levelData.upcomingEvents[0]?.price ||
+                        levelData.price ||
+                        ""}
+                    </p>
+                    {levelData.upcomingEvents[0]?.location && (
+                      <p className="text-sm opacity-90">
+                        📍 {levelData.upcomingEvents[0].location}
+                      </p>
+                    )}
+                  </div>
+                ) : (
+                  <div className="mb-4 p-3 bg-yellow-500/20 rounded-lg border border-yellow-500/30">
+                    <h4 className="font-semibold text-sm mb-2 text-yellow-200">
+                      ⏰ Coming Soon
+                    </h4>
+                    <p className="text-sm opacity-90 text-yellow-100">
+                      New sessions will be announced soon. Stay tuned for
+                      updates!
+                    </p>
+                  </div>
+                )}
+
+                {/* <div className="font-bold mb-2 text-[20px] sm:text-[22.225px]">
+                   {levelData.upcomingEvents && levelData.upcomingEvents.length > 0 
+                     ? (levelData.upcomingEvents[0].price || levelData.price || "Price TBD")
+                     : levelData.price || "Price TBD"
+                   }
+                 </div> */}
+
+                {/* Show next session info if available */}
+                {levelData.upcomingEvents &&
+                  levelData.upcomingEvents.length > 0 &&
+                  levelData.next_session && (
+                    <div className="text-sm opacity-90 mt-4 sm:mt-6">
+                      Next session starts: {levelData.next_session}
+                    </div>
+                  )}
               </div>
 
-              <ul className="list-disc text-[14px] sm:text-[15px] space-y-2 pl-5 marker:text-white marker:text-[10px] mb-4">
-                {levelData.enrollment_features?.map((feature, idx) => (
-                  <li key={idx}>{feature}</li>
-                ))}
-              </ul>
+              {/* Dynamic Enrollment Features */}
+              {levelData.upcomingEvents &&
+              levelData.upcomingEvents.length > 0 ? (
+                <ul className="list-disc text-[14px] sm:text-[15px] space-y-2 pl-5 marker:text-white marker:text-[10px] mb-4">
+                  {levelData.enrollment_features?.map((feature, idx) => (
+                    <li key={idx}>{feature}</li>
+                  ))}
+                </ul>
+              ) : (
+                <div className="text-[14px] sm:text-[15px] space-y-2 mb-4">
+                  <p className="opacity-80 text-center">
+                    No enrollment features available
+                  </p>
+                </div>
+              )}
 
-              {/* Button pushed to bottom using mt-auto */}
               <button
                 onClick={() => setIsModalOpen(true)}
-                className="text-white font-semibold transition-colors text-center mt-auto hover:opacity-90 cursor-pointer w-full py-3 sm:py-4 px-6"
+                className={`font-semibold transition-colors text-center mt-auto w-full py-3 sm:py-4 px-6 ${
+                  levelData.upcomingEvents &&
+                  levelData.upcomingEvents.length > 0
+                    ? "text-white hover:opacity-90 cursor-pointer bg-[#C183B2]"
+                    : "text-gray-300 cursor-not-allowed bg-gray-500"
+                }`}
                 style={{
                   borderRadius: "30px",
-                  background: "#C183B2",
                 }}
-                disabled={!(levelData.level === 5 || levelData.level === 1)}
+                disabled={
+                  !(
+                    levelData.upcomingEvents &&
+                    levelData.upcomingEvents.length > 0
+                  )
+                }
               >
-                {levelData.level === 5 || levelData.level === 1
-                  ? "Register Now"
-                  : " Enroll Now"}
+                {levelData.upcomingEvents && levelData.upcomingEvents.length > 0
+                  ? levelData.level === 5 || levelData.level === 1
+                    ? "Register Now"
+                    : "Enroll Now"
+                  : "Registration Coming Soon"}
               </button>
             </div>
+
             <div className="bg-white rounded-xl p-4 sm:p-6 mt-6 shadow-sm">
               <div
                 className="flex flex-col items-start h-full"
@@ -216,10 +218,6 @@ export default function DynamicDecodePage({ levelData, modal }) {
                 <h3 className="mb-2 font-bold text-[18px] sm:text-[21px] text-[#4A2C82]">
                   Have Questions?
                 </h3>
-
-                {/* <p className="mb-3 text-[14px] sm:text-[15.125px] text-[#333] font-normal">
-                  Got a query to help you understand if this course is right for you?
-                </p> */}
 
                 <Link
                   to="mailto:contact@ekaausa.com"
@@ -231,6 +229,7 @@ export default function DynamicDecodePage({ levelData, modal }) {
                 </Link>
               </div>
             </div>
+
             {/* Instructor Card */}
             <div className="bg-white rounded-xl shadow-md overflow-hidden text-center mt-6">
               <img
@@ -274,6 +273,7 @@ export default function DynamicDecodePage({ levelData, modal }) {
                 with one of the world's most sought-after healers.
               </p>
             </div>
+
             {levelData.level === 5 && (
               <div className="bg-white rounded-xl shadow-md overflow-hidden text-center mt-6 ">
                 <img
@@ -306,93 +306,24 @@ export default function DynamicDecodePage({ levelData, modal }) {
                 </p>
               </div>
             )}
-            {/* <div className="bg-white rounded-xl p-4 sm:p-6 mt-6 shadow-sm">
-              <div className="flex items-start gap-4">
-                
-                <div className="flex-shrink-0">
-                  <img
-                    src="/EK-2.jpg"
-                    alt="Lead Instructor"
-                    className="w-16 h-16 sm:w-16 sm:h-16 rounded-full object-cover"
-                  />
-                </div>
-
-                
-                <div>
-
-                  <h4 className="font-semibold text-[#6E2D79] text-sm sm:text-base">Lead Instructor</h4>
-                  <p className="text-[#6E2D79] mb-3 text-sm">5 years of experience in hypnotherapy and mindfulness practices</p>
-
-                </div>
-              </div>
-
-              <p className="text-[#6E2D79] text-xs sm:text-sm">
-                Dr. Yuvraj Kapadia, founder of EKAA, pioneers subconscious healing.He empowers individuals through emotional mastery and mindful living.
-              </p>
-
-
-            </div> */}
-            {/* Brand Logo */}
-            {/* <div className="flex mt-8 sm:mt-16 justify-center space-x-2">
-              <img
-                src="/logo.svg"
-                alt="Ekaa Logo"
-                className="w-[150px] h-[170px] sm:w-[211px] sm:h-[234px] object-contain"
-              />
-            </div> */}
           </div>
         </div>
       </div>
 
-      {levelData.level === 5 && (
-        <section className="">
-          <div className="max-w-5xl mx-auto">
-            <div className="mb-6">
-              <div className="flex items-center gap-2 mb-2">
-                <div className="w-[40px] h-[40px] sm:w-[50px] sm:h-[50px] bg-[#C183B2] rounded-full flex items-center justify-center">
-                  <span className="text-white font-semibold text-sm sm:text-base">
-                    3
-                  </span>
-                </div>
-                <h2 className="text-[20px] sm:text-[24px] text-[#6E2D79] font-semibold">
-                  Upcoming Workshop
-                </h2>
-              </div>
-              <hr className="mt-2 border-t border-purple-300" />
-            </div>
-
-            <div className="overflow-x-auto">
-              <table className="min-w-full border border-purple-300 rounded-lg overflow-hidden shadow-sm">
-                <thead>
-                  <tr className="bg-[#6E2D79] text-white text-left text-sm sm:text-base">
-                    <th className="px-4 py-3 font-medium">Title</th>
-                    <th className="px-4 py-3 font-medium">City</th>
-                    <th className="px-4 py-3 font-medium">Date</th>
-                    <th className="px-4 py-3 font-medium">Facilitator</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {scheduleData.map((item, idx) => (
-                    <tr
-                      key={idx}
-                      className=" border-t border-[#A35F93] text-sm sm:text-base"
-                    >
-                      <td className="px-4 py-3">{item.title}</td>
-                      <td className="px-4 py-3">{item.city}</td>
-                      <td className="px-4 py-3">{item.date}</td>
-                      <td className="px-4 py-3">{item.Facilitator}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </section>
-      )}
-
       {/* Registration Form Modal */}
       {isModalOpen && (
-        <FormPage onClose={handleCloseModal} level={levelData.level} />
+        // <FormPage onClose={handleCloseModal} level={levelData.level} />
+        <FormPage
+          onClose={handleCloseModal}
+          level={levelData.level}
+          upcomingEventId={
+            levelData.upcomingEvents && levelData.upcomingEvents.length > 0
+              ? levelData.upcomingEvents[0]._id
+              : ""
+          }
+          programId={programId}
+          upcomingEvents={levelData.upcomingEvents}
+        />
       )}
     </div>
   );

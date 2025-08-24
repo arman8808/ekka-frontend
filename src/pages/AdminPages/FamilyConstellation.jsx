@@ -90,16 +90,24 @@ const FamilyConstellationPage = () => {
   // Helper function to set end date automatically when start date changes
   const handleStartDateChange = (e) => {
     const startDate = e.target.value;
+    console.log("Start date changed to:", startDate);
+    
     if (startDate) {
       const start = new Date(startDate);
       const end = new Date(start);
       end.setHours(end.getHours() + 2); // Default 2-hour event
       
+      console.log("Setting end date to:", end.toISOString().slice(0, 16));
       setValue("endDate", end.toISOString().slice(0, 16));
-      // Trigger validation for end date
+      
+      // Clear any existing end date errors and trigger validation
       setTimeout(() => {
         trigger("endDate");
       }, 100);
+    } else {
+      // If start date is cleared, also clear end date
+      console.log("Clearing end date");
+      setValue("endDate", "");
     }
   };
   
@@ -198,16 +206,48 @@ const FamilyConstellationPage = () => {
     // Handle date conversion - prioritize new format over legacy
     if (event.startDate && event.endDate) {
       // Use the new startDate/endDate format
-      setValue("startDate", event.startDate.slice(0, 16)); // Format for datetime-local input
-      setValue("endDate", event.endDate.slice(0, 16));
+      let startDate = event.startDate;
+      let endDate = event.endDate;
+      
+      // Convert UTC to local timezone for display
+      if (typeof startDate === 'string') {
+        try {
+          const startDateTime = new Date(startDate);
+          if (!isNaN(startDateTime.getTime())) {
+            const localStartDate = new Date(startDateTime.getTime() - (startDateTime.getTimezoneOffset() * 60000));
+            startDate = localStartDate.toISOString().slice(0, 16);
+          }
+        } catch (e) {
+          console.warn('Invalid start date format:', event.startDate);
+        }
+      }
+      
+      if (typeof endDate === 'string') {
+        try {
+          const endDateTime = new Date(endDate);
+          if (!isNaN(endDateTime.getTime())) {
+            const localEndDate = new Date(endDateTime.getTime() - (endDateTime.getTimezoneOffset() * 60000));
+            endDate = localEndDate.toISOString().slice(0, 16);
+          }
+        } catch (e) {
+          console.warn('Invalid end date format:', event.endDate);
+        }
+      }
+      
+      setValue("startDate", startDate);
+      setValue("endDate", endDate);
     } else if (event.date && !event.startDate) {
       // Convert legacy date format to start/end dates
       const eventDate = new Date(event.date);
       const endDate = new Date(eventDate);
       endDate.setHours(eventDate.getHours() + 2); // Default 2-hour event
       
-      setValue("startDate", eventDate.toISOString().slice(0, 16)); // Format for datetime-local input
-      setValue("endDate", endDate.toISOString().slice(0, 16));
+      // Convert to local timezone
+      const localStartDate = new Date(eventDate.getTime() - (eventDate.getTimezoneOffset() * 60000));
+      const localEndDate = new Date(endDate.getTime() - (endDate.getTimezoneOffset() * 60000));
+      
+      setValue("startDate", localStartDate.toISOString().slice(0, 16));
+      setValue("endDate", localEndDate.toISOString().slice(0, 16));
     } else {
       // Fallback - set empty values
       setValue("startDate", "");
@@ -261,6 +301,18 @@ const FamilyConstellationPage = () => {
       priceRegex.test(value) ||
       "Price must be in currency format (e.g., $375 or $375.00)"
     );
+  };
+
+  const validateOrganiserEmail = (value) => {
+    // Only validate if email has a value (field is optional)
+    if (value && value.trim() !== "") {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(value)) {
+        return "Please enter a valid email address";
+      }
+    }
+    
+    return true;
   };
 
   useEffect(() => {
@@ -644,6 +696,7 @@ const FamilyConstellationPage = () => {
                       <div className="relative">
                         <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-500" />
                         <input
+                          key={startDate} // Force re-render when start date changes
                           type="datetime-local"
                           {...register("endDate", {
                             required: "End date and time is required",
@@ -659,7 +712,10 @@ const FamilyConstellationPage = () => {
                               // Debug logging
                               console.log("Validation - Start Date:", startDate, "Parsed:", start);
                               console.log("Validation - End Date:", value, "Parsed:", end);
-                              console.log("Comparison:", end <= start, "End <= Start");
+                              console.log("Start timestamp:", start.getTime());
+                              console.log("End timestamp:", end.getTime());
+                              console.log("Comparison:", end < start, "End < Start (should be false for valid dates)");
+                              console.log("Same day check:", start.toDateString() === end.toDateString());
                               
                               // Check if dates are valid
                               if (isNaN(start.getTime()) || isNaN(end.getTime())) {
@@ -667,22 +723,44 @@ const FamilyConstellationPage = () => {
                               }
                               
                               // Check if end date is after start date
-                              if (end <= start) {
-                                return "End date must be after start date";
+                              // Allow same day events (end time can be after start time on same day)
+                              if (end < start) {
+                                console.log("Validation failed: End date is before start date");
+                                return "End date must be after or equal to start date";
                               }
+                              
+                              console.log("Validation passed: End date is valid");
                               
                               return true;
                             }
                           })}
-                          min={startDate || getTodayStartTime()}
+                          min={getValues("startDate") || getTodayStartTime()}
                           className={`w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#6E2D79] focus:border-transparent outline-none ${
                             errors.endDate ? "border-red-500" : "border-gray-300"
                           }`}
                         />
                       </div>
-                      <p className="mt-1 text-xs text-gray-500">
-                        End time must be after start time
-                      </p>
+                      <div className="flex items-center justify-between mt-1">
+                        <p className="text-xs text-gray-500">
+                          End time must be after start time
+                        </p>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const startDate = getValues("startDate");
+                            if (startDate) {
+                              const start = new Date(startDate);
+                              const end = new Date(start);
+                              end.setHours(end.getHours() + 2);
+                              setValue("endDate", end.toISOString().slice(0, 16));
+                              trigger("endDate");
+                            }
+                          }}
+                          className="text-xs text-[#6E2D79] hover:text-[#5C2166] underline"
+                        >
+                          Reset End Time
+                        </button>
+                      </div>
                       {errors.endDate && (
                         <p className="mt-1 text-sm text-red-600">
                           {errors.endDate.message}

@@ -49,10 +49,9 @@ const httpRequest = async (endpoint, options = {}) => {
       status: response.status,
       success: true,
     };
-  } catch (error) {
-    console.error("API Request failed:", error);
-    throw new Error(error.message || "Network request failed");
-  }
+     } catch (error) {
+     throw new Error(error.message || "Network request failed");
+   }
 };
 
 // API Service Functions - Functional approach
@@ -89,21 +88,7 @@ const useApiCall = () => {
   return { makeRequest, loading, error, setError };
 };
 
-// City-Venue-Slot mapping configuration
-const cityConfig = {
-  "New York": {
-    venue: "Main Hall",
-    slot: "Morning",
-  },
-  "Los Angeles": {
-    venue: "Conference Center",
-    slot: "Evening",
-  },
-  Chicago: {
-    venue: "Training Room",
-    slot: "Night",
-  },
-};
+
 
 // Error Alert Component
 const ErrorAlert = ({ error, onClose }) => (
@@ -172,24 +157,7 @@ const validateForm = (formData, frontImage, backImage, profileImage) => {
     errors.mobileNo = "Mobile number must be 10 digits";
   }
 
-  // if (
-  //   formData.TelNo &&
-  //   formData.TelNo.trim() !== "" &&
-  //   !phoneRegex.test(formData.TelNo)
-  // ) {
-  //   errors.TelNo = "Telephone number must be 10 digits";
-  // }
-
-  // File validation
-  // if (!profileImage) {
-  //   errors.profileImage = "Profile photo is required";
-  // }
-  // if (!frontImage) {
-  //   errors.frontImage = "Front ID photo is required";
-  // }
-  // if (!backImage) {
-  //   errors.backImage = "Back ID photo is required";
-  // }
+ 
 
   // Terms acceptance
   if (!formData.termsandcondition) {
@@ -228,28 +196,6 @@ const buildFormDataPayload = (
     payload.append(key, formattedValue);
   });
 
-  // Append profile image - use default if not provided
-  if (profileImageFile) {
-    payload.append("profileImage", profileImageFile, profileImageFile.name);
-  } else {
-    // Convert base64 to blob and append
-    const blob = base64ToBlob(defaultProfileImage, 'image/png');
-    payload.append("profileImage", blob, "default-profile.png");
-  }
-
-  // Append front ID image - use default if not provided
-  if (frontImageFile) {
-    payload.append("idPhotofront", frontImageFile, frontImageFile.name);
-  } else {
-    // Convert base64 to blob and append
-    const blob = base64ToBlob(defaultFrontImage, 'image/png');
-    payload.append("idPhotofront", blob, "default-front-id.png");
-  }
-
-  // Append back ID image (no default)
-  if (backImageFile) {
-    payload.append("idphotoback", backImageFile, backImageFile.name);
-  }
 
   return payload;
 };
@@ -554,8 +500,35 @@ const useFormData = (initialData) => {
   return { formData, updateField, updateMultipleFields, setFormData };
 };
 
+// Date formatter function
+const formatDate = (dateString) => {
+  if (!dateString) return 'Date TBD';
+  
+  try {
+    const date = new Date(dateString);
+    const day = date.getDate();
+    const month = date.toLocaleDateString('en-US', { month: 'short' });
+    const year = date.getFullYear();
+    
+    // Add ordinal suffix to day
+    const getOrdinalSuffix = (day) => {
+      if (day > 3 && day < 21) return 'th';
+      switch (day % 10) {
+        case 1: return 'st';
+        case 2: return 'nd';
+        case 3: return 'rd';
+        default: return 'th';
+      }
+    };
+    
+    return `${day}${getOrdinalSuffix(day)} ${month} ${year}`;
+  } catch (error) {
+    return 'Date TBD';
+  }
+};
+
 // Main Form Component
-function FormPage({ onClose = () => {}, level }) {
+function FormPage({ onClose = () => {}, level, upcomingEventId, programId, upcomingEvents, selectedEvent }) {
   const { formData, updateField, updateMultipleFields } = useFormData({
     firstName: "",
     middleName: "",
@@ -563,7 +536,7 @@ function FormPage({ onClose = () => {}, level }) {
     nameAsCertificate: "",
     currentAddress: "",
     permanenetAddress: "",
-    city: "",
+    city: selectedEvent ? `${selectedEvent.city || selectedEvent.location || 'Location TBD'} | ${selectedEvent.title || selectedEvent.eventName || 'Session'} | ${formatDate(selectedEvent.startDate || selectedEvent.date)}` : "",
     venue: "",
     timeslot: "",
     TelNo: "",
@@ -571,14 +544,16 @@ function FormPage({ onClose = () => {}, level }) {
     email: "",
     dob: "",
     occupation: "",
-    courseDetailDate: "",
-    courseDetailTime: "",
-    courseDetailVenue: "",
+    courseDetailDate: selectedEvent?.startDate ? new Date(selectedEvent.startDate).toISOString().split('T')[0] : "",
+    courseDetailTime: selectedEvent?.startDate ? new Date(selectedEvent.startDate).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true }) : "",
+    courseDetailVenue: selectedEvent?.location || selectedEvent?.city || "",
     hearAbout: "",
     communicationPreferences: false,
     termsandcondition: false,
     isSameAddress: false,
     levelName: localStorage.getItem("level"),
+    upcomingEventId: upcomingEventId || "",
+    programId: programId || "",
   });
 
   const [profileImage, setProfileImage] = useState(null);
@@ -600,12 +575,17 @@ function FormPage({ onClose = () => {}, level }) {
 
     // Auto-fill venue and slot when city is selected
     if (name === "city" && value) {
-      const config = cityConfig[value];
-      if (config) {
+      // Find the selected event from upcomingEvents
+      const selectedEvent = upcomingEvents?.find(event => {
+        const eventValue = `${event.city || event.location || 'Location TBD'} | ${event.title || event.eventName || 'Session'} | ${formatDate(event.startDate || event.date)}`;
+        return eventValue === value;
+      });
+      
+      if (selectedEvent) {
         updateMultipleFields({
           city: value,
-          courseDetailVenue: config.venue,
-          timeslot: config.slot,
+          courseDetailVenue: selectedEvent.venue || selectedEvent.location || 'Venue TBD',
+          timeslot: selectedEvent.timeslot || selectedEvent.timeSlot || 'Time TBD',
         });
       }
     }
@@ -636,12 +616,16 @@ function FormPage({ onClose = () => {}, level }) {
       updateField(name, value);
 
       // Auto-fill venue and slot when city is selected
-      const config = cityConfig[value];
-      if (config) {
+      const selectedEvent = upcomingEvents?.find(event => {
+        const eventValue = `${event.city || event.location || 'Location TBD'} | ${event.title || event.eventName || 'Session'} | ${formatDate(event.startDate || event.date)}`;
+        return eventValue === value;
+      });
+      
+      if (selectedEvent) {
         updateMultipleFields({
           city: value,
-          courseDetailVenue: config.venue,
-          timeslot: config.slot,
+          courseDetailVenue: selectedEvent.venue || selectedEvent.location || 'Venue TBD',
+          timeslot: selectedEvent.timeslot || selectedEvent.timeSlot || 'Time TBD',
         });
       }
       return;
@@ -699,61 +683,41 @@ function FormPage({ onClose = () => {}, level }) {
     e.preventDefault();
     setError(null);
 
-    // Validate form
-    const errors = validateForm(formData, frontImage, backImage, profileImage);
-    if (Object.keys(errors).length > 0) {
-      console.log("Form validation errors:", errors); // Log validation errors
-      setFormErrors(errors);
-      setError("Please fix the errors below before submitting");
-      const firstErrorField = document.querySelector(".border-red-500");
-      if (firstErrorField) {
-        firstErrorField.scrollIntoView({ behavior: "smooth", block: "center" });
-      }
-      return;
-    }
+         // Validate form
+     const errors = validateForm(formData, frontImage, backImage, profileImage);
+     if (Object.keys(errors).length > 0) {
+       setFormErrors(errors);
+       setError("Please fix the errors below before submitting");
+       const firstErrorField = document.querySelector(".border-red-500");
+       if (firstErrorField) {
+         firstErrorField.scrollIntoView({ behavior: "smooth", block: "center" });
+       }
+       return;
+     }
 
-    try {
-      console.log("Preparing form submission...");
+     try {
+       // Build FormData payload
+       const payload = buildFormDataPayload(
+         formData,
+         frontImageFile,
+         backImageFile,
+         profileImageFile
+       );
 
-      // Build FormData payload
-      const payload = buildFormDataPayload(
-        formData,
-        frontImageFile,
-        backImageFile,
-        profileImageFile
-      );
+       // Make actual API call
+       const response = await makeRequest(() =>
+         apiService.submitRegistration(payload)
+       );
 
-      // Enhanced payload logging
-      console.log("Form Data Payload Contents:");
-      for (let [key, value] of payload.entries()) {
-        console.log(`${key}:`, value);
-      }
+       setShowThankYou(true);
 
-      // Make actual API call
-      console.log(
-        "Making API request to:",
-        API_CONFIG.baseURL + API_CONFIG.endpoints.registration
-      );
-      const response = await makeRequest(() =>
-        apiService.submitRegistration(payload)
-      );
-
-      console.log("Registration successful - Full response:", response);
-      setShowThankYou(true);
-
-      setTimeout(() => {
-        onClose();
-      }, 5000);
-    } catch (err) {
-      console.error("Registration failed - Error details:", {
-        message: err.message,
-        stack: err.stack,
-        response: err.response, // In case the error has a response property
-      });
-
-      // Set a more detailed error message
-      setError(`Submission failed: ${err.message || "Unknown error"}`);
-    }
+       setTimeout(() => {
+         onClose();
+       }, 5000);
+     } catch (err) {
+       // Set a more detailed error message
+       setError(`Submission failed: ${err.message || "Unknown error"}`);
+     }
   };
 
   const handleOverlayClick = (e) => {
@@ -810,9 +774,9 @@ function FormPage({ onClose = () => {}, level }) {
                 )}
               </div>
             </div>
-            <span className="ml-3 block text-sm text-gray-700">
-              {option.label}
-            </span>
+                         <span className="ml-3 block text-sm text-gray-700">
+               {option.label}
+             </span>
           </label>
         ))}
       </div>
@@ -839,18 +803,12 @@ function FormPage({ onClose = () => {}, level }) {
   }, [onClose]);
 
   // City options for select dropdown
-  const cityOptions = [
-    {
-      value: "Houston | Decode The Child | 10th Aug 2025",
-      label: "Houston | Decode The Child | 10th Aug 2025",
-      id: 5,
-    },
-    {
-      value: "San Diego |  L1 | 31st Aug - 1st Sept 2025",
-      label: "San Diego |  L1 | 31st Aug - 1st Sept 2025",
-      id: 1,
-    },
-  ];
+  const cityOptions = upcomingEvents?.map(event => ({
+    value: `${event.city || event.location || 'Location TBD'} | ${event.title || event.eventName || 'Session'} | ${formatDate(event.startDate || event.date)}`,
+    label: `${event.city || event.location || 'Location TBD'} | ${event.title || event.eventName || 'Session'} | ${formatDate(event.startDate || event.date)}`,
+    id: event._id,
+    isSelected: selectedEvent && event._id === selectedEvent._id
+  })) || [];
 
   // How did you hear about us options
   const hearAboutOptions = [
@@ -1029,16 +987,14 @@ function FormPage({ onClose = () => {}, level }) {
                   rows={3}
                 />
 
-                <div className="grid grid-cols-1 md:grid-cols-1 gap-4">
-                  <FormRadioGroup
+                                 <div className="grid grid-cols-1 md:grid-cols-1 gap-4">
+                   <FormRadioGroup
                     label="City"
                     name="city"
                     value={formData.city}
                     onChange={handleInputChange}
                     error={formErrors.city}
-                    options={cityOptions.filter(
-                      (option) => option.id.toString() == level
-                    )}
+                    options={cityOptions}
                     required
                   />
                 </div>

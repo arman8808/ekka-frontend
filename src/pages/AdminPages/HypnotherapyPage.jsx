@@ -158,6 +158,21 @@ const HypnotherapyPage = () => {
     }
   };
 
+  const validateOrganizerEmail = (value, eventIndex) => {
+    const events = watch("upcomingEvents");
+    const email = events[eventIndex].organizerEmail;
+    
+    // Only validate if email has a value (field is optional)
+    if (email && email.trim() !== "") {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        return "Please enter a valid email address";
+      }
+    }
+    
+    return true;
+  };
+
   const validateVideoUrl = (value) => {
     if (!value) return true; // Optional field
     try {
@@ -315,8 +330,16 @@ const HypnotherapyPage = () => {
       // Handle card points with error handling
       try {
         if (Array.isArray(program.cardPoints) && program.cardPoints.length > 0) {
-          const cardPointsHtml = program.cardPoints.map(point => `<li>${point}</li>`).join('');
-          setValue("cardPoints", [`<ul>${cardPointsHtml}</ul>`]);
+          const firstCardPoint = program.cardPoints[0];
+          
+          // If it's already HTML content (contains <ul> or <li>), use it as is
+          if (firstCardPoint && (firstCardPoint.includes('<ul>') || firstCardPoint.includes('<li>'))) {
+            setValue("cardPoints", [firstCardPoint]);
+          } else {
+            // If it's plain text, convert to HTML
+            const cardPointsHtml = program.cardPoints.map(point => `<li>${point}</li>`).join('');
+            setValue("cardPoints", [`<ul>${cardPointsHtml}</ul>`]);
+          }
         } else {
           setValue("cardPoints", [""]);
         }
@@ -329,15 +352,18 @@ const HypnotherapyPage = () => {
       try {
         const convertedSections = program.learningSections?.map(section => {
           if (section.points && Array.isArray(section.points)) {
-            return {
-              title: section.title || "",
-              content: `<ul>${section.points.map(point => `<li>${point}</li>`).join('')}</ul>`
-            };
+            // Check if content is already HTML
+            if (section.content && (section.content.includes('<ul>') || section.content.includes('<li>'))) {
+              return section; // Use existing HTML content
+            } else {
+              // Convert plain text points to HTML
+              return {
+                title: section.title || "",
+                content: `<ul>${section.points.map(point => `<li>${point}</li>`).join('')}</ul>`
+              };
+            }
           }
-          return {
-            title: section.title || "",
-            content: section.content || ""
-          };
+          return section;
         }) || [{ title: "", content: "" }];
         
         setValue("learningSections", convertedSections);
@@ -360,10 +386,14 @@ const HypnotherapyPage = () => {
               const startDate = new Date(event.startDate);
               const endDate = new Date(event.endDate);
               
-              const formattedStartDate = startDate.toISOString().slice(0, 16);
-              const formattedEndDate = endDate.toISOString().slice(0, 16);
+              // Convert UTC to local timezone for display
+              const localStartDate = new Date(startDate.getTime() - (startDate.getTimezoneOffset() * 60000));
+              const localEndDate = new Date(endDate.getTime() - (endDate.getTimezoneOffset() * 60000));
               
-              console.log("Formatted dates:", formattedStartDate, formattedEndDate);
+              const formattedStartDate = localStartDate.toISOString().slice(0, 16);
+              const formattedEndDate = localEndDate.toISOString().slice(0, 16);
+              
+              console.log("Formatted dates (local timezone):", formattedStartDate, formattedEndDate);
               
               return {
                 ...event,
@@ -388,10 +418,14 @@ const HypnotherapyPage = () => {
               const endDate = new Date(eventDate);
               endDate.setHours(eventDate.getHours() + 2);
               
-              const formattedStartDate = eventDate.toISOString().slice(0, 16);
-              const formattedEndDate = endDate.toISOString().slice(0, 16);
+              // Convert to local timezone for display
+              const localStartDate = new Date(eventDate.getTime() - (eventDate.getTimezoneOffset() * 60000));
+              const localEndDate = new Date(endDate.getTime() - (endDate.getTimezoneOffset() * 60000));
               
-              console.log("Converted old format dates:", formattedStartDate, formattedEndDate);
+              const formattedStartDate = localStartDate.toISOString().slice(0, 16);
+              const formattedEndDate = localEndDate.toISOString().slice(0, 16);
+              
+              console.log("Converted old format dates (local timezone):", formattedStartDate, formattedEndDate);
               
               const convertedEvent = {
                 ...event,
@@ -417,7 +451,8 @@ const HypnotherapyPage = () => {
             return {
               ...event,
               startDate: "",
-              endDate: ""
+              endDate: "",
+              organizerEmail: event.organizerEmail || ""
             };
           }
           
@@ -428,10 +463,14 @@ const HypnotherapyPage = () => {
               const endDate = new Date(startDate);
               endDate.setHours(startDate.getHours() + 2);
               
+              // Convert to local timezone for display
+              const localStartDate = new Date(startDate.getTime() - (startDate.getTimezoneOffset() * 60000));
+              const localEndDate = new Date(endDate.getTime() - (endDate.getTimezoneOffset() * 60000));
+              
               return {
                 ...event,
-                startDate: startDate.toISOString().slice(0, 16),
-                endDate: endDate.toISOString().slice(0, 16)
+                startDate: localStartDate.toISOString().slice(0, 16),
+                endDate: localEndDate.toISOString().slice(0, 16)
               };
             } catch (dateError) {
               console.error("Error handling partial dates:", dateError);
@@ -575,6 +614,7 @@ const HypnotherapyPage = () => {
         eventName: "",
         location: "",
         organiser: "",
+        organizerEmail: "",
         price: "",
         paymentLink: "",
       },
@@ -979,6 +1019,24 @@ const HypnotherapyPage = () => {
                                   {upcoming.organiser}
                                 </p>
                               </div>
+                                                             {upcoming.organizerEmail && (
+                                <div className="flex items-center">
+                                  <span className="text-[#6E2D79] mr-3">
+                                    <User className="w-5 h-5" />
+                                  </span>
+                                  <p>
+                                    <span className="font-medium text-gray-700">
+                                      Organizer Email:
+                                    </span>{" "}
+                                    <a
+                                                                             href={`mailto:${upcoming.organizerEmail}`}
+                                      className="text-[#6E2D79] hover:text-[#5C2166] hover:underline"
+                                    >
+                                      {upcoming.organizerEmail}
+                                    </a>
+                                  </p>
+                                </div>
+                              )}
                               <div className="flex items-center">
                                 <span className="text-[#6E2D79] mr-3">
                                   <DollarSign className="w-5 h-5" />
@@ -1659,6 +1717,34 @@ const HypnotherapyPage = () => {
                                   }
                                 </p>
                               )}
+                            </div>
+
+                            <div>
+                              <label className="block text-sm font-medium text-gray-700 mb-1">
+                                Organizer Email
+                              </label>
+                              <div className="relative">
+                                <input
+                                  type="email"
+                                                                      {...register(
+                                      `upcomingEvents.${index}.organizerEmail`,
+                                      {
+                                        validate: (value) => validateOrganizerEmail(value, index)
+                                      }
+                                    )}
+                                  className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#6E2D79] focus:border-transparent outline-none ${
+                                    errors.upcomingEvents?.[index]?.organizerEmail
+                                      ? "border-red-500"
+                                      : "border-gray-300"
+                                  }`}
+                                  placeholder="organizer@example.com"
+                                />
+                              </div>
+                                                              {errors.upcomingEvents?.[index]?.organizerEmail && (
+                                  <p className="mt-1 text-sm text-red-600">
+                                    {errors.upcomingEvents[index].organizerEmail.message}
+                                  </p>
+                                )}
                             </div>
 
                             <div>

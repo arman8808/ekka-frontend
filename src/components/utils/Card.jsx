@@ -336,7 +336,7 @@ const Card = () => {
     try {
       setLoading(true);
       setError(null);
-      const response = await hypnotherapyService.getPrograms();
+      const response = await hypnotherapyService.getUserPrograms();
       // Handle different response structures
       const programs = response.programs || response || [];
       setCourseData(programs);
@@ -350,28 +350,18 @@ const Card = () => {
   };
 
   const handleEnrollNow = (course) => {
-    console.log('🎯 Enrolling in course:', course);
-    console.log('🆔 Course ID:', course._id);
-    console.log('📝 Course Title:', course.title);
-    
     if (course && course._id) {
       setSelectedLevel(course.subtitle || course.title);
       localStorage.setItem("level", course.title);
       // Navigate to the level page with the program ID
-      const navigationPath = `/ich/levels?level=${course._id}`;
-      console.log('🧭 Navigating to:', navigationPath);
+      const navigationPath = `/ich/level/${course._id}`;
       navigate(navigationPath);
-    } else {
-      console.log("❌ Course not found or missing _id");
     }
   };
 
   // Helper function to get card points
   const getCardPoints = (program) => {
-    console.log('🎯 Getting card points for program:', program.title);
-    
     if (program.cardPoints && Array.isArray(program.cardPoints)) {
-      console.log('📋 Using cardPoints:', program.cardPoints);
       // Convert HTML to clean text and extract individual points
       const points = program.cardPoints.map(point => {
         if (typeof point === 'string') {
@@ -380,11 +370,9 @@ const Card = () => {
         return point;
       }).flat(); // Flatten the array since extractListItemsFromHtml returns an array
       
-      console.log('🔄 Flattened points:', points);
       return points;
     }
     if (program.learningSections && Array.isArray(program.learningSections)) {
-      console.log('📚 Using learningSections:', program.learningSections);
       const points = program.learningSections.map(section => {
         if (section.content && typeof section.content === 'string') {
           return extractListItemsFromHtml(section.content);
@@ -392,7 +380,6 @@ const Card = () => {
         return section.title || "Learning point";
       }).flat();
       
-      console.log('🔄 Flattened learning points:', points);
       return points;
     }
     return ["Program details coming soon"];
@@ -401,8 +388,6 @@ const Card = () => {
   // Helper function to extract list items from HTML
   const extractListItemsFromHtml = (htmlString) => {
     if (!htmlString || typeof htmlString !== 'string') return [htmlString];
-    
-    console.log('🔍 Parsing HTML:', htmlString);
     
     // Create a temporary div to parse HTML
     const tempDiv = document.createElement('div');
@@ -415,8 +400,6 @@ const Card = () => {
       return !li.querySelector('ul');
     });
     
-    console.log('📋 Found deepest list items:', deepestListItems.length);
-    
     if (deepestListItems.length > 0) {
       // Extract text from each deepest li element
       const extractedItems = deepestListItems.map((li, index) => {
@@ -425,24 +408,20 @@ const Card = () => {
         text = text.replace(/\s+/g, ' ').trim();
         // Remove common HTML artifacts
         text = text.replace(/Type your list item here/g, '');
-        console.log(`📝 Deepest Item ${index + 1}:`, text);
         return text;
       }).filter(text => text.length > 0); // Remove empty items
       
-      console.log('✨ Final deepest items:', extractedItems);
       return extractedItems;
     }
     
     // Fallback: if no deepest items found, try the original approach
     const allListItems = tempDiv.querySelectorAll('li');
-    console.log('📋 Fallback: Found all list items:', allListItems.length);
     
     if (allListItems.length > 0) {
       const extractedItems = Array.from(allListItems).map((li, index) => {
         let text = li.textContent || li.innerText || '';
         text = text.replace(/\s+/g, ' ').trim();
         text = text.replace(/Type your list item here/g, '');
-        console.log(`📝 Fallback Item ${index + 1}:`, text);
         return text;
       }).filter(text => text.length > 0);
       
@@ -456,7 +435,6 @@ const Card = () => {
         }
       }
       
-      console.log('✨ Final unique fallback items:', uniqueItems);
       return uniqueItems;
     }
     
@@ -557,7 +535,7 @@ const Card = () => {
 
   return (
     <div className="flex flex-col items-center py-8 md:py-10 lg:py-14 px-4 sm:px-6 md:px-8">
-      {courseData.map((course, idx) => {
+      {courseData.slice().reverse().map((course, idx) => {
         const isLevel6 = course._id === 6 || course.id === 6;
         const levelNumber = course._id || course.id || idx + 1;
         

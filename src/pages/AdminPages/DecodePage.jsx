@@ -232,20 +232,17 @@ const DecodeAdminPage = () => {
       const formData = new FormData();
       
       // Handle thumbnail separately to ensure we only send new file, not old value
-      // Only append thumbnail if it's actually a File object (new upload)
+      let thumbnailHandled = false;
       if (data.thumbnail && data.thumbnail instanceof File) {
         formData.append('thumbnail', data.thumbnail);
+        thumbnailHandled = true;
         console.log("✅ Sending new thumbnail file:", data.thumbnail.name);
       } else {
-        console.log("❌ No new thumbnail file found. data.thumbnail:", data.thumbnail);
+        console.log("❌ No new thumbnail file found. Keeping existing thumbnail if editing.");
+        console.log("📋 data.thumbnail value:", data.thumbnail);
       }
-      // If no new thumbnail is uploaded, don't send any thumbnail data
-      // This ensures the backend keeps the existing thumbnail
       
       // Append all other form data to FormData (excluding thumbnail)
-      console.log("📋 Form data keys:", Object.keys(data));
-      console.log("📋 Thumbnail value in form data:", data.thumbnail);
-      
       Object.keys(data).forEach(key => {
         if (key !== 'thumbnail') { // Skip thumbnail as it's handled above
           if (Array.isArray(data[key])) {
@@ -255,6 +252,14 @@ const DecodeAdminPage = () => {
           }
         }
       });
+      
+      // Debug log for form data
+      console.log("📋 Form submission - thumbnail handled:", thumbnailHandled);
+      if (currentProgram) {
+        console.log("🔄 Updating existing program:", currentProgram.title);
+      } else {
+        console.log("➕ Creating new program");
+      }
 
       if (currentProgram) {
         await decodeService.updateProgram(currentProgram._id, formData);
@@ -501,27 +506,36 @@ const DecodeAdminPage = () => {
     const file = e.target.files[0];
     if (file) {
       console.log("📁 New thumbnail file selected:", file.name, "Type:", file.type);
+      
+      // Clear any existing thumbnail data and set new file
       setValue("thumbnail", file);
       
-      // Create preview for UI
+      // Create preview for UI using the new file
       const reader = new FileReader();
       reader.onloadend = () => {
-        setThumbnailPreview(reader.result);
+        console.log("🖼️ Setting new thumbnail preview from uploaded file");
+        setThumbnailPreview(reader.result); // This will be a data URL
       };
       reader.readAsDataURL(file);
+      
+      // Clear the file input to allow re-selection of the same file if needed
+      e.target.value = '';
     }
   };
 
   // Remove thumbnail
   const removeThumbnail = () => {
-    console.log("🗑️ Removing thumbnail - clearing form field");
+    console.log("🗑️ Removing thumbnail - clearing form field and preview");
     setValue("thumbnail", null);
     setThumbnailPreview(null);
-    // Force clear the form field to ensure no old value remains
-    setTimeout(() => {
-      setValue("thumbnail", null);
-      console.log("🗑️ Thumbnail field cleared again after timeout");
-    }, 100);
+    
+    // Also clear any file input elements
+    const fileInputs = document.querySelectorAll('input[type="file"]');
+    fileInputs.forEach(input => {
+      input.value = '';
+    });
+    
+    console.log("🗑️ Thumbnail completely cleared");
   };
 
   useEffect(() => {
@@ -1147,11 +1161,11 @@ const DecodeAdminPage = () => {
                         Thumbnail Image
                       </label>
                       
-                      {thumbnailPreview ? (
-                        <div className="space-y-4">
-                          <div className="relative">
+                      <div className="space-y-4">
+                        {thumbnailPreview && (
+                          <div className="relative inline-block">
                             <img
-                              src={thumbnailPreview ? `${import.meta.env.VITE_API_Image_Url}${thumbnailPreview}` : "/default.png"}
+                              src={thumbnailPreview.startsWith('http') ? thumbnailPreview : `${import.meta.env.VITE_API_Image_Url}${thumbnailPreview}`}
                               alt="Thumbnail preview"
                               className="max-w-xs rounded-lg border border-gray-300"
                             />
@@ -1163,15 +1177,16 @@ const DecodeAdminPage = () => {
                               <X className="w-4 h-4" />
                             </button>
                           </div>
-                          <p className="text-sm text-gray-500">Click to change</p>
-                        </div>
-                      ) : (
+                        )}
+                        
                         <div className="flex items-center justify-center w-full">
                           <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
                             <div className="flex flex-col items-center justify-center pt-5 pb-6">
                               <Image className="w-8 h-8 mb-3 text-gray-400" />
                               <p className="mb-2 text-sm text-gray-500">
-                                <span className="font-semibold">Click to upload</span> or drag and drop
+                                <span className="font-semibold">
+                                  {thumbnailPreview ? "Change thumbnail" : "Click to upload"}
+                                </span> or drag and drop
                               </p>
                               <p className="text-xs text-gray-500">
                                 PNG, JPG, GIF (MAX. 5MB)
@@ -1185,9 +1200,7 @@ const DecodeAdminPage = () => {
                             />
                           </label>
                         </div>
-                      )}
-                      
-                      {/* Removed hidden input - thumbnail is handled by file input */}
+                      </div>
                     </div>
 
                     {/* Card Points Section */}

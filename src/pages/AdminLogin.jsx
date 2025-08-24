@@ -2,6 +2,7 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
+import Cookies from "js-cookie"; 
 
 const AdminLogin = () => {
   const [email, setEmail] = useState("");
@@ -10,6 +11,7 @@ const AdminLogin = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const from = "/all-registration-ekaausa.com.usa";
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -23,10 +25,14 @@ const AdminLogin = () => {
           password,
         }
       );
-      console.log(response, "response");
-
-      // auth.login(response.data.token);
-      localStorage.setItem("adminToken", response.data.token);
+      
+      // Store token in cookie with 1 day expiration
+      Cookies.set("adminToken", response.data.token, {
+        expires: 1, // 1 day
+        secure: true, // Send only over HTTPS
+        sameSite: "strict", // Protection against CSRF attacks
+      });
+      
       navigate('/all-registration-ekaausa.com.usa');
     } catch (err) {
       setError(

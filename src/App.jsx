@@ -33,6 +33,7 @@ import ContactUs from "./pages/ContactUs";
 import ScrollToTop from "./components/ScrollToTop";
 import DecodePage from "./pages/DecodePage";
 import DynamicLevelPage from "./pages/Level1";
+import DecodeLevel from "./pages/DecodeLevel";
 import Layout from "./components/layout/Layout";
 import AllRegistration from "./pages/AllRegistration";
 import ContactsTable from "./pages/ContactsTable";
@@ -60,11 +61,13 @@ function App() {
         <Route path="/about" element={<AboutPage />} />
         <Route path="/contact-us" element={<ContactUs />} />
         <Route path="/decode" element={<DecodePage />} />
+        <Route path="/decode/level/:id" element={<DecodeLevel />} />
         <Route path="/schedule" element={<Schedule />} />
         <Route path="/tasso" element={<Tasso />} />
         <Route path="/family-constellation" element={<FamilyConstellation />} />
         <Route path="/ich" element={<ICH />} />
         <Route path="/ich/levels" element={<ICHLevels />} />
+        <Route path="/ich/level/:id" element={<ICHLevels />} />
         {/* <Route path="/ich" element={<ICH />} /> */}
         <Route path="/admin/login" element={<AdminLogin />} />
         {/* Dynamic route for all levels */}

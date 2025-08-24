@@ -27,7 +27,8 @@ import Layout from "../../components/layout/Layout";
 import decodeService from "../../components/services/decodeService";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
-
+import Cookies from "js-cookie"; 
+import RichTextEditor from "../../components/utils/RichTextEditor";
 const DecodeAdminPage = () => {
   const navigate = useNavigate();
   const [authChecked, setAuthChecked] = useState(false);
@@ -84,17 +85,8 @@ const DecodeAdminPage = () => {
       thumbnail: null,
       duration: "",
       cardPoints: [""],
-      learningSections: [{ title: "", points: [""] }],
-      upcomingEvents: [
-        {
-          date: "",
-          eventName: "",
-          location: "",
-          organiser: "",
-          price: "",
-          paymentLink: "",
-        },
-      ],
+      learningSections: [{ title: "", content: "" }],
+      upcomingEvents: [],
       status: "Open",
     },
   });
@@ -107,22 +99,63 @@ const DecodeAdminPage = () => {
     );
   };
 
-  const validateSectionPoint = (value, sectionIndex, pointIndex) => {
+  const validateSectionContent = (value, sectionIndex) => {
     const sections = watch("learningSections");
-    return (
-      sections[sectionIndex].points[pointIndex].trim() !== "" ||
-      "Learning point is required"
-    );
+    const content = sections[sectionIndex].content;
+    // Remove HTML tags and check content length
+    const textContent = content.replace(/<[^>]*>/g, '').trim();
+    return textContent.length >= 10 || "Section content must be at least 10 characters";
   };
 
-  const validateCardPoint = (value, index) => {
-    const points = watch("cardPoints");
-    return points[index].trim() !== "" || "Card point is required";
+  const validateCardPoint = (value) => {
+    const cardPoint = watch("cardPoints.0");
+    // Remove HTML tags and check if content exists
+    const textContent = cardPoint?.replace(/<[^>]*>/g, '').trim();
+    return textContent !== "" || "Card point is required";
   };
 
-  const validateEventDate = (value, eventIndex) => {
+  const validateEventStartDate = (value, eventIndex) => {
     const events = watch("upcomingEvents");
-    return events[eventIndex].date.trim() !== "" || "Date is required";
+    const event = events[eventIndex];
+    
+    // If any other field in this event has content, start date becomes required
+    if (event.eventName || event.location || event.organiser || event.price || event.paymentLink || event.endDate) {
+      return value.trim() !== "" || "Start date and time is required when adding an event";
+    }
+    
+    // If no other fields have content, start date is optional
+    return true;
+  };
+
+  const validateEventEndDate = (value, eventIndex) => {
+    const events = watch("upcomingEvents");
+    const event = events[eventIndex];
+    
+    // If any other field in this event has content, end date becomes required
+    if (event.startDate || event.eventName || event.location || event.organiser || event.price || event.paymentLink) {
+      if (!event.startDate) {
+        return "Start date is required before setting end date";
+      }
+      
+      if (!value) {
+        return "End date and time is required when adding an event";
+      }
+      
+      const startDate = new Date(event.startDate);
+      const endDate = new Date(value);
+      
+      if (endDate <= startDate) {
+        return "End date must be after start date";
+      }
+    }
+    
+    // If no other fields have content, end date is optional
+    return true;
+  };
+
+  // Helper function to check if an event has any content
+  const hasEventContent = (event) => {
+    return !!(event.startDate || event.endDate || event.eventName || event.location || event.organiser || event.price || event.paymentLink);
   };
 
   const validatePrice = (value, eventIndex) => {
@@ -145,6 +178,21 @@ const DecodeAdminPage = () => {
     } catch {
       return "Invalid URL format";
     }
+  };
+
+  const validateOrganizerEmail = (value, eventIndex) => {
+    const events = watch("upcomingEvents");
+    const email = events[eventIndex].organizerEmail;
+    
+    // Only validate if email has a value (field is optional)
+    if (email && email.trim() !== "") {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        return "Please enter a valid email address";
+      }
+    }
+    
+    return true;
   };
 
   const validateVideoUrl = (value) => {
@@ -194,13 +242,18 @@ const DecodeAdminPage = () => {
     try {
       setLoading(true);
       
+      // Filter out empty upcoming events
+      if (data.upcomingEvents) {
+        data.upcomingEvents = data.upcomingEvents.filter(event => hasEventContent(event));
+      }
+      
       // Create FormData to handle file upload
       const formData = new FormData();
       
       // Append all form data to FormData
       Object.keys(data).forEach(key => {
         if (key === 'thumbnail' && data[key]) {
-          formData.append('thumbnail', data.thumbnail);
+          formData.append('thumbnail', data[key]);
         } else if (Array.isArray(data[key])) {
           formData.append(key, JSON.stringify(data[key]));
         } else {
@@ -251,9 +304,100 @@ const DecodeAdminPage = () => {
     setValue("subtitle", program.subtitle);
     setValue("videoUrl", program.videoUrl || "");
     setValue("duration", program.duration);
-    setValue("cardPoints", program.cardPoints || [""]);
-    setValue("learningSections", program.learningSections);
-    setValue("upcomingEvents", program.upcomingEvents);
+    
+    // Handle card points - check if it's already HTML or plain text
+    if (Array.isArray(program.cardPoints) && program.cardPoints.length > 0) {
+      const firstCardPoint = program.cardPoints[0];
+      
+      // If it's already HTML content (contains <ul> or <li>), use it as is
+      if (firstCardPoint && (firstCardPoint.includes('<ul>') || firstCardPoint.includes('<li>'))) {
+        setValue("cardPoints", [firstCardPoint]);
+      } else {
+        // If it's plain text, convert to HTML
+        const cardPointsHtml = program.cardPoints.map(point => `<li>${point}</li>`).join('');
+        setValue("cardPoints", [`<ul>${cardPointsHtml}</ul>`]);
+      }
+    } else {
+      setValue("cardPoints", [""]);
+    }
+    
+    // Convert old points to HTML content if needed
+    const convertedSections = program.learningSections.map(section => {
+      if (section.points && Array.isArray(section.points)) {
+        // Check if content is already HTML
+        if (section.content && (section.content.includes('<ul>') || section.content.includes('<li>'))) {
+          return section; // Use existing HTML content
+        } else {
+          // Convert plain text points to HTML
+          return {
+            title: section.title,
+            content: `<ul>${section.points.map(point => `<li>${point}</li>`).join('')}</ul>`
+          };
+        }
+      }
+      return section;
+    });
+    
+    setValue("learningSections", convertedSections);
+    
+    // Convert old date format to new startDate/endDate format if needed
+    const convertedEvents = program.upcomingEvents.map(event => {
+      let startDate = event.startDate;
+      let endDate = event.endDate;
+      
+      // If we have old date format, convert it
+      if (event.date && !event.startDate) {
+        const eventDate = new Date(event.date);
+        const endDateTime = new Date(eventDate);
+        endDateTime.setHours(eventDate.getHours() + 2); // Default 2-hour event
+        
+        startDate = eventDate.toISOString().slice(0, 16); // Format for datetime-local input
+        endDate = endDateTime.toISOString().slice(0, 16);
+      }
+      
+             // If we have startDate but it's not in the right format, convert it
+       if (event.startDate && typeof event.startDate === 'string') {
+         try {
+           const startDateTime = new Date(event.startDate);
+           if (!isNaN(startDateTime.getTime())) {
+             // Convert UTC to local timezone for display
+             const localStartDate = new Date(startDateTime.getTime() - (startDateTime.getTimezoneOffset() * 60000));
+             startDate = localStartDate.toISOString().slice(0, 16);
+           }
+         } catch (e) {
+           console.warn('Invalid start date format:', event.startDate);
+         }
+       }
+       
+       // If we have endDate but it's not in the right format, convert it
+       if (event.endDate && typeof event.endDate === 'string') {
+         try {
+           const endDateTime = new Date(event.endDate);
+           if (!isNaN(endDateTime.getTime())) {
+             // Convert UTC to local timezone for display
+             const localEndDate = new Date(endDateTime.getTime() - (endDateTime.getTimezoneOffset() * 60000));
+             endDate = localEndDate.toISOString().slice(0, 16);
+           }
+         } catch (e) {
+           console.warn('Invalid end date format:', event.endDate);
+         }
+       }
+      
+      return {
+        ...event,
+        startDate: startDate || "",
+        endDate: endDate || "",
+        organizerEmail: event.organizerEmail || "",
+        date: undefined // Remove old date field
+      };
+    });
+    
+         console.log("🔍 Original upcoming events:", program.upcomingEvents);
+     console.log("🔍 Converted upcoming events:", convertedEvents);
+     console.log("🌍 Your timezone offset:", new Date().getTimezoneOffset(), "minutes");
+     console.log("🌍 Current local time:", new Date().toLocaleString());
+    
+    setValue("upcomingEvents", convertedEvents);
     setValue("status", program.status);
     
     // Set thumbnail preview using helper function
@@ -276,17 +420,8 @@ const DecodeAdminPage = () => {
       thumbnail: null,
       duration: "",
       cardPoints: [""],
-      learningSections: [{ title: "", points: [""] }],
-      upcomingEvents: [
-        {
-          date: "",
-          eventName: "",
-          location: "",
-          organiser: "",
-          price: "",
-          paymentLink: "",
-        },
-      ],
+      learningSections: [{ title: "", content: "" }],
+      upcomingEvents: [],
       status: "Open",
     });
     setThumbnailPreview(null);
@@ -310,34 +445,18 @@ const DecodeAdminPage = () => {
     }
   };
 
-  // Add a new card point
-  const addCardPoint = () => {
-    const currentPoints = watch("cardPoints") || [];
-    setValue("cardPoints", [...currentPoints, ""]);
-  };
-
-  // Remove a card point
-  const removeCardPoint = (index) => {
-    const currentPoints = watch("cardPoints") || [];
-    if (currentPoints.length > 1) {
-      const newPoints = [...currentPoints];
-      newPoints.splice(index, 1);
-      setValue("cardPoints", newPoints);
-    }
-  };
-
   // Add a new learning section
   const addLearningSection = async () => {
     const currentSections = watch("learningSections") || [];
     setValue("learningSections", [
       ...currentSections,
-      { title: "", points: [""] },
+      { title: "", content: "" },
     ]);
 
     // Trigger validation for new section
     setTimeout(() => {
       trigger(`learningSections.${currentSections.length}.title`);
-      trigger(`learningSections.${currentSections.length}.points.0`);
+      trigger(`learningSections.${currentSections.length}.content`);
     }, 100);
   };
 
@@ -351,32 +470,18 @@ const DecodeAdminPage = () => {
     }
   };
 
-  // Add a new learning point to a section
-  const addLearningPoint = (sectionIndex) => {
-    const currentSections = [...watch("learningSections")];
-    currentSections[sectionIndex].points.push("");
-    setValue("learningSections", currentSections);
-  };
-
-  // Remove a learning point from a section
-  const removeLearningPoint = (sectionIndex, pointIndex) => {
-    const currentSections = [...watch("learningSections")];
-    if (currentSections[sectionIndex].points.length > 1) {
-      currentSections[sectionIndex].points.splice(pointIndex, 1);
-      setValue("learningSections", currentSections);
-    }
-  };
-
   // Add a new upcoming event
   const addUpcomingEvent = () => {
     const currentEvents = watch("upcomingEvents") || [];
     setValue("upcomingEvents", [
       ...currentEvents,
       {
-        date: "",
+        startDate: "",
+        endDate: "",
         eventName: "",
         location: "",
         organiser: "",
+        organizerEmail: "",
         price: "",
         paymentLink: "",
       },
@@ -386,7 +491,7 @@ const DecodeAdminPage = () => {
   // Remove an upcoming event
   const removeUpcomingEvent = (index) => {
     const currentEvents = watch("upcomingEvents") || [];
-    if (currentEvents.length > 1) {
+    if (currentEvents.length > 0) {
       const newEvents = [...currentEvents];
       newEvents.splice(index, 1);
       setValue("upcomingEvents", newEvents);
@@ -415,7 +520,7 @@ const DecodeAdminPage = () => {
   };
 
   useEffect(() => {
-    const adminToken = localStorage.getItem("adminToken");
+    const adminToken = Cookies.get("adminToken");
     if (!adminToken) {
       navigate("/admin/login");
     } else {
@@ -472,6 +577,63 @@ const DecodeAdminPage = () => {
   }
   return (
     <Layout>
+      {/* Custom CSS for lists and modal */}
+      <style jsx>{`
+        .prose ul {
+          list-style-type: disc !important;
+          margin-left: 20px !important;
+          margin-top: 8px !important;
+          margin-bottom: 8px !important;
+        }
+        .prose ol {
+          list-style-type: decimal !important;
+          margin-left: 20px !important;
+          margin-top: 8px !important;
+          margin-bottom: 8px !important;
+        }
+        .prose li {
+          margin-bottom: 4px !important;
+          padding-left: 4px !important;
+        }
+        .prose p {
+          margin-bottom: 8px !important;
+        }
+        
+        /* Modal z-index fixes */
+        .modal-overlay {
+          z-index: 9999 !important;
+        }
+        .modal-content {
+          z-index: 10000 !important;
+          position: relative;
+        }
+        .modal-header {
+          z-index: 10001 !important;
+          position: sticky;
+          top: 0;
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Ensure smooth scrolling in modal */
+        .modal-content .overflow-y-auto {
+          scrollbar-width: thin;
+          scrollbar-color: #6E2D79 #f3f4f6;
+        }
+        
+        .modal-content .overflow-y-auto::-webkit-scrollbar {
+          width: 8px;
+        }
+        
+        .modal-content .overflow-y-auto::-webkit-scrollbar-track {
+          background: #f3f4f6;
+        }
+        
+        .modal-content .overflow-y-auto::-webkit-scrollbar-thumb {
+          background: #6E2D79;
+          border-radius: 4px;
+        }
+      `}</style>
+      
       <div className="w-full max-w-7xl mx-auto p-4 space-y-6">
         {/* Header */}
         <div className="bg-white rounded-lg shadow-lg p-6">
@@ -558,19 +720,16 @@ const DecodeAdminPage = () => {
 
                   {/* Display card points in collapsed view */}
                   {expandedProgram !== program._id && program.cardPoints && (
-                    <ul className="mt-3 space-y-1">
-                      {program.cardPoints.map((point, index) => (
-                        <li
-                          key={index}
-                          className="flex items-start text-gray-700"
-                        >
-                          <span className="bg-gray-200 text-[#6E2D79] p-1 rounded-full mr-2 mt-1">
-                            <Check className="w-3 h-3" />
-                          </span>
-                          <span>{point}</span>
-                        </li>
-                      ))}
-                    </ul>
+                    <div className="mt-3">
+                      <div 
+                        className="prose max-w-none text-gray-700"
+                        dangerouslySetInnerHTML={{ 
+                          __html: Array.isArray(program.cardPoints) 
+                            ? program.cardPoints[0] || '' 
+                            : program.cardPoints || '' 
+                        }} 
+                      />
+                    </div>
                   )}
                 </div>
                 <div className="flex items-center space-x-4">
@@ -652,30 +811,21 @@ const DecodeAdminPage = () => {
                             Learning Objectives:
                           </p>
                         </div>
-                        <ul className="ml-9 space-y-2">
+                        <div className="ml-9 space-y-2">
                           {program.learningSections.map(
                             (section, sectionIdx) => (
-                              <React.Fragment key={sectionIdx}>
-                                <li className="font-semibold text-[#6E2D79]">
+                              <div key={sectionIdx} className="space-y-2">
+                                <h5 className="font-semibold text-[#6E2D79]">
                                   {section.title}
-                                </li>
-                                {section.points.map((point, pointIdx) => (
-                                  <li
-                                    key={pointIdx}
-                                    className="flex items-start ml-4"
-                                  >
-                                    <span className="bg-gray-200 text-[#6E2D79] p-1 rounded-full mr-2 mt-1">
-                                      <Check className="w-4 h-4" />
-                                    </span>
-                                    <span className="text-gray-700">
-                                      {point}
-                                    </span>
-                                  </li>
-                                ))}
-                              </React.Fragment>
+                                </h5>
+                                <div 
+                                  className="prose max-w-none text-gray-700 ml-4"
+                                  dangerouslySetInnerHTML={{ __html: section.content || section.points?.map(point => `<li>${point}</li>`).join('') || '' }} 
+                                />
+                              </div>
                             )
                           )}
-                        </ul>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -700,9 +850,26 @@ const DecodeAdminPage = () => {
                               <h5 className="font-bold text-[#6E2D79]">
                                 {upcoming.eventName}
                               </h5>
+                              <div className="flex flex-col space-y-1">
                               <span className="bg-gray-100 text-[#6E2D79] px-3 py-1 rounded-lg text-sm font-medium">
-                                {upcoming.date}
+                                  {new Date(upcoming.startDate || upcoming.date).toLocaleDateString('en-US', { 
+                                    month: 'short', 
+                                    day: 'numeric', 
+                                    year: 'numeric' 
+                                  })}
                               </span>
+                                {upcoming.startDate && upcoming.endDate && (
+                                  <span className="text-xs text-gray-600">
+                                    {new Date(upcoming.startDate).toLocaleTimeString('en-US', { 
+                                      hour: '2-digit', 
+                                      minute: '2-digit' 
+                                    })} - {new Date(upcoming.endDate).toLocaleTimeString('en-US', { 
+                                      hour: '2-digit', 
+                                      minute: '2-digit' 
+                                    })}
+                                  </span>
+                                )}
+                              </div>
                             </div>
                             <div className="mt-4 space-y-3">
                               <div className="flex items-center">
@@ -727,6 +894,24 @@ const DecodeAdminPage = () => {
                                   {upcoming.organiser}
                                 </p>
                               </div>
+                              {upcoming.organizerEmail && (
+                                <div className="flex items-center">
+                                  <span className="text-[#6E2D79] mr-3">
+                                    <User className="w-5 h-5" />
+                                  </span>
+                                  <p>
+                                    <span className="font-medium text-gray-700">
+                                      Organizer Email:
+                                    </span>{" "}
+                                    <a
+                                      href={`mailto:${upcoming.organizerEmail}`}
+                                      className="text-[#6E2D79] hover:text-[#5C2166] hover:underline"
+                                    >
+                                      {upcoming.organizerEmail}
+                                    </a>
+                                  </p>
+                                </div>
+                              )}
                               <div className="flex items-center">
                                 <span className="text-[#6E2D79] mr-3">
                                   <DollarSign className="w-5 h-5" />
@@ -858,9 +1043,9 @@ const DecodeAdminPage = () => {
 
         {/* Add/Edit Program Modal */}
         {showModal && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-            <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-              <div className="sticky top-0 bg-[#6E2D79] text-white p-6 rounded-t-lg">
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 modal-overlay">
+            <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col modal-content">
+              <div className="bg-[#6E2D79] text-white p-6 rounded-t-lg flex-shrink-0 modal-header">
                 <div className="flex items-center justify-between">
                   <h2 className="text-xl font-bold">
                     {currentProgram
@@ -876,8 +1061,8 @@ const DecodeAdminPage = () => {
                 </div>
               </div>
 
-              <div className="p-6 space-y-6">
-                <form onSubmit={handleSubmit(onSubmit)}>
+              <div className="flex-1 overflow-y-auto">
+                <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-6">
                   {/* Program Title and Subtitle */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="md:col-span-2">
@@ -1005,66 +1190,22 @@ const DecodeAdminPage = () => {
 
                     {/* Card Points Section */}
                     <div className="md:col-span-2">
-                      <div className="flex items-center justify-between mb-1">
-                        <label className="block text-sm font-medium text-gray-700">
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
                           Card Points (For Display) *
                         </label>
-                        <button
-                          type="button"
-                          onClick={addCardPoint}
-                          className="text-sm bg-gray-100 text-gray-700 px-3 py-1 rounded-lg hover:bg-gray-200"
-                        >
-                          Add Point
-                        </button>
-                      </div>
-
-                      <div className="space-y-3">
-                        {watch("cardPoints")?.map((_, index) => (
-                          <div
-                            key={index}
-                            className="flex items-start space-x-3"
-                          >
-                            <div className="flex-1">
-                              <div className="flex items-center">
-                                <div className="bg-gray-100 text-[#6E2D79] p-2 rounded-lg mr-3">
-                                  <Check className="w-4 h-4" />
-                                </div>
-                                <input
-                                  {...register(`cardPoints.${index}`, {
-                                    required: "Card point is required",
-                                    minLength: {
-                                      value: 5,
-                                      message:
-                                        "Point must be at least 5 characters",
-                                    },
-                                    validate: (value) =>
-                                      validateCardPoint(value, index),
-                                  })}
-                                  className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#6E2D79] focus:border-transparent outline-none ${
-                                    errors.cardPoints?.[index]
-                                      ? "border-red-500"
-                                      : "border-gray-300"
-                                  }`}
-                                  placeholder="Short point for card display..."
-                                />
-                              </div>
-                              {errors.cardPoints?.[index] && (
-                                <p className="mt-1 text-sm text-red-600 ml-10">
-                                  {errors.cardPoints[index].message}
+                      <RichTextEditor
+                        value={watch("cardPoints.0") || ""}
+                        onChange={(html) => {
+                          setValue("cardPoints.0", html);
+                          trigger("cardPoints.0");
+                        }}
+                        placeholder="Enter card points for display (you can create bullet points, numbered lists, etc.)"
+                      />
+                      {errors.cardPoints?.[0] && (
+                        <p className="mt-1 text-sm text-red-600">
+                          {errors.cardPoints[0].message}
                                 </p>
                               )}
-                            </div>
-                            <button
-                              type="button"
-                              onClick={() => removeCardPoint(index)}
-                              className="mt-3 text-red-500 hover:text-red-700"
-                              disabled={watch("cardPoints")?.length <= 1}
-                            >
-                              <X className="w-5 h-5" />
-                            </button>
-                          </div>
-                        ))}
-                      </div>
                     </div>
 
                     <div>
@@ -1194,81 +1335,25 @@ const DecodeAdminPage = () => {
                             <div className="space-y-4 ml-4">
                               <div className="flex items-center justify-between">
                                 <h4 className="text-sm font-medium text-gray-700">
-                                  Learning Points *
+                                  Section Content *
                                 </h4>
-                                <button
-                                  type="button"
-                                  onClick={() => addLearningPoint(sectionIndex)}
-                                  className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded hover:bg-gray-200"
-                                >
-                                  Add Point
-                                </button>
                               </div>
 
-                              {section.points?.map((_, pointIndex) => (
-                                <div
-                                  key={pointIndex}
-                                  className="flex items-start space-x-3"
-                                >
-                                  <div className="flex-1">
-                                    <div className="flex items-center">
-                                      <div className="bg-gray-100 text-[#6E2D79] p-2 rounded-lg mr-3">
-                                        <Check className="w-4 h-4" />
-                                      </div>
-                                      <input
-                                        {...register(
-                                          `learningSections.${sectionIndex}.points.${pointIndex}`,
-                                          {
-                                            required:
-                                              "Learning point is required",
-                                            minLength: {
-                                              value: 5,
-                                              message:
-                                                "Point must be at least 5 characters",
-                                            },
-                                            validate: (value) =>
-                                              validateSectionPoint(
-                                                value,
-                                                sectionIndex,
-                                                pointIndex
-                                              ),
-                                          }
-                                        )}
-                                        className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#6E2D79] focus:border-transparent outline-none ${
-                                          errors.learningSections?.[
-                                            sectionIndex
-                                          ]?.points?.[pointIndex]
-                                            ? "border-red-500"
-                                            : "border-gray-300"
-                                        }`}
-                                        placeholder="What participants will learn..."
-                                      />
-                                    </div>
-                                    {errors.learningSections?.[sectionIndex]
-                                      ?.points?.[pointIndex] && (
-                                      <p className="mt-1 text-sm text-red-600 ml-10">
-                                        {
-                                          errors.learningSections[sectionIndex]
-                                            .points[pointIndex].message
-                                        }
+                              <div>
+                                <RichTextEditor
+                                  value={section.content || ""}
+                                  onChange={(html) => {
+                                    setValue(`learningSections.${sectionIndex}.content`, html);
+                                    trigger(`learningSections.${sectionIndex}.content`);
+                                  }}
+                                  placeholder="Enter section content..."
+                                />
+                                {errors.learningSections?.[sectionIndex]?.content && (
+                                  <p className="mt-1 text-sm text-red-600">
+                                    {errors.learningSections[sectionIndex].content.message}
                                       </p>
                                     )}
                                   </div>
-                                  <button
-                                    type="button"
-                                    onClick={() =>
-                                      removeLearningPoint(
-                                        sectionIndex,
-                                        pointIndex
-                                      )
-                                    }
-                                    className="mt-3 text-red-500 hover:text-red-700"
-                                    disabled={section.points.length <= 1}
-                                  >
-                                    <X className="w-5 h-5" />
-                                  </button>
-                                </div>
-                              ))}
                             </div>
                           </div>
                         )
@@ -1281,7 +1366,7 @@ const DecodeAdminPage = () => {
                     <div className="flex items-center justify-between border-b border-gray-200 pb-3">
                       <h3 className="text-lg font-semibold text-[#6E2D79] flex items-center">
                         <Calendar className="mr-2 w-5 h-5 text-[#6E2D79]" />
-                        Upcoming Events
+                        Upcoming Events (Optional)
                       </h3>
                       <button
                         type="button"
@@ -1292,6 +1377,17 @@ const DecodeAdminPage = () => {
                       </button>
                     </div>
 
+                    {watch("upcomingEvents")?.length === 0 ? (
+                      <div className="text-center py-8 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300">
+                        <Calendar className="w-12 h-12 text-gray-400 mx-auto mb-3" />
+                        <p className="text-gray-500 text-sm">
+                          No upcoming events scheduled
+                        </p>
+                        <p className="text-gray-400 text-xs mt-1">
+                          Click "Add Event" to schedule an event for this program
+                        </p>
+                      </div>
+                    ) : (
                     <div className="space-y-6">
                       {watch("upcomingEvents")?.map((_, index) => (
                         <div
@@ -1306,7 +1402,7 @@ const DecodeAdminPage = () => {
                               type="button"
                               onClick={() => removeUpcomingEvent(index)}
                               className="text-red-500 hover:text-red-700"
-                              disabled={watch("upcomingEvents")?.length <= 1}
+                                disabled={watch("upcomingEvents")?.length === 0}
                             >
                               <X className="w-5 h-5" />
                             </button>
@@ -1315,32 +1411,59 @@ const DecodeAdminPage = () => {
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                             <div>
                               <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Event Date *
+                                  Start Date & Time *
                               </label>
                               <div className="relative">
                                 <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-500" />
                                 <input
-                                  {...register(`upcomingEvents.${index}.date`, {
-                                    required: "Date is required",
+                                    type="datetime-local"
+                                    {...register(`upcomingEvents.${index}.startDate`, {
+                                      required: false, // Not required by default
                                     validate: (value) =>
-                                      validateEventDate(value, index),
+                                        validateEventStartDate(value, index)
                                   })}
                                   className={`w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#6E2D79] focus:border-transparent outline-none ${
-                                    errors.upcomingEvents?.[index]?.date
+                                      errors.upcomingEvents?.[index]?.startDate
                                       ? "border-red-500"
                                       : "border-gray-300"
                                   }`}
-                                  placeholder="Aug 15, 2025"
                                 />
                               </div>
-                              {errors.upcomingEvents?.[index]?.date && (
+                                {errors.upcomingEvents?.[index]?.startDate && (
                                 <p className="mt-1 text-sm text-red-600">
-                                  {errors.upcomingEvents[index].date.message}
+                                    {errors.upcomingEvents[index].startDate.message}
                                 </p>
                               )}
                             </div>
 
                             <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                  End Date & Time *
+                                </label>
+                                <div className="relative">
+                                  <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-500" />
+                                  <input
+                                    type="datetime-local"
+                                    {...register(`upcomingEvents.${index}.endDate`, {
+                                      required: false, // Not required by default
+                                      validate: (value) => 
+                                        validateEventEndDate(value, index)
+                                    })}
+                                    className={`w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#6E2D79] focus:border-transparent outline-none ${
+                                      errors.upcomingEvents?.[index]?.endDate
+                                        ? "border-red-500"
+                                        : "border-gray-300"
+                                    }`}
+                                  />
+                                </div>
+                                {errors.upcomingEvents?.[index]?.endDate && (
+                                  <p className="mt-1 text-sm text-red-600">
+                                    {errors.upcomingEvents[index].endDate.message}
+                                  </p>
+                                )}
+                              </div>
+
+                              <div className="md:col-span-2">
                               <label className="block text-sm font-medium text-gray-700 mb-1">
                                 Event Name *
                               </label>
@@ -1348,12 +1471,21 @@ const DecodeAdminPage = () => {
                                 {...register(
                                   `upcomingEvents.${index}.eventName`,
                                   {
-                                    required: "Event name is required",
+                                      required: false, // Not required by default
                                     minLength: {
                                       value: 5,
-                                      message:
-                                        "Name must be at least 5 characters",
-                                    },
+                                        message: "Name must be at least 5 characters",
+                                      },
+                                      validate: (value) => {
+                                        const event = watch(`upcomingEvents.${index}`);
+                                        // If any other field has content, event name becomes required
+                                        if (event.startDate || event.endDate || event.location || event.organiser || event.price || event.paymentLink) {
+                                          if (!value || value.trim().length < 5) {
+                                            return "Event name is required and must be at least 5 characters when adding an event";
+                                          }
+                                        }
+                                        return true;
+                                      }
                                   }
                                 )}
                                 className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#6E2D79] focus:border-transparent outline-none ${
@@ -1383,12 +1515,21 @@ const DecodeAdminPage = () => {
                                   {...register(
                                     `upcomingEvents.${index}.location`,
                                     {
-                                      required: "Location is required",
+                                        required: false, // Not required by default
                                       minLength: {
                                         value: 3,
-                                        message:
-                                          "Location must be at least 3 characters",
-                                      },
+                                          message: "Location must be at least 3 characters",
+                                        },
+                                        validate: (value) => {
+                                          const event = watch(`upcomingEvents.${index}`);
+                                          // If any other field has content, location becomes required
+                                          if (event.startDate || event.endDate || event.eventName || event.organiser || event.price || event.paymentLink) {
+                                            if (!value || value.trim().length < 3) {
+                                              return "Location is required and must be at least 3 characters when adding an event";
+                                            }
+                                          }
+                                          return true;
+                                        }
                                     }
                                   )}
                                   className={`w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#6E2D79] focus:border-transparent outline-none ${
@@ -1419,12 +1560,21 @@ const DecodeAdminPage = () => {
                                   {...register(
                                     `upcomingEvents.${index}.organiser`,
                                     {
-                                      required: "Organizer is required",
+                                        required: false, // Not required by default
                                       minLength: {
                                         value: 3,
-                                        message:
-                                          "Organizer must be at least 3 characters",
-                                      },
+                                          message: "Organizer must be at least 3 characters",
+                                        },
+                                        validate: (value) => {
+                                          const event = watch(`upcomingEvents.${index}`);
+                                          // If any other field has content, organizer becomes required
+                                          if (event.startDate || event.endDate || event.eventName || event.location || event.price || event.paymentLink) {
+                                            if (!value || value.trim().length < 3) {
+                                              return "Organizer is required and must be at least 3 characters when adding an event";
+                                            }
+                                          }
+                                          return true;
+                                        }
                                     }
                                   )}
                                   className={`w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#6E2D79] focus:border-transparent outline-none ${
@@ -1447,6 +1597,32 @@ const DecodeAdminPage = () => {
 
                             <div>
                               <label className="block text-sm font-medium text-gray-700 mb-1">
+                                Organizer Email
+                              </label>
+                                                              <input
+                                  type="email"
+                                  {...register(
+                                    `upcomingEvents.${index}.organizerEmail`,
+                                    {
+                                      validate: (value) => validateOrganizerEmail(value, index)
+                                    }
+                                  )}
+                                  className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#6E2D79] focus:border-transparent outline-none ${
+                                    errors.upcomingEvents?.[index]?.organizerEmail
+                                      ? "border-red-500"
+                                      : "border-gray-300"
+                                  }`}
+                                  placeholder="organizer@example.com"
+                                />
+                                {errors.upcomingEvents?.[index]?.organizerEmail && (
+                                  <p className="mt-1 text-sm text-red-600">
+                                    {errors.upcomingEvents[index].organizerEmail.message}
+                                  </p>
+                                )}
+                            </div>
+
+                            <div>
+                              <label className="block text-sm font-medium text-gray-700 mb-1">
                                 Price *
                               </label>
                               <div className="relative">
@@ -1455,9 +1631,18 @@ const DecodeAdminPage = () => {
                                   {...register(
                                     `upcomingEvents.${index}.price`,
                                     {
-                                      required: "Price is required",
-                                      validate: (value) =>
-                                        validatePrice(value, index),
+                                        required: false, // Not required by default
+                                        validate: (value) => {
+                                          const event = watch(`upcomingEvents.${index}`);
+                                          // If any other field has content, price becomes required
+                                          if (event.startDate || event.endDate || event.eventName || event.location || event.organiser || event.paymentLink) {
+                                            if (!value) {
+                                              return "Price is required when adding an event";
+                                            }
+                                            return validatePrice(value, index);
+                                          }
+                                          return true;
+                                        }
                                     }
                                   )}
                                   className={`w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#6E2D79] focus:border-transparent outline-none ${
@@ -1486,9 +1671,18 @@ const DecodeAdminPage = () => {
                                   {...register(
                                     `upcomingEvents.${index}.paymentLink`,
                                     {
-                                      required: "Payment link is required",
-                                      validate: (value) =>
-                                        validatePaymentLink(value, index),
+                                        required: false, // Not required by default
+                                        validate: (value) => {
+                                          const event = watch(`upcomingEvents.${index}`);
+                                          // If any other field has content, payment link becomes required
+                                          if (event.startDate || event.endDate || event.eventName || event.location || event.organiser || event.price) {
+                                            if (!value) {
+                                              return "Payment link is required when adding an event";
+                                            }
+                                            return validatePaymentLink(value, index);
+                                          }
+                                          return true;
+                                        }
                                     }
                                   )}
                                   className={`w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#6E2D79] focus:border-transparent outline-none ${
@@ -1512,6 +1706,7 @@ const DecodeAdminPage = () => {
                         </div>
                       ))}
                     </div>
+                    )}
                   </div>
 
                   {/* Form Actions */}
@@ -1554,9 +1749,9 @@ const DecodeAdminPage = () => {
 
         {/* Delete Confirmation Modal */}
         {showDeleteModal && programToDelete && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-            <div className="bg-white rounded-lg max-w-md w-full">
-              <div className="bg-red-600 text-white p-6 rounded-t-lg">
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 modal-overlay">
+            <div className="bg-white rounded-lg max-w-md w-full modal-content">
+              <div className="bg-red-600 text-white p-6 rounded-t-lg modal-header">
                 <div className="flex items-center justify-between">
                   <h2 className="text-xl font-bold">Confirm Deletion</h2>
                   <button

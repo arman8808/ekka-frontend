@@ -1,6 +1,7 @@
 import axios from "axios";
 import Cookies from "js-cookie";
-const API_URL = `${import.meta.env.VITE_API_BASE_URL}familyEvent`;
+
+const API_URL = `${import.meta.env.VITE_API_BASE_URL || 'https://api.ekaausa.com/api/'}events/open`;
 
 // Create axios instance with auth header
 const api = axios.create({
@@ -22,29 +23,9 @@ api.interceptors.request.use(
   }
 );
 
-const familyEventService = {
-  // Get all events for users (no admin token required)
-  getUserEvents: async () => {
-    try {
-      const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}familyEvent/user`);
-      return response.data;
-    } catch (error) {
-      throw error.response?.data?.message || error.message;
-    }
-  },
-
-  // Get single event for users by ID
-  getUserEventById: async (id) => {
-    try {
-      const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}familyEvent/user/${id}`);
-      return response.data;
-    } catch (error) {
-      throw error.response?.data?.message || error.message;
-    }
-  },
-
-  // Get all events with pagination and search (admin only)
-  getEvents: async (search = "", page = 1, limit = 50) => {
+const scheduleService = {
+  // Get all schedule events with pagination and search
+  getScheduleEvents: async (search = "", page = 1, limit = 50) => {
     try {
       const response = await api.get("", {
         params: { search, page, limit },
@@ -55,37 +36,39 @@ const familyEventService = {
     }
   },
 
-  // Create new event
-  createEvent: async (eventData) => {
+  // Get schedule events by program type
+  getEventsByType: async (programType) => {
     try {
-      const response = await api.post("", eventData);
+      const response = await api.get(`/type/${programType}`);
       return response.data;
     } catch (error) {
       throw error.response?.data?.message || error.message;
     }
   },
 
-  // Update event
-  updateEvent: async (id, eventData) => {
+  // Get upcoming events
+  getUpcomingEvents: async () => {
     try {
-      const response = await api.put(`/${id}`, eventData);
+      const response = await api.get("/upcoming");
       return response.data;
     } catch (error) {
       throw error.response?.data?.message || error.message;
     }
   },
 
-  // Delete event
-  deleteEvent: async (id) => {
+  // Get events by date range
+  getEventsByDateRange: async (startDate, endDate) => {
     try {
-      const response = await api.delete(`/${id}`);
+      const response = await api.get("/date-range", {
+        params: { startDate, endDate },
+      });
       return response.data;
     } catch (error) {
       throw error.response?.data?.message || error.message;
     }
   },
 
-  // Get single event
+  // Get single event by ID
   getEventById: async (id) => {
     try {
       const response = await api.get(`/${id}`);
@@ -96,4 +79,5 @@ const familyEventService = {
   },
 };
 
-export default familyEventService;
+export default scheduleService;
+

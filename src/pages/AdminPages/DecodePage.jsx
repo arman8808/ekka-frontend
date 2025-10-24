@@ -1650,13 +1650,13 @@ const DecodeAdminPage = () => {
                                         validate: (value) => {
                                           const event = watch(`upcomingEvents.${index}`);
                                           // If any other field has content, price becomes required
-                                          if (event.startDate || event.endDate || event.eventName || event.location || event.organiser || event.paymentLink) {
-                                            if (!value) {
-                                              return "Price is required when adding an event";
-                                            }
-                                            return validatePrice(value, index);
-                                          }
-                                          return true;
+                                          // if (event.startDate || event.endDate || event.eventName || event.location || event.organiser || event.paymentLink) {
+                                          //   if (!value) {
+                                          //     return "Price is required when adding an event";
+                                          //   }
+                                          //   return validatePrice(value, index);
+                                          // }
+                                          // return true;
                                         }
                                     }
                                   )}

@@ -806,7 +806,7 @@ const FamilyConstellationPage = () => {
                       </label>
                       <input
                         {...register("capacity", {
-                          required: "Capacity is required",
+                          // required: "Capacity is required",
                           pattern: {
                             value: /^\d+\sSeats?$/,
                             message:
@@ -885,7 +885,7 @@ const FamilyConstellationPage = () => {
                       </label>
                       <input
                         {...register("price", {
-                          required: "Price is required",
+                          // required: "Price is required",
                           validate: validatePrice,
                         })}
                         className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#6E2D79] focus:border-transparent outline-none ${

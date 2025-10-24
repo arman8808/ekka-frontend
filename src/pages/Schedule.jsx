@@ -23,7 +23,6 @@ function Schedule() {
       setError(null);
       const response = await scheduleService.getScheduleEvents();
 
-      
       // Handle different response structures
       let eventsData = [];
       if (response && response.data) {
@@ -33,7 +32,7 @@ function Schedule() {
       } else if (response && Array.isArray(response.events)) {
         eventsData = response.events;
       }
-      
+
       setEvents(eventsData);
     } catch (err) {
       console.error("Error fetching events:", err);
@@ -44,8 +43,6 @@ function Schedule() {
       setLoading(false);
     }
   };
-
-
 
   const handleRegister = (event) => {
     // Navigate to registration page with event ID
@@ -105,7 +102,9 @@ function Schedule() {
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.8, delay: 0.4 }}
           >
-            {loading ? "Loading events..." : "Explore the upcoming programs and reserve your spot today."}
+            {loading
+              ? "Loading events..."
+              : "Explore the upcoming programs and reserve your spot today."}
           </motion.p>
 
           <motion.div
@@ -194,8 +193,16 @@ function Schedule() {
           >
             <div className="flex items-center justify-between">
               <div className="flex items-center">
-                <svg className="w-5 h-5 text-red-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                <svg
+                  className="w-5 h-5 text-red-400 mr-2"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                    clipRule="evenodd"
+                  />
                 </svg>
                 <span className="text-red-800 font-medium">{error}</span>
               </div>
@@ -211,7 +218,9 @@ function Schedule() {
 
         {/* Header with Refresh Button */}
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-semibold text-gray-800">Upcoming Events</h2>
+          <h2 className="text-xl font-semibold text-gray-800">
+            Upcoming Events
+          </h2>
           <button
             onClick={fetchEvents}
             disabled={loading}
@@ -219,16 +228,42 @@ function Schedule() {
           >
             {loading ? (
               <>
-                <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                <svg
+                  className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  ></circle>
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  ></path>
                 </svg>
                 Loading...
               </>
             ) : (
               <>
-                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                <svg
+                  className="w-4 h-4 mr-2"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                  />
                 </svg>
                 Refresh
               </>
@@ -270,21 +305,27 @@ function Schedule() {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                                 {loading ? (
-                   <ScheduleSkeleton rows={8} />
-                 ) : error ? (
-                   <tr>
-                     <td colSpan="7" className="px-4 py-4 text-center text-red-600">
-                       {error}
-                     </td>
-                   </tr>
-                 ) : events.length === 0 ? (
-                   <tr>
-                     <td colSpan="7" className="px-4 py-4 text-center text-gray-500">
-                       No events found.
-                     </td>
-                   </tr>
-                 ) : (
+                {loading ? (
+                  <ScheduleSkeleton rows={8} />
+                ) : error ? (
+                  <tr>
+                    <td
+                      colSpan="7"
+                      className="px-4 py-4 text-center text-red-600"
+                    >
+                      {error}
+                    </td>
+                  </tr>
+                ) : events.length === 0 ? (
+                  <tr>
+                    <td
+                      colSpan="7"
+                      className="px-4 py-4 text-center text-gray-500"
+                    >
+                      No events found.
+                    </td>
+                  </tr>
+                ) : (
                   events.map((event, index) => (
                     <motion.tr
                       key={event.id || index}
@@ -299,10 +340,10 @@ function Schedule() {
                           className="flex flex-col max-w-[250px] cursor-pointer"
                           onClick={() => {
                             // Navigate based on program type
-                            if (event.programType === 'hypnotherapy') {
-                              navigate('/ich/level/1');
-                            } else if (event.programType === 'family') {
-                              navigate('/family-constellation');
+                            if (event.programType === "hypnotherapy") {
+                              navigate("/ich/level/1");
+                            } else if (event.programType === "family") {
+                              navigate("/family-constellation");
                             } else {
                               // Default fallback
                               event.pagelink && navigate(event.pagelink);
@@ -310,16 +351,30 @@ function Schedule() {
                           }}
                         >
                           <span className="text-sm font-bold text-[#2D2D2D] break-words">
-                            {(event.event || event.eventName) && (event.event || event.eventName).includes("Training,") ? (
+                            {(event.event || event.eventName) &&
+                            (event.event || event.eventName).includes(
+                              "Training,"
+                            ) ? (
                               <>
-                                {(event.event || event.eventName).split("Training,")[0]}Training,
+                                {
+                                  (event.event || event.eventName).split(
+                                    "Training,"
+                                  )[0]
+                                }
+                                Training,
                                 <br />
                                 <span className="text-sm font-bold text-[#2D2D2D] break-words">
-                                  {(event.event || event.eventName).split("Training,")[1]}
+                                  {
+                                    (event.event || event.eventName).split(
+                                      "Training,"
+                                    )[1]
+                                  }
                                 </span>
                               </>
                             ) : (
-                              event.event || event.eventName || "Event Name Not Available"
+                              event.event ||
+                              event.eventName ||
+                              "Event Name Not Available"
                             )}
                           </span>
                         </div>
@@ -327,7 +382,9 @@ function Schedule() {
 
                       <td className="px-4 py-4">
                         <div className="text-sm text-[#2D2D2D] whitespace-nowrap">
-                          {event.date || event.formattedStartDate || "Date Not Available"}
+                          {event.date ||
+                            event.formattedStartDate ||
+                            "Date Not Available"}
                         </div>
                       </td>
                       <td className="px-4 py-4">
@@ -337,13 +394,18 @@ function Schedule() {
                       </td>
                       <td className="px-4 py-4">
                         <div className="text-sm text-[#2D2D2D]">
-                          {event.facilitator || event.organisedby || event.organiser || "-"}
+                          {event.facilitator ||
+                            event.organisedby ||
+                            event.organiser ||
+                            "-"}
                         </div>
                       </td>
                       <td className="px-4 py-4">
                         <div className="text-sm">
                           <span className={`px-2 py-1 rounded-full`}>
-                            {event.eventType === 'fc' ? (event.capacity || event.seats || "10 Seats") : "Not Limited"}
+                            {event.eventType === "fc"
+                              ? event.capacity || event.seats || "10 Seats"
+                              : "Not Limited"}
                           </span>
                         </div>
                       </td>
@@ -353,14 +415,19 @@ function Schedule() {
                         ) : (
                           <span
                             className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                              (event.price && event.price.includes("AED")) || event.currency === "AED"
+                              (event.price && event.price.includes("AED")) ||
+                              event.currency === "AED"
                                 ? "bg-blue-100 text-blue-800"
-                                : (event.price && event.price.includes("USD")) || event.currency === "USD"
+                                : (event.price &&
+                                    event.price.includes("USD")) ||
+                                  event.currency === "USD"
                                 ? "bg-green-100 text-green-800"
                                 : "bg-yellow-100 text-yellow-800"
                             }`}
                           >
-                            {event.price || "Price Not Available"}
+                            {event.price != ""
+                              ? event.price
+                              : "TBD" || "Price Not Available"}
                           </span>
                         )}
                       </td>
@@ -371,45 +438,48 @@ function Schedule() {
                           <motion.button
                             whileHover={{ scale: 1.05 }}
                             whileTap={{ scale: 0.95 }}
-                                                          onClick={() => {
-                                if (event.externalLink) {
-                                  window.open(event.externalLink, "_blank");
+                            onClick={() => {
+                              if (event.externalLink) {
+                                window.open(event.externalLink, "_blank");
+                              } else {
+                                // Navigate to appropriate detail page with event data
+                                if (event.eventType === "hyp") {
+                                  navigate(`/ich/level/${event.programId}`, {
+                                    state: {
+                                      openModal: true,
+                                      selectedEvent: event,
+                                      fromSchedule: true,
+                                    },
+                                  });
+                                } else if (event.eventType === "fc") {
+                                  navigate("/family-constellation", {
+                                    state: {
+                                      openModal: true,
+                                      selectedEvent: event,
+                                      fromSchedule: true,
+                                    },
+                                  });
+                                } else if (event.eventType === "decode") {
+                                  navigate(`/decode/level/${event.programId}`, {
+                                    state: {
+                                      openModal: true,
+                                      selectedEvent: event,
+                                      fromSchedule: true,
+                                    },
+                                  });
                                 } else {
-                                  // Navigate to appropriate detail page with event data
-                                  if (event.eventType === 'hyp') {
-                                    navigate(`/ich/level/${event.programId}`, { 
-                                      state: { 
-                                        openModal: true, 
-                                        selectedEvent: event,
-                                        fromSchedule: true 
-                                      } 
-                                    });
-                                  } else if (event.eventType === 'fc') {
-                                    navigate('/family-constellation', { 
-                                      state: { 
-                                        openModal: true, 
-                                        selectedEvent: event,
-                                        fromSchedule: true 
-                                      } 
-                                    });
-                                  } else if (event.eventType === 'decode') {
-                                    navigate(`/decode/level/${event.programId}`, { 
-                                      state: { 
-                                        openModal: true, 
-                                        selectedEvent: event,
-                                        fromSchedule: true 
-                                      } 
-                                    });
-                                  } else {
-                                    // Fallback to existing logic
-                                    if (event.link && event.link.startsWith("/")) {
-                                      handleRegister(event.link);
-                                    } else if (event.link) {
-                                      window.location.href = event.link;
-                                    }
+                                  // Fallback to existing logic
+                                  if (
+                                    event.link &&
+                                    event.link.startsWith("/")
+                                  ) {
+                                    handleRegister(event.link);
+                                  } else if (event.link) {
+                                    window.location.href = event.link;
                                   }
                                 }
-                              }}
+                              }
+                            }}
                             className="px-3 py-2 bg-[#6E2D79] text-white text-xs rounded-md hover:bg-[#5a2465] transition-colors cursor-pointer"
                           >
                             Enroll Now

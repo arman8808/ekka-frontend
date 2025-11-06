@@ -16,7 +16,7 @@ function Tasso() {
         "Explore the core principles and historical context of transpersonal regression therapy.",
       duration: "2 hours",
       videoSrc: `${import.meta.env.VITE_API_Cloud_Front_URL}tasso/2.mp4`,
-      thumbnailSrc: "/thumbnails/module1.jpg",
+      thumbnailSrc: "/thumbnailvideo1.png",
       learningPoints: [
         "Master basic hypnosis skills and techniques",
         "Conduct effective client intake and induction processes",
@@ -38,7 +38,7 @@ function Tasso() {
         "Specialized methods for addressing different types of trauma.",
       duration: "3 hours",
       videoSrc: `${import.meta.env.VITE_API_Cloud_Front_URL}tasso/5.mp4`,
-      thumbnailSrc: "/thumbnails/module2.jpg",
+      thumbnailSrc: "/thumbnailvideo1.png",
       learningPoints: [
         "Master techniques for accident trauma release",
         "Develop skills to address childhood trauma patterns",
@@ -62,7 +62,7 @@ function Tasso() {
       description: "Working with life choices and interpersonal connections.",
       duration: "3 hours",
       videoSrc: `${import.meta.env.VITE_API_Cloud_Front_URL}tasso/6.mp4`,
-      thumbnailSrc: "/thumbnails/module3.jpg",
+      thumbnailSrc: "/thumbnailvideo1.png",
       learningPoints: [
         "Explore and analyze personal life plans and choices",
         "Develop techniques to modify limiting life patterns",
@@ -90,7 +90,7 @@ function Tasso() {
         "Techniques for accessing and healing past life experiences.",
       duration: "3 hours",
       videoSrc: `${import.meta.env.VITE_API_Cloud_Front_URL}tasso/7.mp4`,
-      thumbnailSrc: "/thumbnails/module4.jpg",
+      thumbnailSrc: "/thumbnailvideo1.png",
       learningPoints: [
         "Process traumatic lifetimes and emotional hangovers between incarnations",
         "Resolve painful death experiences from past lives",
@@ -117,7 +117,7 @@ function Tasso() {
         "Advanced techniques for karmic resolution and spiritual guidance.",
       duration: "3 hours",
       videoSrc: `${import.meta.env.VITE_API_Cloud_Front_URL}tasso/8.mp4`,
-      thumbnailSrc: "/thumbnails/module5.jpg",
+      thumbnailSrc: "/thumbnailvideo1.png",
       learningPoints: [
         "Navigate complicated karmic lifetimes and soul contracts",
         "Facilitate Higher Self interventions during sessions",
@@ -143,7 +143,7 @@ function Tasso() {
       description: "Master techniques for complete healing integration.",
       duration: "3 hours",
       videoSrc: `${import.meta.env.VITE_API_Cloud_Front_URL}tasso/9.mp4`,
-      thumbnailSrc: "/thumbnails/module6.jpg",
+     thumbnailSrc: "/thumbnailvideo1.png",
       learningPoints: [
         "Master techniques for Great Integrations across consciousness levels",
         "Conduct deep Core Issue Exploration and Transformation sessions",

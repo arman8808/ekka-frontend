@@ -227,10 +227,10 @@ function Tasso() {
                     <h2 className="text-[#6E2D79] text-xl sm:text-2xl font-semibold">
                       {module.title}
                     </h2>
-                    <div className="flex items-center gap-2 text-[#6E2D79] mt-1">
+                    {/* <div className="flex items-center gap-2 text-[#6E2D79] mt-1">
                       <Clock size={16} />
                       <span className="text-sm">{module.duration}</span>
-                    </div>
+                    </div> */}
                   </div>
                 </div>
 
@@ -269,7 +269,7 @@ function Tasso() {
                   </div>
 
                   {/* Resources */}
-                  {module.resources && module.resources.length > 0 && (
+                  {/* {module.resources && module.resources.length > 0 && (
                     <div>
                       <h3 className="text-[#6E2D79] font-semibold text-lg sm:text-xl mb-4">
                         Resources:
@@ -291,7 +291,7 @@ function Tasso() {
                         ))}
                       </div>
                     </div>
-                  )}
+                  )} */}
                 </div>
               </div>
             ))}
@@ -354,7 +354,7 @@ function Tasso() {
             </div>
 
             {/* EKAA Certified Faculty */}
-            <div className="bg-white rounded-xl shadow-md overflow-hidden border border-[#E5E7EB]">
+            {/* <div className="bg-white rounded-xl shadow-md overflow-hidden border border-[#E5E7EB]">
               <img
                 src={courseInfo.instructor.image}
                 alt="Lead Instructor"
@@ -377,7 +377,7 @@ function Tasso() {
                   {courseInfo.instructor.experience}
                 </p>
               </div>
-            </div>
+            </div> */}
           </div>
         </div>
       </div>

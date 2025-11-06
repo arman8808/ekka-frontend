@@ -97,7 +97,7 @@ const textVariants = {
 
 const Founder = () => {
   return (
-    <div className="flex flex-col lg:flex-row w-full bg-white">
+    <div className="flex flex-col lg:flex-row w-full bg-white items-center justify-center ">
       {/* Left side - Image */}
       <motion.div
         className="w-full lg:w-[607px] lg:h-[591px] flex items-center justify-center flex-shrink-0"
@@ -130,10 +130,10 @@ bg-cover bg-center overflow-hidden
         {/* Main content container with proper constraints */}
         <div className="relative z-10 w-full max-w-[765px] mx-auto overflow-y-auto">
           <h2 className="text-[22px] md:text-[26px] font-bold text-[#6E2D79] font-[Poppins]">
-            Dr. Yuvraj Kapadia
+        Yuvraj Kapadia
           </h2>
           <p className="text-[18px] md:text-[20px] font-medium text-[#6E2D79] font-[Poppins] mb-4">
-            Founder-Director & CEO
+            Founder-Director
           </p>
 
           <div className="space-y-4 text-[#A35F93] font-[Poppins] text-[16px] sm:text-[18px] leading-[1.6]">

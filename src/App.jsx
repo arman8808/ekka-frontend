@@ -26,7 +26,7 @@
 // tanu code
 
 import React from "react";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import HomePage from "./pages/HomePage";
 import AboutPage from "./pages/AboutPage";
 import ContactUs from "./pages/ContactUs";
@@ -63,6 +63,7 @@ function App() {
         <Route path="/decode" element={<DecodePage />} />
         <Route path="/decode/level/:id" element={<DecodeLevel />} />
         <Route path="/schedule" element={<Schedule />} />
+        <Route path="/practitioner" element={<Navigate to="/schedule" replace />} />
         <Route path="/tasso" element={<Tasso />} />
         <Route path="/family-constellation" element={<FamilyConstellation />} />
         <Route path="/ich" element={<ICH />} />

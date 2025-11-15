@@ -291,7 +291,10 @@ function Schedule() {
                     Location
                   </th>
                   <th className="px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider whitespace-nowrap">
-                    Facilitator
+                    Facilitator/Instructor
+                  </th>{" "}
+                  <th className="px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider whitespace-nowrap">
+                    Organizer Name
                   </th>
                   <th className="px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider whitespace-nowrap">
                     Total Participants
@@ -379,7 +382,6 @@ function Schedule() {
                           </span>
                         </div>
                       </td>
-
                       <td className="px-4 py-4">
                         <div className="text-sm text-[#2D2D2D] whitespace-nowrap">
                           {event.date ||
@@ -398,6 +400,11 @@ function Schedule() {
                             event.organisedby ||
                             event.organiser ||
                             "-"}
+                        </div>
+                      </td>{" "}
+                      <td className="px-4 py-4">
+                        <div className="text-sm text-[#2D2D2D]">
+                          {event.organisedby || event.organiser || "-"}
                         </div>
                       </td>
                       <td className="px-4 py-4">

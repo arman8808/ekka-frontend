@@ -18,6 +18,7 @@ import familyEventService from "../../components/services/familyEventService.js"
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
+
 const FamilyConstellationPage = () => {
   const navigate = useNavigate();
   const [authChecked, setAuthChecked] = useState(false);
@@ -90,14 +91,12 @@ const FamilyConstellationPage = () => {
   // Helper function to set end date automatically when start date changes
   const handleStartDateChange = (e) => {
     const startDate = e.target.value;
-    // Debug info removed
-
+    
     if (startDate) {
       const start = new Date(startDate);
       const end = new Date(start);
       end.setHours(end.getHours() + 2); // Default 2-hour event
 
-      // Debug info removed
       setValue("endDate", end.toISOString().slice(0, 16));
 
       // Clear any existing end date errors and trigger validation
@@ -106,7 +105,6 @@ const FamilyConstellationPage = () => {
       }, 100);
     } else {
       // If start date is cleared, also clear end date
-      // Debug info removed
       setValue("endDate", "");
     }
   };
@@ -160,11 +158,18 @@ const FamilyConstellationPage = () => {
         return;
       }
 
+      // Convert dates to UTC before sending to backend
+      const dataToSend = {
+        ...data,
+        startDate: data.startDate ? new Date(data.startDate).toISOString() : null,
+        endDate: data.endDate ? new Date(data.endDate).toISOString() : null,
+      };
+
       if (showAddModal) {
-        await familyEventService.createEvent(data, token);
+        await familyEventService.createEvent(dataToSend, token);
         toast.success("Event created successfully");
       } else if (showEditModal && currentEvent) {
-        await familyEventService.updateEvent(currentEvent._id, data, token);
+        await familyEventService.updateEvent(currentEvent._id, dataToSend, token);
         toast.success("Event updated successfully");
       }
 
@@ -203,22 +208,18 @@ const FamilyConstellationPage = () => {
     setCurrentEvent(event);
     setValue("event", event.event);
 
-    // Handle date conversion - prioritize new format over legacy
+    // Use UTC dates directly without conversion
     if (event.startDate && event.endDate) {
-      // Use the new startDate/endDate format
       let startDate = event.startDate;
       let endDate = event.endDate;
 
-      // Convert UTC to local timezone for display
+      // Ensure the format is correct for datetime-local input
       if (typeof startDate === "string") {
         try {
           const startDateTime = new Date(startDate);
           if (!isNaN(startDateTime.getTime())) {
-            const localStartDate = new Date(
-              startDateTime.getTime() -
-                startDateTime.getTimezoneOffset() * 60000
-            );
-            startDate = localStartDate.toISOString().slice(0, 16);
+            // Remove the 'Z' and use as-is (datetime-local expects local time)
+            startDate = startDate.replace('Z', '');
           }
         } catch (e) {
           console.warn("Invalid start date format:", event.startDate);
@@ -229,34 +230,27 @@ const FamilyConstellationPage = () => {
         try {
           const endDateTime = new Date(endDate);
           if (!isNaN(endDateTime.getTime())) {
-            const localEndDate = new Date(
-              endDateTime.getTime() - endDateTime.getTimezoneOffset() * 60000
-            );
-            endDate = localEndDate.toISOString().slice(0, 16);
+            endDate = endDate.replace('Z', '');
           }
         } catch (e) {
           console.warn("Invalid end date format:", event.endDate);
         }
       }
 
-      setValue("startDate", startDate);
-      setValue("endDate", endDate);
+      setValue("startDate", startDate.slice(0, 16));
+      setValue("endDate", endDate.slice(0, 16));
     } else if (event.date && !event.startDate) {
       // Convert legacy date format to start/end dates
       const eventDate = new Date(event.date);
       const endDate = new Date(eventDate);
       endDate.setHours(eventDate.getHours() + 2); // Default 2-hour event
 
-      // Convert to local timezone
-      const localStartDate = new Date(
-        eventDate.getTime() - eventDate.getTimezoneOffset() * 60000
-      );
-      const localEndDate = new Date(
-        endDate.getTime() - endDate.getTimezoneOffset() * 60000
-      );
+      // Convert to ISO string without timezone conversion
+      const isoStartDate = eventDate.toISOString().replace('Z', '');
+      const isoEndDate = endDate.toISOString().replace('Z', '');
 
-      setValue("startDate", localStartDate.toISOString().slice(0, 16));
-      setValue("endDate", localEndDate.toISOString().slice(0, 16));
+      setValue("startDate", isoStartDate.slice(0, 16));
+      setValue("endDate", isoEndDate.slice(0, 16));
     } else {
       // Fallback - set empty values
       setValue("startDate", "");
@@ -1189,4 +1183,4 @@ export default FamilyConstellationPage;
   .modal-body::-webkit-scrollbar-thumb:hover {
     background: #a0aec0;
   }
-`}</style>;
+`}</style>

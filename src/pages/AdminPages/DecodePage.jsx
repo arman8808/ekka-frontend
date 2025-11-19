@@ -27,8 +27,9 @@ import Layout from "../../components/layout/Layout";
 import decodeService from "../../components/services/decodeService";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
-import Cookies from "js-cookie"; 
+import Cookies from "js-cookie";
 import RichTextEditor from "../../components/utils/RichTextEditor";
+
 const DecodeAdminPage = () => {
   const navigate = useNavigate();
   const [authChecked, setAuthChecked] = useState(false);
@@ -84,26 +85,39 @@ const DecodeAdminPage = () => {
     const sections = watch("learningSections");
     const content = sections[sectionIndex].content;
     // Remove HTML tags and check content length
-    const textContent = content.replace(/<[^>]*>/g, '').trim();
-    return textContent.length >= 10 || "Section content must be at least 10 characters";
+    const textContent = content.replace(/<[^>]*>/g, "").trim();
+    return (
+      textContent.length >= 10 ||
+      "Section content must be at least 10 characters"
+    );
   };
 
   const validateCardPoint = (value) => {
     const cardPoint = watch("cardPoints.0");
     // Remove HTML tags and check if content exists
-    const textContent = cardPoint?.replace(/<[^>]*>/g, '').trim();
+    const textContent = cardPoint?.replace(/<[^>]*>/g, "").trim();
     return textContent !== "" || "Card point is required";
   };
 
   const validateEventStartDate = (value, eventIndex) => {
     const events = watch("upcomingEvents");
     const event = events[eventIndex];
-    
+
     // If any other field in this event has content, start date becomes required
-    if (event.eventName || event.location || event.organiser || event.price || event.paymentLink || event.endDate) {
-      return value.trim() !== "" || "Start date and time is required when adding an event";
+    if (
+      event.eventName ||
+      event.location ||
+      event.organiser ||
+      event.price ||
+      event.paymentLink ||
+      event.endDate
+    ) {
+      return (
+        value.trim() !== "" ||
+        "Start date and time is required when adding an event"
+      );
     }
-    
+
     // If no other fields have content, start date is optional
     return true;
   };
@@ -111,32 +125,47 @@ const DecodeAdminPage = () => {
   const validateEventEndDate = (value, eventIndex) => {
     const events = watch("upcomingEvents");
     const event = events[eventIndex];
-    
+
     // If any other field in this event has content, end date becomes required
-    if (event.startDate || event.eventName || event.location || event.organiser || event.price || event.paymentLink) {
+    if (
+      event.startDate ||
+      event.eventName ||
+      event.location ||
+      event.organiser ||
+      event.price ||
+      event.paymentLink
+    ) {
       if (!event.startDate) {
         return "Start date is required before setting end date";
       }
-      
+
       if (!value) {
         return "End date and time is required when adding an event";
       }
-      
+
       const startDate = new Date(event.startDate);
       const endDate = new Date(value);
-      
+
       if (endDate <= startDate) {
         return "End date must be after start date";
       }
     }
-    
+
     // If no other fields have content, end date is optional
     return true;
   };
 
   // Helper function to check if an event has any content
   const hasEventContent = (event) => {
-    return !!(event.startDate || event.endDate || event.eventName || event.location || event.organiser || event.price || event.paymentLink);
+    return !!(
+      event.startDate ||
+      event.endDate ||
+      event.eventName ||
+      event.location ||
+      event.organiser ||
+      event.price ||
+      event.paymentLink
+    );
   };
 
   const validatePrice = (value, eventIndex) => {
@@ -164,7 +193,7 @@ const DecodeAdminPage = () => {
   const validateOrganizerEmail = (value, eventIndex) => {
     const events = watch("upcomingEvents");
     const email = events[eventIndex].organizerEmail;
-    
+
     // Only validate if email has a value (field is optional)
     if (email && email.trim() !== "") {
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -172,7 +201,7 @@ const DecodeAdminPage = () => {
         return "Please enter a valid email address";
       }
     }
-    
+
     return true;
   };
 
@@ -222,29 +251,34 @@ const DecodeAdminPage = () => {
   const onSubmit = async (data) => {
     try {
       setLoading(true);
-      
+
       // Filter out empty upcoming events
       if (data.upcomingEvents) {
-        data.upcomingEvents = data.upcomingEvents.filter(event => hasEventContent(event));
+        data.upcomingEvents = data.upcomingEvents.filter((event) =>
+          hasEventContent(event)
+        );
       }
-      
+
       // Create FormData to handle file upload
       const formData = new FormData();
-      
+
       // Handle thumbnail separately to ensure we only send new file, not old value
       let thumbnailHandled = false;
       if (data.thumbnail && data.thumbnail instanceof File) {
-        formData.append('thumbnail', data.thumbnail);
+        formData.append("thumbnail", data.thumbnail);
         thumbnailHandled = true;
         console.log("✅ Sending new thumbnail file:", data.thumbnail.name);
       } else {
-        console.log("❌ No new thumbnail file found. Keeping existing thumbnail if editing.");
+        console.log(
+          "❌ No new thumbnail file found. Keeping existing thumbnail if editing."
+        );
         console.log("📋 data.thumbnail value:", data.thumbnail);
       }
-      
+
       // Append all other form data to FormData (excluding thumbnail)
-      Object.keys(data).forEach(key => {
-        if (key !== 'thumbnail') { // Skip thumbnail as it's handled above
+      Object.keys(data).forEach((key) => {
+        if (key !== "thumbnail") {
+          // Skip thumbnail as it's handled above
           if (Array.isArray(data[key])) {
             formData.append(key, JSON.stringify(data[key]));
           } else {
@@ -252,7 +286,7 @@ const DecodeAdminPage = () => {
           }
         }
       });
-      
+
       // Debug log for form data
       console.log("📋 Form submission - thumbnail handled:", thumbnailHandled);
       if (currentProgram) {
@@ -304,99 +338,114 @@ const DecodeAdminPage = () => {
     setValue("subtitle", program.subtitle);
     setValue("videoUrl", program.videoUrl || "");
     setValue("duration", program.duration);
-    
+
     // Handle card points - check if it's already HTML or plain text
     if (Array.isArray(program.cardPoints) && program.cardPoints.length > 0) {
       const firstCardPoint = program.cardPoints[0];
-      
+
       // If it's already HTML content (contains <ul> or <li>), use it as is
-      if (firstCardPoint && (firstCardPoint.includes('<ul>') || firstCardPoint.includes('<li>'))) {
+      if (
+        firstCardPoint &&
+        (firstCardPoint.includes("<ul>") || firstCardPoint.includes("<li>"))
+      ) {
         setValue("cardPoints", [firstCardPoint]);
       } else {
         // If it's plain text, convert to HTML
-        const cardPointsHtml = program.cardPoints.map(point => `<li>${point}</li>`).join('');
+        const cardPointsHtml = program.cardPoints
+          .map((point) => `<li>${point}</li>`)
+          .join("");
         setValue("cardPoints", [`<ul>${cardPointsHtml}</ul>`]);
       }
     } else {
       setValue("cardPoints", [""]);
     }
-    
+
     // Convert old points to HTML content if needed
-    const convertedSections = program.learningSections.map(section => {
+    const convertedSections = program.learningSections.map((section) => {
       if (section.points && Array.isArray(section.points)) {
         // Check if content is already HTML
-        if (section.content && (section.content.includes('<ul>') || section.content.includes('<li>'))) {
+        if (
+          section.content &&
+          (section.content.includes("<ul>") || section.content.includes("<li>"))
+        ) {
           return section; // Use existing HTML content
         } else {
           // Convert plain text points to HTML
           return {
             title: section.title,
-            content: `<ul>${section.points.map(point => `<li>${point}</li>`).join('')}</ul>`
+            content: `<ul>${section.points
+              .map((point) => `<li>${point}</li>`)
+              .join("")}</ul>`,
           };
         }
       }
       return section;
     });
-    
+
     setValue("learningSections", convertedSections);
-    
+
     // Convert old date format to new startDate/endDate format if needed
-    const convertedEvents = program.upcomingEvents.map(event => {
+    const convertedEvents = program.upcomingEvents.map((event) => {
       let startDate = event.startDate;
       let endDate = event.endDate;
-      
+
       // If we have old date format, convert it
       if (event.date && !event.startDate) {
         const eventDate = new Date(event.date);
         const endDateTime = new Date(eventDate);
         endDateTime.setHours(eventDate.getHours() + 2); // Default 2-hour event
-        
+
         startDate = eventDate.toISOString().slice(0, 16); // Format for datetime-local input
         endDate = endDateTime.toISOString().slice(0, 16);
       }
-      
-             // If we have startDate but it's not in the right format, convert it
-       if (event.startDate && typeof event.startDate === 'string') {
-         try {
-           const startDateTime = new Date(event.startDate);
-           if (!isNaN(startDateTime.getTime())) {
-             // Convert UTC to local timezone for display
-             const localStartDate = new Date(startDateTime.getTime() - (startDateTime.getTimezoneOffset() * 60000));
-             startDate = localStartDate.toISOString().slice(0, 16);
-           }
-         } catch (e) {
-           console.warn('Invalid start date format:', event.startDate);
-         }
-       }
-       
-       // If we have endDate but it's not in the right format, convert it
-       if (event.endDate && typeof event.endDate === 'string') {
-         try {
-           const endDateTime = new Date(event.endDate);
-           if (!isNaN(endDateTime.getTime())) {
-             // Convert UTC to local timezone for display
-             const localEndDate = new Date(endDateTime.getTime() - (endDateTime.getTimezoneOffset() * 60000));
-             endDate = localEndDate.toISOString().slice(0, 16);
-           }
-         } catch (e) {
-           console.warn('Invalid end date format:', event.endDate);
-         }
-       }
-      
+
+      // If we have startDate but it's not in the right format, convert it
+      if (event.startDate && typeof event.startDate === "string") {
+        try {
+          const startDateTime = new Date(event.startDate);
+          if (!isNaN(startDateTime.getTime())) {
+            // Convert UTC to local timezone for display
+            const localStartDate = new Date(
+              startDateTime.getTime() -
+                startDateTime.getTimezoneOffset() * 60000
+            );
+            startDate = localStartDate.toISOString().slice(0, 16);
+          }
+        } catch (e) {
+          console.warn("Invalid start date format:", event.startDate);
+        }
+      }
+
+      // If we have endDate but it's not in the right format, convert it
+      if (event.endDate && typeof event.endDate === "string") {
+        try {
+          const endDateTime = new Date(event.endDate);
+          if (!isNaN(endDateTime.getTime())) {
+            // Convert UTC to local timezone for display
+            const localEndDate = new Date(
+              endDateTime.getTime() - endDateTime.getTimezoneOffset() * 60000
+            );
+            endDate = localEndDate.toISOString().slice(0, 16);
+          }
+        } catch (e) {
+          console.warn("Invalid end date format:", event.endDate);
+        }
+      }
+
       return {
         ...event,
         startDate: startDate || "",
         endDate: endDate || "",
         organizerEmail: event.organizerEmail || "",
-        date: undefined // Remove old date field
+        date: undefined, // Remove old date field
       };
     });
-    
-         // Debug info removed
-    
+
+    // Debug info removed
+
     setValue("upcomingEvents", convertedEvents);
     setValue("status", program.status);
-    
+
     // Set thumbnail preview and clear form thumbnail field for editing
     if (program.thumbnail && program.thumbnail !== "null") {
       console.log("🖼️ Setting thumbnail preview for:", program.thumbnail);
@@ -409,7 +458,7 @@ const DecodeAdminPage = () => {
       setThumbnailPreview(null);
       setValue("thumbnail", null);
     }
-    
+
     setShowModal(true);
   };
 
@@ -505,11 +554,16 @@ const DecodeAdminPage = () => {
   const handleThumbnailChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      console.log("📁 New thumbnail file selected:", file.name, "Type:", file.type);
-      
+      console.log(
+        "📁 New thumbnail file selected:",
+        file.name,
+        "Type:",
+        file.type
+      );
+
       // Clear any existing thumbnail data and set new file
       setValue("thumbnail", file);
-      
+
       // Create preview for UI using the new file
       const reader = new FileReader();
       reader.onloadend = () => {
@@ -517,9 +571,9 @@ const DecodeAdminPage = () => {
         setThumbnailPreview(reader.result); // This will be a data URL
       };
       reader.readAsDataURL(file);
-      
+
       // Clear the file input to allow re-selection of the same file if needed
-      e.target.value = '';
+      e.target.value = "";
     }
   };
 
@@ -528,13 +582,13 @@ const DecodeAdminPage = () => {
     console.log("🗑️ Removing thumbnail - clearing form field and preview");
     setValue("thumbnail", null);
     setThumbnailPreview(null);
-    
+
     // Also clear any file input elements
     const fileInputs = document.querySelectorAll('input[type="file"]');
-    fileInputs.forEach(input => {
-      input.value = '';
+    fileInputs.forEach((input) => {
+      input.value = "";
     });
-    
+
     console.log("🗑️ Thumbnail completely cleared");
   };
 
@@ -546,7 +600,7 @@ const DecodeAdminPage = () => {
       setAuthChecked(true);
     }
   }, [navigate]);
-  
+
   // Loading state
   if (loading) {
     return (
@@ -617,7 +671,7 @@ const DecodeAdminPage = () => {
         .prose p {
           margin-bottom: 8px !important;
         }
-        
+
         /* Modal z-index fixes */
         .modal-overlay {
           z-index: 9999 !important;
@@ -632,27 +686,27 @@ const DecodeAdminPage = () => {
           top: 0;
           box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
-        
+
         /* Ensure smooth scrolling in modal */
         .modal-content .overflow-y-auto {
           scrollbar-width: thin;
-          scrollbar-color: #6E2D79 #f3f4f6;
+          scrollbar-color: #6e2d79 #f3f4f6;
         }
-        
+
         .modal-content .overflow-y-auto::-webkit-scrollbar {
           width: 8px;
         }
-        
+
         .modal-content .overflow-y-auto::-webkit-scrollbar-track {
           background: #f3f4f6;
         }
-        
+
         .modal-content .overflow-y-auto::-webkit-scrollbar-thumb {
-          background: #6E2D79;
+          background: #6e2d79;
           border-radius: 4px;
         }
       `}</style>
-      
+
       <div className="w-full max-w-7xl mx-auto p-4 space-y-6">
         {/* Header */}
         <div className="bg-white rounded-lg shadow-lg p-6">
@@ -740,13 +794,13 @@ const DecodeAdminPage = () => {
                   {/* Display card points in collapsed view */}
                   {expandedProgram !== program._id && program.cardPoints && (
                     <div className="mt-3">
-                      <div 
+                      <div
                         className="prose max-w-none text-gray-700"
-                        dangerouslySetInnerHTML={{ 
-                          __html: Array.isArray(program.cardPoints) 
-                            ? program.cardPoints[0] || '' 
-                            : program.cardPoints || '' 
-                        }} 
+                        dangerouslySetInnerHTML={{
+                          __html: Array.isArray(program.cardPoints)
+                            ? program.cardPoints[0] || ""
+                            : program.cardPoints || "",
+                        }}
                       />
                     </div>
                   )}
@@ -799,7 +853,7 @@ const DecodeAdminPage = () => {
                           </span>
                         </p>
                       </div>
-                      
+
                       {program.videoUrl && (
                         <div className="flex items-center">
                           <span className="bg-gray-100 text-[#6E2D79] p-2 rounded-lg mr-3">
@@ -820,7 +874,7 @@ const DecodeAdminPage = () => {
                           </p>
                         </div>
                       )}
-                      
+
                       <div>
                         <div className="flex items-center mb-2">
                           <span className="bg-gray-100 text-[#6E2D79] p-2 rounded-lg mr-3">
@@ -837,9 +891,16 @@ const DecodeAdminPage = () => {
                                 <h5 className="font-semibold text-[#6E2D79]">
                                   {section.title}
                                 </h5>
-                                <div 
+                                <div
                                   className="prose max-w-none text-gray-700 ml-4"
-                                  dangerouslySetInnerHTML={{ __html: section.content || section.points?.map(point => `<li>${point}</li>`).join('') || '' }} 
+                                  dangerouslySetInnerHTML={{
+                                    __html:
+                                      section.content ||
+                                      section.points
+                                        ?.map((point) => `<li>${point}</li>`)
+                                        .join("") ||
+                                      "",
+                                  }}
                                 />
                               </div>
                             )
@@ -870,21 +931,29 @@ const DecodeAdminPage = () => {
                                 {upcoming.eventName}
                               </h5>
                               <div className="flex flex-col space-y-1">
-                              <span className="bg-gray-100 text-[#6E2D79] px-3 py-1 rounded-lg text-sm font-medium">
-                                  {new Date(upcoming.startDate || upcoming.date).toLocaleDateString('en-US', { 
-                                    month: 'short', 
-                                    day: 'numeric', 
-                                    year: 'numeric' 
+                                <span className="bg-gray-100 text-[#6E2D79] px-3 py-1 rounded-lg text-sm font-medium">
+                                  {new Date(
+                                    upcoming.startDate || upcoming.date
+                                  ).toLocaleDateString("en-US", {
+                                    month: "short",
+                                    day: "numeric",
+                                    year: "numeric",
                                   })}
-                              </span>
+                                </span>
                                 {upcoming.startDate && upcoming.endDate && (
                                   <span className="text-xs text-gray-600">
-                                    {new Date(upcoming.startDate).toLocaleTimeString('en-US', { 
-                                      hour: '2-digit', 
-                                      minute: '2-digit' 
-                                    })} - {new Date(upcoming.endDate).toLocaleTimeString('en-US', { 
-                                      hour: '2-digit', 
-                                      minute: '2-digit' 
+                                    {new Date(
+                                      upcoming.startDate
+                                    ).toLocaleTimeString("en-US", {
+                                      hour: "2-digit",
+                                      minute: "2-digit",
+                                    })}{" "}
+                                    -{" "}
+                                    {new Date(
+                                      upcoming.endDate
+                                    ).toLocaleTimeString("en-US", {
+                                      hour: "2-digit",
+                                      minute: "2-digit",
                                     })}
                                   </span>
                                 )}
@@ -1081,7 +1150,10 @@ const DecodeAdminPage = () => {
               </div>
 
               <div className="flex-1 overflow-y-auto">
-                <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-6">
+                <form
+                  onSubmit={handleSubmit(onSubmit)}
+                  className="p-6 space-y-6"
+                >
                   {/* Program Title and Subtitle */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="md:col-span-2">
@@ -1140,10 +1212,12 @@ const DecodeAdminPage = () => {
                         <Video className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
                         <input
                           {...register("videoUrl", {
-                            validate: validateVideoUrl
+                            validate: validateVideoUrl,
                           })}
                           className={`w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#6E2D79] focus:border-transparent outline-none ${
-                            errors.videoUrl ? "border-red-500" : "border-gray-300"
+                            errors.videoUrl
+                              ? "border-red-500"
+                              : "border-gray-300"
                           }`}
                           placeholder="https://youtube.com/watch?v=..."
                         />
@@ -1160,12 +1234,18 @@ const DecodeAdminPage = () => {
                       <label className="block text-sm font-medium text-gray-700 mb-1">
                         Thumbnail Image
                       </label>
-                      
+
                       <div className="space-y-4">
                         {thumbnailPreview && (
                           <div className="relative inline-block">
                             <img
-                              src={thumbnailPreview.startsWith('http') ? thumbnailPreview : `${import.meta.env.VITE_API_Image_Url}${thumbnailPreview}`}
+                              src={
+                                thumbnailPreview.startsWith("http")
+                                  ? thumbnailPreview
+                                  : `${
+                                      import.meta.env.VITE_API_Image_Url
+                                    }${thumbnailPreview}`
+                              }
                               alt="Thumbnail preview"
                               className="max-w-xs rounded-lg border border-gray-300"
                             />
@@ -1178,23 +1258,26 @@ const DecodeAdminPage = () => {
                             </button>
                           </div>
                         )}
-                        
+
                         <div className="flex items-center justify-center w-full">
                           <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
                             <div className="flex flex-col items-center justify-center pt-5 pb-6">
                               <Image className="w-8 h-8 mb-3 text-gray-400" />
                               <p className="mb-2 text-sm text-gray-500">
                                 <span className="font-semibold">
-                                  {thumbnailPreview ? "Change thumbnail" : "Click to upload"}
-                                </span> or drag and drop
+                                  {thumbnailPreview
+                                    ? "Change thumbnail"
+                                    : "Click to upload"}
+                                </span>{" "}
+                                or drag and drop
                               </p>
                               <p className="text-xs text-gray-500">
                                 PNG, JPG, GIF (MAX. 5MB)
                               </p>
                             </div>
-                            <input 
-                              type="file" 
-                              className="hidden" 
+                            <input
+                              type="file"
+                              className="hidden"
                               accept="image/*"
                               onChange={handleThumbnailChange}
                             />
@@ -1206,8 +1289,8 @@ const DecodeAdminPage = () => {
                     {/* Card Points Section */}
                     <div className="md:col-span-2">
                       <label className="block text-sm font-medium text-gray-700 mb-1">
-                          Card Points (For Display) *
-                        </label>
+                        Card Points (For Display) *
+                      </label>
                       <RichTextEditor
                         value={watch("cardPoints.0") || ""}
                         onChange={(html) => {
@@ -1219,8 +1302,8 @@ const DecodeAdminPage = () => {
                       {errors.cardPoints?.[0] && (
                         <p className="mt-1 text-sm text-red-600">
                           {errors.cardPoints[0].message}
-                                </p>
-                              )}
+                        </p>
+                      )}
                     </div>
 
                     <div>
@@ -1358,17 +1441,26 @@ const DecodeAdminPage = () => {
                                 <RichTextEditor
                                   value={section.content || ""}
                                   onChange={(html) => {
-                                    setValue(`learningSections.${sectionIndex}.content`, html);
-                                    trigger(`learningSections.${sectionIndex}.content`);
+                                    setValue(
+                                      `learningSections.${sectionIndex}.content`,
+                                      html
+                                    );
+                                    trigger(
+                                      `learningSections.${sectionIndex}.content`
+                                    );
                                   }}
                                   placeholder="Enter section content..."
                                 />
-                                {errors.learningSections?.[sectionIndex]?.content && (
+                                {errors.learningSections?.[sectionIndex]
+                                  ?.content && (
                                   <p className="mt-1 text-sm text-red-600">
-                                    {errors.learningSections[sectionIndex].content.message}
-                                      </p>
-                                    )}
-                                  </div>
+                                    {
+                                      errors.learningSections[sectionIndex]
+                                        .content.message
+                                    }
+                                  </p>
+                                )}
+                              </div>
                             </div>
                           </div>
                         )
@@ -1399,59 +1491,66 @@ const DecodeAdminPage = () => {
                           No upcoming events scheduled
                         </p>
                         <p className="text-gray-400 text-xs mt-1">
-                          Click "Add Event" to schedule an event for this program
+                          Click "Add Event" to schedule an event for this
+                          program
                         </p>
                       </div>
                     ) : (
-                    <div className="space-y-6">
-                      {watch("upcomingEvents")?.map((_, index) => (
-                        <div
-                          key={index}
-                          className="bg-gray-50 p-5 rounded-lg border border-gray-200"
-                        >
-                          <div className="flex justify-between items-center mb-4">
-                            <h4 className="font-bold text-[#6E2D79]">
-                              Event #{index + 1}
-                            </h4>
-                            <button
-                              type="button"
-                              onClick={() => removeUpcomingEvent(index)}
-                              className="text-red-500 hover:text-red-700"
+                      <div className="space-y-6">
+                        {watch("upcomingEvents")?.map((_, index) => (
+                          <div
+                            key={index}
+                            className="bg-gray-50 p-5 rounded-lg border border-gray-200"
+                          >
+                            <div className="flex justify-between items-center mb-4">
+                              <h4 className="font-bold text-[#6E2D79]">
+                                Event #{index + 1}
+                              </h4>
+                              <button
+                                type="button"
+                                onClick={() => removeUpcomingEvent(index)}
+                                className="text-red-500 hover:text-red-700"
                                 disabled={watch("upcomingEvents")?.length === 0}
-                            >
-                              <X className="w-5 h-5" />
-                            </button>
-                          </div>
-
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                            <div>
-                              <label className="block text-sm font-medium text-gray-700 mb-1">
-                                  Start Date & Time *
-                              </label>
-                              <div className="relative">
-                                <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-500" />
-                                <input
-                                    type="datetime-local"
-                                    {...register(`upcomingEvents.${index}.startDate`, {
-                                      required: false, // Not required by default
-                                    validate: (value) =>
-                                        validateEventStartDate(value, index)
-                                  })}
-                                  className={`w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#6E2D79] focus:border-transparent outline-none ${
-                                      errors.upcomingEvents?.[index]?.startDate
-                                      ? "border-red-500"
-                                      : "border-gray-300"
-                                  }`}
-                                />
-                              </div>
-                                {errors.upcomingEvents?.[index]?.startDate && (
-                                <p className="mt-1 text-sm text-red-600">
-                                    {errors.upcomingEvents[index].startDate.message}
-                                </p>
-                              )}
+                              >
+                                <X className="w-5 h-5" />
+                              </button>
                             </div>
 
-                            <div>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                              <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                  Start Date & Time *
+                                </label>
+                                <div className="relative">
+                                  <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-500" />
+                                  <input
+                                    type="datetime-local"
+                                    {...register(
+                                      `upcomingEvents.${index}.startDate`,
+                                      {
+                                        required: false, // Not required by default
+                                        validate: (value) =>
+                                          validateEventStartDate(value, index),
+                                      }
+                                    )}
+                                    className={`w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#6E2D79] focus:border-transparent outline-none ${
+                                      errors.upcomingEvents?.[index]?.startDate
+                                        ? "border-red-500"
+                                        : "border-gray-300"
+                                    }`}
+                                  />
+                                </div>
+                                {errors.upcomingEvents?.[index]?.startDate && (
+                                  <p className="mt-1 text-sm text-red-600">
+                                    {
+                                      errors.upcomingEvents[index].startDate
+                                        .message
+                                    }
+                                  </p>
+                                )}
+                              </div>
+
+                              <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">
                                   End Date & Time *
                                 </label>
@@ -1459,11 +1558,14 @@ const DecodeAdminPage = () => {
                                   <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-500" />
                                   <input
                                     type="datetime-local"
-                                    {...register(`upcomingEvents.${index}.endDate`, {
-                                      required: false, // Not required by default
-                                      validate: (value) => 
-                                        validateEventEndDate(value, index)
-                                    })}
+                                    {...register(
+                                      `upcomingEvents.${index}.endDate`,
+                                      {
+                                        required: false, // Not required by default
+                                        validate: (value) =>
+                                          validateEventEndDate(value, index),
+                                      }
+                                    )}
                                     className={`w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#6E2D79] focus:border-transparent outline-none ${
                                       errors.upcomingEvents?.[index]?.endDate
                                         ? "border-red-500"
@@ -1473,182 +1575,267 @@ const DecodeAdminPage = () => {
                                 </div>
                                 {errors.upcomingEvents?.[index]?.endDate && (
                                   <p className="mt-1 text-sm text-red-600">
-                                    {errors.upcomingEvents[index].endDate.message}
+                                    {
+                                      errors.upcomingEvents[index].endDate
+                                        .message
+                                    }
                                   </p>
                                 )}
                               </div>
 
                               <div className="md:col-span-2">
-                              <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Event Name *
-                              </label>
-                              <input
-                                {...register(
-                                  `upcomingEvents.${index}.eventName`,
-                                  {
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                  Event Name *
+                                </label>
+                                <input
+                                  {...register(
+                                    `upcomingEvents.${index}.eventName`,
+                                    {
                                       required: false, // Not required by default
-                                    minLength: {
-                                      value: 5,
-                                        message: "Name must be at least 5 characters",
+                                      minLength: {
+                                        value: 5,
+                                        message:
+                                          "Name must be at least 5 characters",
                                       },
                                       validate: (value) => {
-                                        const event = watch(`upcomingEvents.${index}`);
+                                        const event = watch(
+                                          `upcomingEvents.${index}`
+                                        );
                                         // If any other field has content, event name becomes required
-                                        if (event.startDate || event.endDate || event.location || event.organiser || event.price || event.paymentLink) {
-                                          if (!value || value.trim().length < 5) {
+                                        if (
+                                          event.startDate ||
+                                          event.endDate ||
+                                          event.location ||
+                                          event.organiser ||
+                                          event.price ||
+                                          event.paymentLink
+                                        ) {
+                                          if (
+                                            !value ||
+                                            value.trim().length < 5
+                                          ) {
                                             return "Event name is required and must be at least 5 characters when adding an event";
                                           }
                                         }
                                         return true;
-                                      }
-                                  }
-                                )}
-                                className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#6E2D79] focus:border-transparent outline-none ${
-                                  errors.upcomingEvents?.[index]?.eventName
-                                    ? "border-red-500"
-                                    : "border-gray-300"
-                                }`}
-                                placeholder="Introductory Workshop"
-                              />
-                              {errors.upcomingEvents?.[index]?.eventName && (
-                                <p className="mt-1 text-sm text-red-600">
-                                  {
-                                    errors.upcomingEvents[index].eventName
-                                      .message
-                                  }
-                                </p>
-                              )}
-                            </div>
-
-                            <div>
-                              <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Location *
-                              </label>
-                              <div className="relative">
-                                <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-500" />
-                                <input
-                                  {...register(
-                                    `upcomingEvents.${index}.location`,
+                                      },
+                                    }
+                                  )}
+                                  className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#6E2D79] focus:border-transparent outline-none ${
+                                    errors.upcomingEvents?.[index]?.eventName
+                                      ? "border-red-500"
+                                      : "border-gray-300"
+                                  }`}
+                                  placeholder="Introductory Workshop"
+                                />
+                                {errors.upcomingEvents?.[index]?.eventName && (
+                                  <p className="mt-1 text-sm text-red-600">
                                     {
+                                      errors.upcomingEvents[index].eventName
+                                        .message
+                                    }
+                                  </p>
+                                )}
+                              </div>
+
+                              <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                  Location *
+                                </label>
+                                <div className="relative">
+                                  <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-500" />
+                                  <input
+                                    {...register(
+                                      `upcomingEvents.${index}.location`,
+                                      {
                                         required: false, // Not required by default
-                                      minLength: {
-                                        value: 3,
-                                          message: "Location must be at least 3 characters",
+                                        minLength: {
+                                          value: 3,
+                                          message:
+                                            "Location must be at least 3 characters",
                                         },
                                         validate: (value) => {
-                                          const event = watch(`upcomingEvents.${index}`);
+                                          const event = watch(
+                                            `upcomingEvents.${index}`
+                                          );
                                           // If any other field has content, location becomes required
-                                          if (event.startDate || event.endDate || event.eventName || event.organiser || event.price || event.paymentLink) {
-                                            if (!value || value.trim().length < 3) {
+                                          if (
+                                            event.startDate ||
+                                            event.endDate ||
+                                            event.eventName ||
+                                            event.organiser ||
+                                            event.price ||
+                                            event.paymentLink
+                                          ) {
+                                            if (
+                                              !value ||
+                                              value.trim().length < 3
+                                            ) {
                                               return "Location is required and must be at least 3 characters when adding an event";
                                             }
                                           }
                                           return true;
-                                        }
-                                    }
-                                  )}
-                                  className={`w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#6E2D79] focus:border-transparent outline-none ${
-                                    errors.upcomingEvents?.[index]?.location
-                                      ? "border-red-500"
-                                      : "border-gray-300"
-                                  }`}
-                                  placeholder="New York, NY"
-                                />
-                              </div>
-                              {errors.upcomingEvents?.[index]?.location && (
-                                <p className="mt-1 text-sm text-red-600">
-                                  {
-                                    errors.upcomingEvents[index].location
-                                      .message
-                                  }
-                                </p>
-                              )}
-                            </div>
-
-                            <div>
-                              <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Organizer *
-                              </label>
-                              <div className="relative">
-                                <User className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-500" />
-                                <input
-                                  {...register(
-                                    `upcomingEvents.${index}.organiser`,
+                                        },
+                                      }
+                                    )}
+                                    className={`w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#6E2D79] focus:border-transparent outline-none ${
+                                      errors.upcomingEvents?.[index]?.location
+                                        ? "border-red-500"
+                                        : "border-gray-300"
+                                    }`}
+                                    placeholder="New York, NY"
+                                  />
+                                </div>
+                                {errors.upcomingEvents?.[index]?.location && (
+                                  <p className="mt-1 text-sm text-red-600">
                                     {
+                                      errors.upcomingEvents[index].location
+                                        .message
+                                    }
+                                  </p>
+                                )}
+                              </div>
+
+                              <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                  Facilitator (Optional)
+                                </label>
+                                <div className="relative">
+                                  <User className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-500" />
+                                  <input
+                                    {...register(
+                                      `upcomingEvents.${index}.facilitator`,
+                                      {
                                         required: false, // Not required by default
-                                      minLength: {
-                                        value: 3,
-                                          message: "Organizer must be at least 3 characters",
+                                        minLength: {
+                                          value: 3,
+                                          message:
+                                            "Organizer must be at least 3 characters",
+                                        },
+                                      }
+                                    )}
+                                    className={`w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#6E2D79] focus:border-transparent outline-none ${
+                                      errors.upcomingEvents?.[index]?.organiser
+                                        ? "border-red-500"
+                                        : "border-gray-300"
+                                    }`}
+                                    placeholder="Facilitator(Optional)"
+                                  />
+                                </div>
+                                {errors.upcomingEvents?.[index]?.facilitator && (
+                                  <p className="mt-1 text-sm text-red-600">
+                                    {
+                                      errors.upcomingEvents[index].facilitator
+                                        .message
+                                    }
+                                  </p>
+                                )}
+                              </div>
+                              <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                  Organizer *
+                                </label>
+                                <div className="relative">
+                                  <User className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-500" />
+                                  <input
+                                    {...register(
+                                      `upcomingEvents.${index}.organiser`,
+                                      {
+                                        required: false, // Not required by default
+                                        minLength: {
+                                          value: 3,
+                                          message:
+                                            "Organizer must be at least 3 characters",
                                         },
                                         validate: (value) => {
-                                          const event = watch(`upcomingEvents.${index}`);
+                                          const event = watch(
+                                            `upcomingEvents.${index}`
+                                          );
                                           // If any other field has content, organizer becomes required
-                                          if (event.startDate || event.endDate || event.eventName || event.location || event.price || event.paymentLink) {
-                                            if (!value || value.trim().length < 3) {
+                                          if (
+                                            event.startDate ||
+                                            event.endDate ||
+                                            event.eventName ||
+                                            event.location ||
+                                            event.price ||
+                                            event.paymentLink
+                                          ) {
+                                            if (
+                                              !value ||
+                                              value.trim().length < 3
+                                            ) {
                                               return "Organizer is required and must be at least 3 characters when adding an event";
                                             }
                                           }
                                           return true;
-                                        }
+                                        },
+                                      }
+                                    )}
+                                    className={`w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#6E2D79] focus:border-transparent outline-none ${
+                                      errors.upcomingEvents?.[index]?.organiser
+                                        ? "border-red-500"
+                                        : "border-gray-300"
+                                    }`}
+                                    placeholder="Dr. Samantha Reed"
+                                  />
+                                </div>
+                                {errors.upcomingEvents?.[index]?.organiser && (
+                                  <p className="mt-1 text-sm text-red-600">
+                                    {
+                                      errors.upcomingEvents[index].organiser
+                                        .message
                                     }
-                                  )}
-                                  className={`w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#6E2D79] focus:border-transparent outline-none ${
-                                    errors.upcomingEvents?.[index]?.organiser
-                                      ? "border-red-500"
-                                      : "border-gray-300"
-                                  }`}
-                                  placeholder="Dr. Samantha Reed"
-                                />
+                                  </p>
+                                )}
                               </div>
-                              {errors.upcomingEvents?.[index]?.organiser && (
-                                <p className="mt-1 text-sm text-red-600">
-                                  {
-                                    errors.upcomingEvents[index].organiser
-                                      .message
-                                  }
-                                </p>
-                              )}
-                            </div>
 
-                            <div>
-                              <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Organizer Email
-                              </label>
-                                                              <input
+                              <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                  Organizer Email
+                                </label>
+                                <input
                                   type="email"
                                   {...register(
                                     `upcomingEvents.${index}.organizerEmail`,
                                     {
-                                      validate: (value) => validateOrganizerEmail(value, index)
+                                      validate: (value) =>
+                                        validateOrganizerEmail(value, index),
                                     }
                                   )}
                                   className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#6E2D79] focus:border-transparent outline-none ${
-                                    errors.upcomingEvents?.[index]?.organizerEmail
+                                    errors.upcomingEvents?.[index]
+                                      ?.organizerEmail
                                       ? "border-red-500"
                                       : "border-gray-300"
                                   }`}
                                   placeholder="organizer@example.com"
                                 />
-                                {errors.upcomingEvents?.[index]?.organizerEmail && (
+                                {errors.upcomingEvents?.[index]
+                                  ?.organizerEmail && (
                                   <p className="mt-1 text-sm text-red-600">
-                                    {errors.upcomingEvents[index].organizerEmail.message}
+                                    {
+                                      errors.upcomingEvents[index]
+                                        .organizerEmail.message
+                                    }
                                   </p>
                                 )}
-                            </div>
+                              </div>
 
-                            <div>
-                              <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Price *
-                              </label>
-                              <div className="relative">
-                                <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-500" />
-                                <input
-                                  {...register(
-                                    `upcomingEvents.${index}.price`,
-                                    {
+                              <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                  Price *
+                                </label>
+                                <div className="relative">
+                                  <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-500" />
+                                  <input
+                                    {...register(
+                                      `upcomingEvents.${index}.price`,
+                                      {
                                         required: false, // Not required by default
                                         validate: (value) => {
-                                          const event = watch(`upcomingEvents.${index}`);
+                                          const event = watch(
+                                            `upcomingEvents.${index}`
+                                          );
                                           // If any other field has content, price becomes required
                                           // if (event.startDate || event.endDate || event.eventName || event.location || event.organiser || event.paymentLink) {
                                           //   if (!value) {
@@ -1657,70 +1844,84 @@ const DecodeAdminPage = () => {
                                           //   return validatePrice(value, index);
                                           // }
                                           // return true;
-                                        }
-                                    }
-                                  )}
-                                  className={`w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#6E2D79] focus:border-transparent outline-none ${
-                                    errors.upcomingEvents?.[index]?.price
-                                      ? "border-red-500"
-                                      : "border-gray-300"
-                                  }`}
-                                  placeholder="$199"
-                                />
+                                        },
+                                      }
+                                    )}
+                                    className={`w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#6E2D79] focus:border-transparent outline-none ${
+                                      errors.upcomingEvents?.[index]?.price
+                                        ? "border-red-500"
+                                        : "border-gray-300"
+                                    }`}
+                                    placeholder="$199"
+                                  />
+                                </div>
+                                {errors.upcomingEvents?.[index]?.price && (
+                                  <p className="mt-1 text-sm text-red-600">
+                                    {errors.upcomingEvents[index].price.message}
+                                  </p>
+                                )}
                               </div>
-                              {errors.upcomingEvents?.[index]?.price && (
-                                <p className="mt-1 text-sm text-red-600">
-                                  {errors.upcomingEvents[index].price.message}
-                                </p>
-                              )}
-                            </div>
 
-                            <div>
-                              <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Payment Link *
-                              </label>
-                              <div className="relative">
-                                <LinkIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-500" />
-                                <input
-                                  type="url"
-                                  {...register(
-                                    `upcomingEvents.${index}.paymentLink`,
-                                    {
+                              <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                  Payment Link *
+                                </label>
+                                <div className="relative">
+                                  <LinkIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-500" />
+                                  <input
+                                    type="url"
+                                    {...register(
+                                      `upcomingEvents.${index}.paymentLink`,
+                                      {
                                         required: false, // Not required by default
                                         validate: (value) => {
-                                          const event = watch(`upcomingEvents.${index}`);
+                                          const event = watch(
+                                            `upcomingEvents.${index}`
+                                          );
                                           // If any other field has content, payment link becomes required
-                                          if (event.startDate || event.endDate || event.eventName || event.location || event.organiser || event.price) {
+                                          if (
+                                            event.startDate ||
+                                            event.endDate ||
+                                            event.eventName ||
+                                            event.location ||
+                                            event.organiser ||
+                                            event.price
+                                          ) {
                                             if (!value) {
                                               return "Payment link is required when adding an event";
                                             }
-                                            return validatePaymentLink(value, index);
+                                            return validatePaymentLink(
+                                              value,
+                                              index
+                                            );
                                           }
                                           return true;
-                                        }
+                                        },
+                                      }
+                                    )}
+                                    className={`w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#6E2D79] focus:border-transparent outline-none ${
+                                      errors.upcomingEvents?.[index]
+                                        ?.paymentLink
+                                        ? "border-red-500"
+                                        : "border-gray-300"
+                                    }`}
+                                    placeholder="https://payment.example.com/decode1"
+                                  />
+                                </div>
+                                {errors.upcomingEvents?.[index]
+                                  ?.paymentLink && (
+                                  <p className="mt-1 text-sm text-red-600">
+                                    {
+                                      errors.upcomingEvents[index].paymentLink
+                                        .message
                                     }
-                                  )}
-                                  className={`w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#6E2D79] focus:border-transparent outline-none ${
-                                    errors.upcomingEvents?.[index]?.paymentLink
-                                      ? "border-red-500"
-                                      : "border-gray-300"
-                                  }`}
-                                  placeholder="https://payment.example.com/decode1"
-                                />
+                                  </p>
+                                )}
                               </div>
-                              {errors.upcomingEvents?.[index]?.paymentLink && (
-                                <p className="mt-1 text-sm text-red-600">
-                                  {
-                                    errors.upcomingEvents[index].paymentLink
-                                      .message
-                                  }
-                                </p>
-                              )}
                             </div>
                           </div>
-                        </div>
-                      ))}
-                    </div>
+                        ))}
+                      </div>
                     )}
                   </div>
 

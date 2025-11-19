@@ -29,7 +29,7 @@ import hypnotherapyService from "../../components/services/hypnotherapyService";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import RichTextEditor from "../../components/utils/RichTextEditor";
-
+import Cookies from "js-cookie";
 const HypnotherapyPage = () => {
   const navigate = useNavigate();
   const [authChecked, setAuthChecked] = useState(false);
@@ -690,14 +690,9 @@ const HypnotherapyPage = () => {
       setValue("upcomingEvents", newEvents);
     }
   };
+
   useEffect(() => {
-    const token = Cookies.get("adminToken");
-    if (token) {
-      setUser({ token });
-    }
-  }, []);
-  useEffect(() => {
-    const adminToken = localStorage.getItem("adminToken");
+    const adminToken = Cookies.get("adminToken");
     if (!adminToken) {
       navigate("/admin/login");
     } else {
@@ -1814,7 +1809,42 @@ const HypnotherapyPage = () => {
                                   </p>
                                 )}
                               </div>
-
+                              <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                  Facilitator (Optional)
+                                </label>
+                                <div className="relative">
+                                  <User className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-500" />
+                                  <input
+                                    {...register(
+                                      `upcomingEvents.${index}.facilitator`,
+                                      {
+                                        required: false, // Not required by default
+                                        minLength: {
+                                          value: 3,
+                                          message:
+                                            "Organizer must be at least 3 characters",
+                                        },
+                                      }
+                                    )}
+                                    className={`w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#6E2D79] focus:border-transparent outline-none ${
+                                      errors.upcomingEvents?.[index]?.organiser
+                                        ? "border-red-500"
+                                        : "border-gray-300"
+                                    }`}
+                                    placeholder="Facilitator(Optional)"
+                                  />
+                                </div>
+                                {errors.upcomingEvents?.[index]
+                                  ?.facilitator && (
+                                  <p className="mt-1 text-sm text-red-600">
+                                    {
+                                      errors.upcomingEvents[index].facilitator
+                                        .message
+                                    }
+                                  </p>
+                                )}
+                              </div>
                               <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">
                                   Organizer *

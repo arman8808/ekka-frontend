@@ -396,10 +396,7 @@ function Schedule() {
                       </td>
                       <td className="px-4 py-4">
                         <div className="text-sm text-[#2D2D2D]">
-                          {event.facilitator ||
-                            event.organisedby ||
-                            event.organiser ||
-                            "-"}
+                          {event.facilitator || "-"}
                         </div>
                       </td>{" "}
                       <td className="px-4 py-4">

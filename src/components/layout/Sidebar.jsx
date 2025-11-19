@@ -26,7 +26,7 @@ const navigation = [
   },
 
   {
-    name: "All Family Consultation Registration",
+    name: "All Family Constellation Registration",
     path: "/all-FamilyConsultationTable.usa",
     icon: <FaWpforms />,
   },

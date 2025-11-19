@@ -30,7 +30,6 @@ import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import RichTextEditor from "../../components/utils/RichTextEditor";
 
-
 const HypnotherapyPage = () => {
   const navigate = useNavigate();
   const [authChecked, setAuthChecked] = useState(false);
@@ -60,7 +59,7 @@ const HypnotherapyPage = () => {
     formState: { errors, isSubmitting },
     setValue,
     watch,
-    trigger
+    trigger,
   } = useForm({
     defaultValues: {
       title: "",
@@ -74,34 +73,48 @@ const HypnotherapyPage = () => {
       status: "Open",
     },
   });
-  
+
   // Validation functions
   const validateSectionTitle = (value, sectionIndex) => {
     const sections = watch("learningSections");
-    return sections[sectionIndex].title.trim() !== "" || "Section title is required";
+    return (
+      sections[sectionIndex].title.trim() !== "" || "Section title is required"
+    );
   };
-  
+
   const validateSectionContent = (value, sectionIndex) => {
     const sections = watch("learningSections");
-    return sections[sectionIndex].content.trim() !== "" || "Content is required";
+    return (
+      sections[sectionIndex].content.trim() !== "" || "Content is required"
+    );
   };
 
   const validateCardPoint = (value) => {
     const cardPoint = watch("cardPoints.0");
     // Remove HTML tags and check if content exists
-    const textContent = cardPoint?.replace(/<[^>]*>/g, '').trim();
+    const textContent = cardPoint?.replace(/<[^>]*>/g, "").trim();
     return textContent !== "" || "Card point is required";
   };
 
   const validateEventStartDate = (value, eventIndex) => {
     const events = watch("upcomingEvents");
     const event = events[eventIndex];
-    
+
     // If any other field in this event has content, start date becomes required
-    if (event.eventName || event.location || event.organiser || event.price || event.paymentLink || event.endDate) {
-      return value.trim() !== "" || "Start date and time is required when adding an event";
+    if (
+      event.eventName ||
+      event.location ||
+      event.organiser ||
+      event.price ||
+      event.paymentLink ||
+      event.endDate
+    ) {
+      return (
+        value.trim() !== "" ||
+        "Start date and time is required when adding an event"
+      );
     }
-    
+
     // If no other fields have content, start date is optional
     return true;
   };
@@ -109,32 +122,47 @@ const HypnotherapyPage = () => {
   const validateEventEndDate = (value, eventIndex) => {
     const events = watch("upcomingEvents");
     const event = events[eventIndex];
-    
+
     // If any other field in this event has content, end date becomes required
-    if (event.startDate || event.eventName || event.location || event.organiser || event.price || event.paymentLink) {
+    if (
+      event.startDate ||
+      event.eventName ||
+      event.location ||
+      event.organiser ||
+      event.price ||
+      event.paymentLink
+    ) {
       if (!event.startDate) {
         return "Start date is required before setting end date";
       }
-      
+
       if (!value) {
         return "End date and time is required when adding an event";
       }
-      
+
       const startDate = new Date(event.startDate);
       const endDate = new Date(value);
-      
+
       if (endDate <= startDate) {
         return "End date must be after start date";
       }
     }
-    
+
     // If no other fields have content, end date is optional
     return true;
   };
 
   // Helper function to check if an event has any content
   const hasEventContent = (event) => {
-    return !!(event.startDate || event.endDate || event.eventName || event.location || event.organiser || event.price || event.paymentLink);
+    return !!(
+      event.startDate ||
+      event.endDate ||
+      event.eventName ||
+      event.location ||
+      event.organiser ||
+      event.price ||
+      event.paymentLink
+    );
   };
 
   const validatePrice = (value, eventIndex) => {
@@ -148,8 +176,9 @@ const HypnotherapyPage = () => {
 
   const validatePaymentLink = (value, eventIndex) => {
     const events = watch("upcomingEvents");
-    if (!events[eventIndex].paymentLink.trim()) return "Payment link is required";
-    
+    if (!events[eventIndex].paymentLink.trim())
+      return "Payment link is required";
+
     try {
       new URL(events[eventIndex].paymentLink);
       return true;
@@ -161,7 +190,7 @@ const HypnotherapyPage = () => {
   const validateOrganizerEmail = (value, eventIndex) => {
     const events = watch("upcomingEvents");
     const email = events[eventIndex].organizerEmail;
-    
+
     // Only validate if email has a value (field is optional)
     if (email && email.trim() !== "") {
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -169,7 +198,7 @@ const HypnotherapyPage = () => {
         return "Please enter a valid email address";
       }
     }
-    
+
     return true;
   };
 
@@ -232,22 +261,24 @@ const HypnotherapyPage = () => {
   const onSubmit = async (data) => {
     try {
       setLoading(true);
-      
+
       // Create FormData if we have a thumbnail file
       let formData;
       if (thumbnailFile) {
         formData = new FormData();
-        formData.append('thumbnail', thumbnailFile);
-        
+        formData.append("thumbnail", thumbnailFile);
+
         // Append all other fields
-        Object.keys(data).forEach(key => {
-          if (key !== 'thumbnail') {
+        Object.keys(data).forEach((key) => {
+          if (key !== "thumbnail") {
             if (Array.isArray(data[key])) {
-              if (key === 'upcomingEvents') {
+              if (key === "upcomingEvents") {
                 // Filter out empty events before sending
-                const filteredEvents = data[key].filter(event => hasEventContent(event));
+                const filteredEvents = data[key].filter((event) =>
+                  hasEventContent(event)
+                );
                 formData.append(key, JSON.stringify(filteredEvents));
-              } else if (key === 'cardPoints') {
+              } else if (key === "cardPoints") {
                 // For cardPoints, we need to handle HTML content properly
                 formData.append(key, JSON.stringify(data[key]));
               } else {
@@ -262,19 +293,28 @@ const HypnotherapyPage = () => {
 
       // Filter out empty events if no thumbnail file
       if (!thumbnailFile && data.upcomingEvents) {
-        data.upcomingEvents = data.upcomingEvents.filter(event => hasEventContent(event));
+        data.upcomingEvents = data.upcomingEvents.filter((event) =>
+          hasEventContent(event)
+        );
       }
 
       if (currentProgram) {
         const updateData = thumbnailFile ? formData : data;
-        await hypnotherapyService.updateProgram(currentProgram._id, updateData, thumbnailFile ? true : false);
+        await hypnotherapyService.updateProgram(
+          currentProgram._id,
+          updateData,
+          thumbnailFile ? true : false
+        );
         toast.success("Program updated successfully");
       } else {
         const createData = thumbnailFile ? formData : data;
-        await hypnotherapyService.createProgram(createData, thumbnailFile ? true : false);
+        await hypnotherapyService.createProgram(
+          createData,
+          thumbnailFile ? true : false
+        );
         toast.success("Program created successfully");
       }
-      
+
       fetchPrograms();
       reset();
       setThumbnailPreview(null);
@@ -307,12 +347,12 @@ const HypnotherapyPage = () => {
   // Open edit modal with program data
   const openEditModal = (program) => {
     try {
-          // Debug info removed
-      
+      // Debug info removed
+
       // Set current program first
       setCurrentProgram(program);
       // Debug info removed
-      
+
       // Set basic form values with error handling
       try {
         setValue("title", program.title || "");
@@ -323,18 +363,26 @@ const HypnotherapyPage = () => {
       } catch (error) {
         console.error("Error setting basic form values:", error);
       }
-      
+
       // Handle card points with error handling
       try {
-        if (Array.isArray(program.cardPoints) && program.cardPoints.length > 0) {
+        if (
+          Array.isArray(program.cardPoints) &&
+          program.cardPoints.length > 0
+        ) {
           const firstCardPoint = program.cardPoints[0];
-          
+
           // If it's already HTML content (contains <ul> or <li>), use it as is
-          if (firstCardPoint && (firstCardPoint.includes('<ul>') || firstCardPoint.includes('<li>'))) {
+          if (
+            firstCardPoint &&
+            (firstCardPoint.includes("<ul>") || firstCardPoint.includes("<li>"))
+          ) {
             setValue("cardPoints", [firstCardPoint]);
           } else {
             // If it's plain text, convert to HTML
-            const cardPointsHtml = program.cardPoints.map(point => `<li>${point}</li>`).join('');
+            const cardPointsHtml = program.cardPoints
+              .map((point) => `<li>${point}</li>`)
+              .join("");
             setValue("cardPoints", [`<ul>${cardPointsHtml}</ul>`]);
           }
         } else {
@@ -344,157 +392,184 @@ const HypnotherapyPage = () => {
         console.error("Error setting card points:", error);
         setValue("cardPoints", [""]);
       }
-      
+
       // Handle learning sections with error handling
       try {
-        const convertedSections = program.learningSections?.map(section => {
+        const convertedSections = program.learningSections?.map((section) => {
           if (section.points && Array.isArray(section.points)) {
             // Check if content is already HTML
-            if (section.content && (section.content.includes('<ul>') || section.content.includes('<li>'))) {
+            if (
+              section.content &&
+              (section.content.includes("<ul>") ||
+                section.content.includes("<li>"))
+            ) {
               return section; // Use existing HTML content
             } else {
               // Convert plain text points to HTML
               return {
                 title: section.title || "",
-                content: `<ul>${section.points.map(point => `<li>${point}</li>`).join('')}</ul>`
+                content: `<ul>${section.points
+                  .map((point) => `<li>${point}</li>`)
+                  .join("")}</ul>`,
               };
             }
           }
           return section;
         }) || [{ title: "", content: "" }];
-        
+
         setValue("learningSections", convertedSections);
       } catch (error) {
         console.error("Error setting learning sections:", error);
         setValue("learningSections", [{ title: "", content: "" }]);
       }
-      
+
       // Handle upcoming events with error handling
       try {
-        const convertedEvents = program.upcomingEvents?.map(event => {
-          // Debug info removed
-          
-          // If event already has startDate and endDate, convert them to datetime-local format
-          if (event.startDate && event.endDate) {
-            try {
-              // Debug info removed
-              
-              // Convert to datetime-local format (YYYY-MM-DDTHH:MM)
-              const startDate = new Date(event.startDate);
-              const endDate = new Date(event.endDate);
-              
-              // Convert UTC to local timezone for display
-              const localStartDate = new Date(startDate.getTime() - (startDate.getTimezoneOffset() * 60000));
-              const localEndDate = new Date(endDate.getTime() - (endDate.getTimezoneOffset() * 60000));
-              
-              const formattedStartDate = localStartDate.toISOString().slice(0, 16);
-              const formattedEndDate = localEndDate.toISOString().slice(0, 16);
-              
-                              // Debug info removed
-              
-              return {
-                ...event,
-                startDate: formattedStartDate,
-                endDate: formattedEndDate
-              };
-            } catch (dateError) {
-              console.error("Error formatting existing dates:", dateError);
-              return {
-                ...event,
-                startDate: "",
-                endDate: ""
-              };
-            }
-          }
-          
-          // If event has old date format, convert it
-          if (event.date && !event.startDate) {
-            try {
-              // Debug info removed
-              const eventDate = new Date(event.date);
-              const endDate = new Date(eventDate);
-              endDate.setHours(eventDate.getHours() + 2);
-              
-              // Convert to local timezone for display
-              const localStartDate = new Date(eventDate.getTime() - (eventDate.getTimezoneOffset() * 60000));
-              const localEndDate = new Date(endDate.getTime() - (endDate.getTimezoneOffset() * 60000));
-              
-              const formattedStartDate = localStartDate.toISOString().slice(0, 16);
-              const formattedEndDate = localEndDate.toISOString().slice(0, 16);
-              
-                              // Debug info removed
-              
-              const convertedEvent = {
-                ...event,
-                startDate: formattedStartDate,
-                endDate: formattedEndDate,
-                date: undefined
-              };
-              // Debug info removed
-              return convertedEvent;
-            } catch (dateError) {
-              console.error("Error converting date:", dateError);
-              return {
-                ...event,
-                startDate: "",
-                endDate: ""
-              };
-            }
-          }
-          
-          // If event has no dates, create empty ones
-          if (!event.startDate && !event.endDate && !event.date) {
+        const convertedEvents =
+          program.upcomingEvents?.map((event) => {
             // Debug info removed
-            return {
-              ...event,
-              startDate: "",
-              endDate: "",
-              organizerEmail: event.organizerEmail || ""
-            };
-          }
-          
-          // If event has partial dates, ensure both are set
-          if (event.startDate && !event.endDate) {
-            try {
-              const startDate = new Date(event.startDate);
-              const endDate = new Date(startDate);
-              endDate.setHours(startDate.getHours() + 2);
-              
-              // Convert to local timezone for display
-              const localStartDate = new Date(startDate.getTime() - (startDate.getTimezoneOffset() * 60000));
-              const localEndDate = new Date(endDate.getTime() - (endDate.getTimezoneOffset() * 60000));
-              
-              return {
-                ...event,
-                startDate: localStartDate.toISOString().slice(0, 16),
-                endDate: localEndDate.toISOString().slice(0, 16)
-              };
-            } catch (dateError) {
-              console.error("Error handling partial dates:", dateError);
+
+            // If event already has startDate and endDate, convert them to datetime-local format
+            if (event.startDate && event.endDate) {
+              try {
+                // Debug info removed
+
+                // Convert to datetime-local format (YYYY-MM-DDTHH:MM)
+                const startDate = new Date(event.startDate);
+                const endDate = new Date(event.endDate);
+
+                // Convert UTC to local timezone for display
+                const localStartDate = new Date(
+                  startDate.getTime() - startDate.getTimezoneOffset() * 60000
+                );
+                const localEndDate = new Date(
+                  endDate.getTime() - endDate.getTimezoneOffset() * 60000
+                );
+
+                const formattedStartDate = localStartDate
+                  .toISOString()
+                  .slice(0, 16);
+                const formattedEndDate = localEndDate
+                  .toISOString()
+                  .slice(0, 16);
+
+                // Debug info removed
+
+                return {
+                  ...event,
+                  startDate: formattedStartDate,
+                  endDate: formattedEndDate,
+                };
+              } catch (dateError) {
+                console.error("Error formatting existing dates:", dateError);
+                return {
+                  ...event,
+                  startDate: "",
+                  endDate: "",
+                };
+              }
+            }
+
+            // If event has old date format, convert it
+            if (event.date && !event.startDate) {
+              try {
+                // Debug info removed
+                const eventDate = new Date(event.date);
+                const endDate = new Date(eventDate);
+                endDate.setHours(eventDate.getHours() + 2);
+
+                // Convert to local timezone for display
+                const localStartDate = new Date(
+                  eventDate.getTime() - eventDate.getTimezoneOffset() * 60000
+                );
+                const localEndDate = new Date(
+                  endDate.getTime() - endDate.getTimezoneOffset() * 60000
+                );
+
+                const formattedStartDate = localStartDate
+                  .toISOString()
+                  .slice(0, 16);
+                const formattedEndDate = localEndDate
+                  .toISOString()
+                  .slice(0, 16);
+
+                // Debug info removed
+
+                const convertedEvent = {
+                  ...event,
+                  startDate: formattedStartDate,
+                  endDate: formattedEndDate,
+                  date: undefined,
+                };
+                // Debug info removed
+                return convertedEvent;
+              } catch (dateError) {
+                console.error("Error converting date:", dateError);
+                return {
+                  ...event,
+                  startDate: "",
+                  endDate: "",
+                };
+              }
+            }
+
+            // If event has no dates, create empty ones
+            if (!event.startDate && !event.endDate && !event.date) {
+              // Debug info removed
               return {
                 ...event,
                 startDate: "",
-                endDate: ""
+                endDate: "",
+                organizerEmail: event.organizerEmail || "",
               };
             }
-          }
-          
-          return event;
-        }) || [];
-        
+
+            // If event has partial dates, ensure both are set
+            if (event.startDate && !event.endDate) {
+              try {
+                const startDate = new Date(event.startDate);
+                const endDate = new Date(startDate);
+                endDate.setHours(startDate.getHours() + 2);
+
+                // Convert to local timezone for display
+                const localStartDate = new Date(
+                  startDate.getTime() - startDate.getTimezoneOffset() * 60000
+                );
+                const localEndDate = new Date(
+                  endDate.getTime() - endDate.getTimezoneOffset() * 60000
+                );
+
+                return {
+                  ...event,
+                  startDate: localStartDate.toISOString().slice(0, 16),
+                  endDate: localEndDate.toISOString().slice(0, 16),
+                };
+              } catch (dateError) {
+                console.error("Error handling partial dates:", dateError);
+                return {
+                  ...event,
+                  startDate: "",
+                  endDate: "",
+                };
+              }
+            }
+
+            return event;
+          }) || [];
+
         // Debug info removed
         setValue("upcomingEvents", convertedEvents);
-        
+
         // Debug: Check what was actually set in the form
         setTimeout(() => {
           const formEvents = watch("upcomingEvents");
-                  // Debug info removed
+          // Debug info removed
         }, 100);
       } catch (error) {
         console.error("Error setting upcoming events:", error);
         setValue("upcomingEvents", []);
       }
-      
+
       // Handle thumbnail with error handling
       try {
         if (program.thumbnail && program.thumbnail !== "null") {
@@ -510,10 +585,9 @@ const HypnotherapyPage = () => {
         setThumbnailPreview(null);
         setValue("thumbnail", null);
       }
-      
+
       // Debug info removed
       setShowModal(true);
-      
     } catch (error) {
       console.error("Critical error in openEditModal:", error);
       // Even if there's an error, try to open the modal with basic data
@@ -549,10 +623,8 @@ const HypnotherapyPage = () => {
   // Helper function to strip HTML tags
   const stripHtmlTags = (html) => {
     if (!html) return "";
-    return html.replace(/<[^>]*>/g, '').trim();
+    return html.replace(/<[^>]*>/g, "").trim();
   };
-
-
 
   // Status badge color
   const getStatusColor = (status) => {
@@ -618,11 +690,16 @@ const HypnotherapyPage = () => {
       setValue("upcomingEvents", newEvents);
     }
   };
-
   useEffect(() => {
-    const adminToken = localStorage.getItem('adminToken');
+    const token = Cookies.get("adminToken");
+    if (token) {
+      setUser({ token });
+    }
+  }, []);
+  useEffect(() => {
+    const adminToken = localStorage.getItem("adminToken");
     if (!adminToken) {
-      navigate('/admin/login');
+      navigate("/admin/login");
     } else {
       setAuthChecked(true);
     }
@@ -706,7 +783,7 @@ const HypnotherapyPage = () => {
           margin-bottom: 8px !important;
         }
       `}</style>
-      
+
       <div className="w-full max-w-7xl mx-auto p-4 space-y-6">
         {/* Header */}
         <div className="bg-white rounded-lg shadow-lg p-6">
@@ -771,8 +848,6 @@ const HypnotherapyPage = () => {
           </div>
         </div>
 
-      
-
         {/* Programs List */}
         <div className="space-y-6">
           {programs.map((program) => (
@@ -788,7 +863,9 @@ const HypnotherapyPage = () => {
                   {program.thumbnail && program.thumbnail !== "null" && (
                     <div className="flex-shrink-0">
                       <img
-                        src={`${import.meta.env.VITE_API_Image_Url}${program.thumbnail}`}
+                        src={`${import.meta.env.VITE_API_Image_Url}${
+                          program.thumbnail
+                        }`}
                         alt="Program thumbnail"
                         className="w-16 h-16 object-cover rounded-lg"
                       />
@@ -802,17 +879,17 @@ const HypnotherapyPage = () => {
                       </h3>
                     </div>
                     <p className="text-gray-600 mt-1">{program.subtitle}</p>
-                    
+
                     {/* Display card points in collapsed view */}
                     {expandedProgram !== program._id && program.cardPoints && (
                       <div className="mt-3">
-                        <div 
+                        <div
                           className="prose max-w-none text-gray-700"
-                          dangerouslySetInnerHTML={{ 
-                            __html: Array.isArray(program.cardPoints) 
-                              ? program.cardPoints[0] || '' 
-                              : program.cardPoints || '' 
-                          }} 
+                          dangerouslySetInnerHTML={{
+                            __html: Array.isArray(program.cardPoints)
+                              ? program.cardPoints[0] || ""
+                              : program.cardPoints || "",
+                          }}
                         />
                       </div>
                     )}
@@ -866,7 +943,7 @@ const HypnotherapyPage = () => {
                           </span>
                         </p>
                       </div>
-                      
+
                       {/* Video URL */}
                       {program.videoUrl && (
                         <div className="flex items-center">
@@ -888,7 +965,7 @@ const HypnotherapyPage = () => {
                           </p>
                         </div>
                       )}
-                      
+
                       <div>
                         <div className="flex items-center mb-2">
                           <span className="bg-gray-100 text-[#6E2D79] p-2 rounded-lg mr-3">
@@ -899,20 +976,24 @@ const HypnotherapyPage = () => {
                           </p>
                         </div>
                         <div className="ml-9 space-y-4">
-                          {program.learningSections.map((section, sectionIdx) => (
-                            <div key={sectionIdx}>
-                              <h5 className="font-semibold text-[#6E2D79] mb-2">
-                                {section.title}
-                              </h5>
-                              <div 
-                                className="prose max-w-none text-gray-700"
-                                dangerouslySetInnerHTML={{ __html: section.content }} 
-                              />
-                            </div>
-                          ))}
+                          {program.learningSections.map(
+                            (section, sectionIdx) => (
+                              <div key={sectionIdx}>
+                                <h5 className="font-semibold text-[#6E2D79] mb-2">
+                                  {section.title}
+                                </h5>
+                                <div
+                                  className="prose max-w-none text-gray-700"
+                                  dangerouslySetInnerHTML={{
+                                    __html: section.content,
+                                  }}
+                                />
+                              </div>
+                            )
+                          )}
                         </div>
                       </div>
-                      
+
                       {/* Card Points Display */}
                       <div>
                         <div className="flex items-center mb-2">
@@ -925,16 +1006,19 @@ const HypnotherapyPage = () => {
                         </div>
                         <div className="ml-9 space-y-3">
                           {program.cardPoints.map((point, pointIdx) => {
-                                    // Debug info removed
+                            // Debug info removed
                             return (
-                              <div key={pointIdx} className="bg-gray-50 p-3 rounded-lg">
-                                                              <div 
-                                className="prose max-w-none text-gray-700"
-                                style={{
-                                  lineHeight: '1.6'
-                                }}
-                                dangerouslySetInnerHTML={{ __html: point }} 
-                              />
+                              <div
+                                key={pointIdx}
+                                className="bg-gray-50 p-3 rounded-lg"
+                              >
+                                <div
+                                  className="prose max-w-none text-gray-700"
+                                  style={{
+                                    lineHeight: "1.6",
+                                  }}
+                                  dangerouslySetInnerHTML={{ __html: point }}
+                                />
                               </div>
                             );
                           })}
@@ -963,24 +1047,32 @@ const HypnotherapyPage = () => {
                               <h5 className="font-bold text-[#6E2D79]">
                                 {upcoming.eventName}
                               </h5>
-                                                             <div className="flex flex-col space-y-1">
-                                 <span className="bg-gray-100 text-[#6E2D79] px-3 py-1 rounded-lg text-sm font-medium">
-                                   {new Date(upcoming.startDate).toLocaleDateString('en-US', { 
-                                     month: 'short', 
-                                     day: 'numeric', 
-                                     year: 'numeric' 
-                                   })}
-                                 </span>
-                                 <span className="text-xs text-gray-600">
-                                   {new Date(upcoming.startDate).toLocaleTimeString('en-US', { 
-                                     hour: '2-digit', 
-                                     minute: '2-digit' 
-                                   })} - {new Date(upcoming.endDate).toLocaleTimeString('en-US', { 
-                                     hour: '2-digit', 
-                                     minute: '2-digit' 
-                                   })}
-                                 </span>
-                               </div>
+                              <div className="flex flex-col space-y-1">
+                                <span className="bg-gray-100 text-[#6E2D79] px-3 py-1 rounded-lg text-sm font-medium">
+                                  {new Date(
+                                    upcoming.startDate
+                                  ).toLocaleDateString("en-US", {
+                                    month: "short",
+                                    day: "numeric",
+                                    year: "numeric",
+                                  })}
+                                </span>
+                                <span className="text-xs text-gray-600">
+                                  {new Date(
+                                    upcoming.startDate
+                                  ).toLocaleTimeString("en-US", {
+                                    hour: "2-digit",
+                                    minute: "2-digit",
+                                  })}{" "}
+                                  -{" "}
+                                  {new Date(
+                                    upcoming.endDate
+                                  ).toLocaleTimeString("en-US", {
+                                    hour: "2-digit",
+                                    minute: "2-digit",
+                                  })}
+                                </span>
+                              </div>
                             </div>
                             <div className="mt-4 space-y-3">
                               <div className="flex items-center">
@@ -1005,7 +1097,7 @@ const HypnotherapyPage = () => {
                                   {upcoming.organiser}
                                 </p>
                               </div>
-                                                             {upcoming.organizerEmail && (
+                              {upcoming.organizerEmail && (
                                 <div className="flex items-center">
                                   <span className="text-[#6E2D79] mr-3">
                                     <User className="w-5 h-5" />
@@ -1015,7 +1107,7 @@ const HypnotherapyPage = () => {
                                       Organizer Email:
                                     </span>{" "}
                                     <a
-                                                                             href={`mailto:${upcoming.organizerEmail}`}
+                                      href={`mailto:${upcoming.organizerEmail}`}
                                       className="text-[#6E2D79] hover:text-[#5C2166] hover:underline"
                                     >
                                       {upcoming.organizerEmail}
@@ -1069,9 +1161,9 @@ const HypnotherapyPage = () => {
                   <div className="flex justify-end space-x-4 pt-6 border-t border-gray-200">
                     <button
                       onClick={() => {
-                              // Debug info removed
+                        // Debug info removed
                         openEditModal(program);
-                                                  // Debug info removed
+                        // Debug info removed
                       }}
                       className="bg-[#6E2D79] text-white px-4 py-2 rounded-lg hover:bg-[#5C2166] transition-colors flex items-center space-x-2"
                     >
@@ -1178,9 +1270,12 @@ const HypnotherapyPage = () => {
                   </button>
                 </div>
               </div>
-              
+
               <div className="flex-1 overflow-y-auto">
-                <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-6">
+                <form
+                  onSubmit={handleSubmit(onSubmit)}
+                  className="p-6 space-y-6"
+                >
                   {/* Program Title and Subtitle */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="md:col-span-2">
@@ -1192,8 +1287,8 @@ const HypnotherapyPage = () => {
                           required: "Title is required",
                           minLength: {
                             value: 5,
-                            message: "Title must be at least 5 characters"
-                          }
+                            message: "Title must be at least 5 characters",
+                          },
                         })}
                         className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#6E2D79] focus:border-transparent outline-none ${
                           errors.title ? "border-red-500" : "border-gray-300"
@@ -1216,8 +1311,8 @@ const HypnotherapyPage = () => {
                           required: "Subtitle is required",
                           minLength: {
                             value: 10,
-                            message: "Subtitle must be at least 10 characters"
-                          }
+                            message: "Subtitle must be at least 10 characters",
+                          },
                         })}
                         className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#6E2D79] focus:border-transparent outline-none ${
                           errors.subtitle ? "border-red-500" : "border-gray-300"
@@ -1240,10 +1335,12 @@ const HypnotherapyPage = () => {
                         <Video className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-500" />
                         <input
                           {...register("videoUrl", {
-                            validate: validateVideoUrl
+                            validate: validateVideoUrl,
                           })}
                           className={`w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#6E2D79] focus:border-transparent outline-none ${
-                            errors.videoUrl ? "border-red-500" : "border-gray-300"
+                            errors.videoUrl
+                              ? "border-red-500"
+                              : "border-gray-300"
                           }`}
                           placeholder="https://youtube.com/example"
                         />
@@ -1284,15 +1381,19 @@ const HypnotherapyPage = () => {
                             />
                           </div>
                         )}
-                        {!thumbnailPreview && currentProgram?.thumbnail && currentProgram.thumbnail !== "null" && (
-                          <div className="flex-shrink-0">
-                            <img
-                              src={`${import.meta.env.VITE_API_Image_Url}${currentProgram.thumbnail}`}
-                              alt="Current thumbnail"
-                              className="w-16 h-16 object-cover rounded-lg"
-                            />
-                          </div>
-                        )}
+                        {!thumbnailPreview &&
+                          currentProgram?.thumbnail &&
+                          currentProgram.thumbnail !== "null" && (
+                            <div className="flex-shrink-0">
+                              <img
+                                src={`${import.meta.env.VITE_API_Image_Url}${
+                                  currentProgram.thumbnail
+                                }`}
+                                alt="Current thumbnail"
+                                className="w-16 h-16 object-cover rounded-lg"
+                              />
+                            </div>
+                          )}
                       </div>
                       <p className="mt-2 text-sm text-gray-500">
                         Upload a thumbnail image for this program (optional)
@@ -1328,8 +1429,8 @@ const HypnotherapyPage = () => {
                           required: "Duration is required",
                           pattern: {
                             value: /^[a-zA-Z0-9\s]+$/,
-                            message: "Invalid duration format"
-                          }
+                            message: "Invalid duration format",
+                          },
                         })}
                         className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#6E2D79] focus:border-transparent outline-none ${
                           errors.duration ? "border-red-500" : "border-gray-300"
@@ -1349,7 +1450,7 @@ const HypnotherapyPage = () => {
                       </label>
                       <select
                         {...register("status", {
-                          required: "Status is required"
+                          required: "Status is required",
                         })}
                         className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#6E2D79] focus:border-transparent outline-none ${
                           errors.status ? "border-red-500" : "border-gray-300"
@@ -1401,10 +1502,14 @@ const HypnotherapyPage = () => {
                                       required: "Section title is required",
                                       minLength: {
                                         value: 3,
-                                        message: "Title must be at least 3 characters"
+                                        message:
+                                          "Title must be at least 3 characters",
                                       },
-                                      validate: (value) => 
-                                        validateSectionTitle(value, sectionIndex)
+                                      validate: (value) =>
+                                        validateSectionTitle(
+                                          value,
+                                          sectionIndex
+                                        ),
                                     }
                                   )}
                                   className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#6E2D79] focus:border-transparent outline-none ${
@@ -1427,7 +1532,9 @@ const HypnotherapyPage = () => {
                               </div>
                               <button
                                 type="button"
-                                onClick={() => removeLearningSection(sectionIndex)}
+                                onClick={() =>
+                                  removeLearningSection(sectionIndex)
+                                }
                                 className="text-red-500 hover:text-red-700 ml-4 mt-6"
                                 disabled={
                                   watch("learningSections")?.length <= 1
@@ -1444,14 +1551,23 @@ const HypnotherapyPage = () => {
                               <RichTextEditor
                                 value={section.content || ""}
                                 onChange={(html) => {
-                                  setValue(`learningSections.${sectionIndex}.content`, html);
-                                  trigger(`learningSections.${sectionIndex}.content`);
+                                  setValue(
+                                    `learningSections.${sectionIndex}.content`,
+                                    html
+                                  );
+                                  trigger(
+                                    `learningSections.${sectionIndex}.content`
+                                  );
                                 }}
                                 placeholder="Enter section content..."
                               />
-                              {errors.learningSections?.[sectionIndex]?.content && (
+                              {errors.learningSections?.[sectionIndex]
+                                ?.content && (
                                 <p className="mt-1 text-sm text-red-600">
-                                  {errors.learningSections[sectionIndex].content.message}
+                                  {
+                                    errors.learningSections[sectionIndex]
+                                      .content.message
+                                  }
                                 </p>
                               )}
                             </div>
@@ -1460,7 +1576,7 @@ const HypnotherapyPage = () => {
                       )}
                     </div>
                   </div>
-                  
+
                   {/* Upcoming Events Section */}
                   <div className="space-y-4 pt-8">
                     <div className="flex items-center justify-between border-b border-gray-200 pb-3">
@@ -1484,334 +1600,412 @@ const HypnotherapyPage = () => {
                           No upcoming events scheduled
                         </p>
                         <p className="text-gray-400 text-xs mt-1">
-                          Click "Add Event" to schedule an event for this program
+                          Click "Add Event" to schedule an event for this
+                          program
                         </p>
                       </div>
                     ) : (
                       <div className="space-y-6">
                         {watch("upcomingEvents")?.map((_, index) => (
-                        <div
-                          key={index}
-                          className="bg-gray-50 p-5 rounded-lg border border-gray-200"
-                        >
-                          <div className="flex justify-between items-center mb-4">
-                            <h4 className="font-bold text-[#6E2D79]">
-                              Event #{index + 1}
-                            </h4>
-                            <button
-                              type="button"
-                              onClick={() => removeUpcomingEvent(index)}
-                              className="text-red-500 hover:text-red-700"
-                              disabled={watch("upcomingEvents")?.length === 0}
-                            >
-                              <X className="w-5 h-5" />
-                            </button>
-                          </div>
-
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                            <div>
-                              <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Start Date & Time *
-                              </label>
-                              <div className="relative">
-                                <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-500" />
-                                <input
-                                  type="datetime-local"
-                                  {...register(`upcomingEvents.${index}.startDate`, {
-                                    required: false, // Not required by default
-                                    validate: (value) => 
-                                      validateEventStartDate(value, index)
-                                  })}
-                                  className={`w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#6E2D79] focus:border-transparent outline-none ${
-                                    errors.upcomingEvents?.[index]?.startDate
-                                      ? "border-red-500"
-                                      : "border-gray-300"
-                                  }`}
-                                />
-                              </div>
-                              <div className="text-xs text-gray-500 mt-1">
-                                Debug: {watch(`upcomingEvents.${index}.startDate`) || 'No value'}
-                              </div>
-                              {errors.upcomingEvents?.[index]?.startDate && (
-                                <p className="mt-1 text-sm text-red-600">
-                                  {errors.upcomingEvents[index].startDate.message}
-                                </p>
-                              )}
+                          <div
+                            key={index}
+                            className="bg-gray-50 p-5 rounded-lg border border-gray-200"
+                          >
+                            <div className="flex justify-between items-center mb-4">
+                              <h4 className="font-bold text-[#6E2D79]">
+                                Event #{index + 1}
+                              </h4>
+                              <button
+                                type="button"
+                                onClick={() => removeUpcomingEvent(index)}
+                                className="text-red-500 hover:text-red-700"
+                                disabled={watch("upcomingEvents")?.length === 0}
+                              >
+                                <X className="w-5 h-5" />
+                              </button>
                             </div>
 
-                            <div>
-                              <label className="block text-sm font-medium text-gray-700 mb-1">
-                                End Date & Time *
-                              </label>
-                              <div className="relative">
-                                <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-500" />
-                                <input
-                                  type="datetime-local"
-                                  {...register(`upcomingEvents.${index}.endDate`, {
-                                    required: false, // Not required by default
-                                    validate: (value) => 
-                                      validateEventEndDate(value, index)
-                                  })}
-                                  className={`w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#6E2D79] focus:border-transparent outline-none ${
-                                    errors.upcomingEvents?.[index]?.endDate
-                                      ? "border-red-500"
-                                      : "border-gray-300"
-                                  }`}
-                                />
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                              <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                  Start Date & Time *
+                                </label>
+                                <div className="relative">
+                                  <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-500" />
+                                  <input
+                                    type="datetime-local"
+                                    {...register(
+                                      `upcomingEvents.${index}.startDate`,
+                                      {
+                                        required: false, // Not required by default
+                                        validate: (value) =>
+                                          validateEventStartDate(value, index),
+                                      }
+                                    )}
+                                    className={`w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#6E2D79] focus:border-transparent outline-none ${
+                                      errors.upcomingEvents?.[index]?.startDate
+                                        ? "border-red-500"
+                                        : "border-gray-300"
+                                    }`}
+                                  />
+                                </div>
+                                <div className="text-xs text-gray-500 mt-1">
+                                  Debug:{" "}
+                                  {watch(`upcomingEvents.${index}.startDate`) ||
+                                    "No value"}
+                                </div>
+                                {errors.upcomingEvents?.[index]?.startDate && (
+                                  <p className="mt-1 text-sm text-red-600">
+                                    {
+                                      errors.upcomingEvents[index].startDate
+                                        .message
+                                    }
+                                  </p>
+                                )}
                               </div>
-                              <div className="text-xs text-gray-500 mt-1">
-                                Debug: {watch(`upcomingEvents.${index}.endDate`) || 'No value'}
-                              </div>
-                              {errors.upcomingEvents?.[index]?.endDate && (
-                                <p className="mt-1 text-sm text-red-600">
-                                  {errors.upcomingEvents[index].endDate.message}
-                                </p>
-                              )}
-                            </div>
 
-                            <div className="md:col-span-2">
-                              <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Event Name *
-                              </label>
-                              <input
-                                                                  {...register(
+                              <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                  End Date & Time *
+                                </label>
+                                <div className="relative">
+                                  <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-500" />
+                                  <input
+                                    type="datetime-local"
+                                    {...register(
+                                      `upcomingEvents.${index}.endDate`,
+                                      {
+                                        required: false, // Not required by default
+                                        validate: (value) =>
+                                          validateEventEndDate(value, index),
+                                      }
+                                    )}
+                                    className={`w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#6E2D79] focus:border-transparent outline-none ${
+                                      errors.upcomingEvents?.[index]?.endDate
+                                        ? "border-red-500"
+                                        : "border-gray-300"
+                                    }`}
+                                  />
+                                </div>
+                                <div className="text-xs text-gray-500 mt-1">
+                                  Debug:{" "}
+                                  {watch(`upcomingEvents.${index}.endDate`) ||
+                                    "No value"}
+                                </div>
+                                {errors.upcomingEvents?.[index]?.endDate && (
+                                  <p className="mt-1 text-sm text-red-600">
+                                    {
+                                      errors.upcomingEvents[index].endDate
+                                        .message
+                                    }
+                                  </p>
+                                )}
+                              </div>
+
+                              <div className="md:col-span-2">
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                  Event Name *
+                                </label>
+                                <input
+                                  {...register(
                                     `upcomingEvents.${index}.eventName`,
                                     {
                                       required: false, // Not required by default
                                       minLength: {
                                         value: 5,
-                                        message: "Name must be at least 5 characters"
+                                        message:
+                                          "Name must be at least 5 characters",
                                       },
                                       validate: (value) => {
-                                        const event = watch(`upcomingEvents.${index}`);
+                                        const event = watch(
+                                          `upcomingEvents.${index}`
+                                        );
                                         // If any other field has content, event name becomes required
-                                        if (event.startDate || event.endDate || event.location || event.organiser || event.price || event.paymentLink) {
-                                          if (!value || value.trim().length < 5) {
+                                        if (
+                                          event.startDate ||
+                                          event.endDate ||
+                                          event.location ||
+                                          event.organiser ||
+                                          event.price ||
+                                          event.paymentLink
+                                        ) {
+                                          if (
+                                            !value ||
+                                            value.trim().length < 5
+                                          ) {
                                             return "Event name is required and must be at least 5 characters when adding an event";
                                           }
                                         }
                                         return true;
-                                      }
-                                    }
-                                  )}
-                                className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#6E2D79] focus:border-transparent outline-none ${
-                                  errors.upcomingEvents?.[index]?.eventName
-                                    ? "border-red-500"
-                                    : "border-gray-300"
-                                }`}
-                                placeholder="Introductory Workshop"
-                              />
-                              {errors.upcomingEvents?.[index]?.eventName && (
-                                <p className="mt-1 text-sm text-red-600">
-                                  {
-                                    errors.upcomingEvents[index].eventName
-                                      .message
-                                  }
-                                </p>
-                              )}
-                            </div>
-
-                            <div>
-                              <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Location *
-                              </label>
-                              <div className="relative">
-                                <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-500" />
-                                <input
-                                  {...register(
-                                    `upcomingEvents.${index}.location`,
-                                    {
-                                      required: false, // Not required by default
-                                      minLength: {
-                                        value: 3,
-                                        message: "Location must be at least 3 characters"
                                       },
-                                      validate: (value) => {
-                                        const event = watch(`upcomingEvents.${index}`);
-                                        // If any other field has content, location becomes required
-                                        if (event.startDate || event.endDate || event.eventName || event.organiser || event.price || event.paymentLink) {
-                                          if (!value || value.trim().length < 3) {
-                                            return "Location is required and must be at least 3 characters when adding an event";
-                                          }
-                                        }
-                                        return true;
-                                      }
                                     }
                                   )}
-                                  className={`w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#6E2D79] focus:border-transparent outline-none ${
-                                    errors.upcomingEvents?.[index]?.location
-                                      ? "border-red-500"
-                                      : "border-gray-300"
-                                  }`}
-                                  placeholder="New York, NY"
-                                />
-                              </div>
-                              {errors.upcomingEvents?.[index]?.location && (
-                                <p className="mt-1 text-sm text-red-600">
-                                  {
-                                    errors.upcomingEvents[index].location
-                                      .message
-                                  }
-                                </p>
-                              )}
-                            </div>
-
-                            <div>
-                              <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Organizer *
-                              </label>
-                              <div className="relative">
-                                <User className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-500" />
-                                <input
-                                  {...register(
-                                    `upcomingEvents.${index}.organiser`,
-                                    {
-                                      required: false, // Not required by default
-                                      minLength: {
-                                        value: 3,
-                                        message: "Organizer must be at least 3 characters"
-                                      },
-                                      validate: (value) => {
-                                        const event = watch(`upcomingEvents.${index}`);
-                                        // If any other field has content, organizer becomes required
-                                        if (event.startDate || event.endDate || event.eventName || event.location || event.price || event.paymentLink) {
-                                          if (!value || value.trim().length < 3) {
-                                            return "Organizer is required and must be at least 3 characters when adding an event";
-                                          }
-                                        }
-                                        return true;
-                                      }
-                                    }
-                                  )}
-                                  className={`w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#6E2D79] focus:border-transparent outline-none ${
-                                    errors.upcomingEvents?.[index]?.organiser
-                                      ? "border-red-500"
-                                      : "border-gray-300"
-                                  }`}
-                                  placeholder="Dr. Samantha Reed"
-                                />
-                              </div>
-                              {errors.upcomingEvents?.[index]?.organiser && (
-                                <p className="mt-1 text-sm text-red-600">
-                                  {
-                                    errors.upcomingEvents[index].organiser
-                                      .message
-                                  }
-                                </p>
-                              )}
-                            </div>
-
-                            <div>
-                              <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Organizer Email
-                              </label>
-                              <div className="relative">
-                                <input
-                                  type="email"
-                                                                      {...register(
-                                      `upcomingEvents.${index}.organizerEmail`,
-                                      {
-                                        validate: (value) => validateOrganizerEmail(value, index)
-                                      }
-                                    )}
                                   className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#6E2D79] focus:border-transparent outline-none ${
-                                    errors.upcomingEvents?.[index]?.organizerEmail
+                                    errors.upcomingEvents?.[index]?.eventName
                                       ? "border-red-500"
                                       : "border-gray-300"
                                   }`}
-                                  placeholder="organizer@example.com"
+                                  placeholder="Introductory Workshop"
                                 />
-                              </div>
-                                                              {errors.upcomingEvents?.[index]?.organizerEmail && (
+                                {errors.upcomingEvents?.[index]?.eventName && (
                                   <p className="mt-1 text-sm text-red-600">
-                                    {errors.upcomingEvents[index].organizerEmail.message}
+                                    {
+                                      errors.upcomingEvents[index].eventName
+                                        .message
+                                    }
                                   </p>
                                 )}
-                            </div>
-
-                            <div>
-                              <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Price *
-                              </label>
-                              <div className="relative">
-                                <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-500" />
-                                <input
-                                  {...register(
-                                    `upcomingEvents.${index}.price`,
-                                    {
-                                      required: false, // Not required by default
-                                      validate: (value) => {
-                                        const event = watch(`upcomingEvents.${index}`);
-                                        // If any other field has content, price becomes required
-                                        // if (event.startDate || event.endDate || event.eventName || event.location || event.organiser || event.paymentLink) {
-                                        //   if (!value) {
-                                        //     return "Price is required when adding an event";
-                                        //   }
-                                        //   return validatePrice(value, index);
-                                        // }
-                                        // return true;
-                                      }
-                                    }
-                                  )}
-                                  className={`w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#6E2D79] focus:border-transparent outline-none ${
-                                    errors.upcomingEvents?.[index]?.price
-                                      ? "border-red-500"
-                                      : "border-gray-300"
-                                  }`}
-                                  placeholder="$199"
-                                />
                               </div>
-                              {errors.upcomingEvents?.[index]?.price && (
-                                <p className="mt-1 text-sm text-red-600">
-                                  {errors.upcomingEvents[index].price.message}
-                                </p>
-                              )}
-                            </div>
 
-                            <div>
-                              <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Payment Link *
-                              </label>
-                              <div className="relative">
-                                <LinkIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-500" />
-                                <input
-                                  type="url"
-                                  {...register(
-                                    `upcomingEvents.${index}.paymentLink`,
-                                    {
-                                      required: false, // Not required by default
-                                      validate: (value) => {
-                                        const event = watch(`upcomingEvents.${index}`);
-                                        // If any other field has content, payment link becomes required
-                                        if (event.startDate || event.endDate || event.eventName || event.location || event.organiser || event.price) {
-                                          if (!value) {
-                                            return "Payment link is required when adding an event";
+                              <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                  Location *
+                                </label>
+                                <div className="relative">
+                                  <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-500" />
+                                  <input
+                                    {...register(
+                                      `upcomingEvents.${index}.location`,
+                                      {
+                                        required: false, // Not required by default
+                                        minLength: {
+                                          value: 3,
+                                          message:
+                                            "Location must be at least 3 characters",
+                                        },
+                                        validate: (value) => {
+                                          const event = watch(
+                                            `upcomingEvents.${index}`
+                                          );
+                                          // If any other field has content, location becomes required
+                                          if (
+                                            event.startDate ||
+                                            event.endDate ||
+                                            event.eventName ||
+                                            event.organiser ||
+                                            event.price ||
+                                            event.paymentLink
+                                          ) {
+                                            if (
+                                              !value ||
+                                              value.trim().length < 3
+                                            ) {
+                                              return "Location is required and must be at least 3 characters when adding an event";
+                                            }
                                           }
-                                          return validatePaymentLink(value, index);
-                                        }
-                                        return true;
+                                          return true;
+                                        },
                                       }
+                                    )}
+                                    className={`w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#6E2D79] focus:border-transparent outline-none ${
+                                      errors.upcomingEvents?.[index]?.location
+                                        ? "border-red-500"
+                                        : "border-gray-300"
+                                    }`}
+                                    placeholder="New York, NY"
+                                  />
+                                </div>
+                                {errors.upcomingEvents?.[index]?.location && (
+                                  <p className="mt-1 text-sm text-red-600">
+                                    {
+                                      errors.upcomingEvents[index].location
+                                        .message
                                     }
-                                  )}
-                                  className={`w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#6E2D79] focus:border-transparent outline-none ${
-                                    errors.upcomingEvents?.[index]?.paymentLink
-                                      ? "border-red-500"
-                                      : "border-gray-300"
-                                  }`}
-                                  placeholder="https://payment.example.com/hypno1"
-                                />
+                                  </p>
+                                )}
                               </div>
-                              {errors.upcomingEvents?.[index]?.paymentLink && (
-                                <p className="mt-1 text-sm text-red-600">
-                                  {
-                                    errors.upcomingEvents[index].paymentLink
-                                      .message
-                                  }
-                                </p>
-                              )}
+
+                              <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                  Organizer *
+                                </label>
+                                <div className="relative">
+                                  <User className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-500" />
+                                  <input
+                                    {...register(
+                                      `upcomingEvents.${index}.organiser`,
+                                      {
+                                        required: false, // Not required by default
+                                        minLength: {
+                                          value: 3,
+                                          message:
+                                            "Organizer must be at least 3 characters",
+                                        },
+                                        validate: (value) => {
+                                          const event = watch(
+                                            `upcomingEvents.${index}`
+                                          );
+                                          // If any other field has content, organizer becomes required
+                                          if (
+                                            event.startDate ||
+                                            event.endDate ||
+                                            event.eventName ||
+                                            event.location ||
+                                            event.price ||
+                                            event.paymentLink
+                                          ) {
+                                            if (
+                                              !value ||
+                                              value.trim().length < 3
+                                            ) {
+                                              return "Organizer is required and must be at least 3 characters when adding an event";
+                                            }
+                                          }
+                                          return true;
+                                        },
+                                      }
+                                    )}
+                                    className={`w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#6E2D79] focus:border-transparent outline-none ${
+                                      errors.upcomingEvents?.[index]?.organiser
+                                        ? "border-red-500"
+                                        : "border-gray-300"
+                                    }`}
+                                    placeholder="Dr. Samantha Reed"
+                                  />
+                                </div>
+                                {errors.upcomingEvents?.[index]?.organiser && (
+                                  <p className="mt-1 text-sm text-red-600">
+                                    {
+                                      errors.upcomingEvents[index].organiser
+                                        .message
+                                    }
+                                  </p>
+                                )}
+                              </div>
+
+                              <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                  Organizer Email
+                                </label>
+                                <div className="relative">
+                                  <input
+                                    type="email"
+                                    {...register(
+                                      `upcomingEvents.${index}.organizerEmail`,
+                                      {
+                                        validate: (value) =>
+                                          validateOrganizerEmail(value, index),
+                                      }
+                                    )}
+                                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#6E2D79] focus:border-transparent outline-none ${
+                                      errors.upcomingEvents?.[index]
+                                        ?.organizerEmail
+                                        ? "border-red-500"
+                                        : "border-gray-300"
+                                    }`}
+                                    placeholder="organizer@example.com"
+                                  />
+                                </div>
+                                {errors.upcomingEvents?.[index]
+                                  ?.organizerEmail && (
+                                  <p className="mt-1 text-sm text-red-600">
+                                    {
+                                      errors.upcomingEvents[index]
+                                        .organizerEmail.message
+                                    }
+                                  </p>
+                                )}
+                              </div>
+
+                              <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                  Price *
+                                </label>
+                                <div className="relative">
+                                  <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-500" />
+                                  <input
+                                    {...register(
+                                      `upcomingEvents.${index}.price`,
+                                      {
+                                        required: false, // Not required by default
+                                        validate: (value) => {
+                                          const event = watch(
+                                            `upcomingEvents.${index}`
+                                          );
+                                          // If any other field has content, price becomes required
+                                          // if (event.startDate || event.endDate || event.eventName || event.location || event.organiser || event.paymentLink) {
+                                          //   if (!value) {
+                                          //     return "Price is required when adding an event";
+                                          //   }
+                                          //   return validatePrice(value, index);
+                                          // }
+                                          // return true;
+                                        },
+                                      }
+                                    )}
+                                    className={`w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#6E2D79] focus:border-transparent outline-none ${
+                                      errors.upcomingEvents?.[index]?.price
+                                        ? "border-red-500"
+                                        : "border-gray-300"
+                                    }`}
+                                    placeholder="$199"
+                                  />
+                                </div>
+                                {errors.upcomingEvents?.[index]?.price && (
+                                  <p className="mt-1 text-sm text-red-600">
+                                    {errors.upcomingEvents[index].price.message}
+                                  </p>
+                                )}
+                              </div>
+
+                              <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                  Payment Link *
+                                </label>
+                                <div className="relative">
+                                  <LinkIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-500" />
+                                  <input
+                                    type="url"
+                                    {...register(
+                                      `upcomingEvents.${index}.paymentLink`,
+                                      {
+                                        required: false, // Not required by default
+                                        validate: (value) => {
+                                          const event = watch(
+                                            `upcomingEvents.${index}`
+                                          );
+                                          // If any other field has content, payment link becomes required
+                                          if (
+                                            event.startDate ||
+                                            event.endDate ||
+                                            event.eventName ||
+                                            event.location ||
+                                            event.organiser ||
+                                            event.price
+                                          ) {
+                                            if (!value) {
+                                              return "Payment link is required when adding an event";
+                                            }
+                                            return validatePaymentLink(
+                                              value,
+                                              index
+                                            );
+                                          }
+                                          return true;
+                                        },
+                                      }
+                                    )}
+                                    className={`w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#6E2D79] focus:border-transparent outline-none ${
+                                      errors.upcomingEvents?.[index]
+                                        ?.paymentLink
+                                        ? "border-red-500"
+                                        : "border-gray-300"
+                                    }`}
+                                    placeholder="https://payment.example.com/hypno1"
+                                  />
+                                </div>
+                                {errors.upcomingEvents?.[index]
+                                  ?.paymentLink && (
+                                  <p className="mt-1 text-sm text-red-600">
+                                    {
+                                      errors.upcomingEvents[index].paymentLink
+                                        .message
+                                    }
+                                  </p>
+                                )}
+                              </div>
                             </div>
                           </div>
-                        </div>
                         ))}
                       </div>
                     )}
@@ -1841,7 +2035,9 @@ const HypnotherapyPage = () => {
                         <>
                           <Check className="w-4 h-4" />
                           <span>
-                            {currentProgram ? "Update Program" : "Create Program"}
+                            {currentProgram
+                              ? "Update Program"
+                              : "Create Program"}
                           </span>
                         </>
                       )}

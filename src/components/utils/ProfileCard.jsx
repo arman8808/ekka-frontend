@@ -32,7 +32,7 @@ const ProfileCard = () => {
                 About Facilitator
               </h1>
               <p className="text-xl md:text-2xl text-purple-200 italic font-light border-l-4 border-white/30 pl-4 py-1">
-                Dr Yuvraj Kapadia , Master Facilitator & Transformational Guide
+                Yuvraj Kapadia , Master Facilitator & Transformational Guide
               </p>
             </div>
 

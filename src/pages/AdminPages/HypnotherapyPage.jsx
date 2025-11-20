@@ -30,6 +30,7 @@ import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import RichTextEditor from "../../components/utils/RichTextEditor";
 import Cookies from "js-cookie";
+
 const HypnotherapyPage = () => {
   const navigate = useNavigate();
   const [authChecked, setAuthChecked] = useState(false);
@@ -212,6 +213,21 @@ const HypnotherapyPage = () => {
     }
   };
 
+  // Helper function to format date for datetime-local input (UTC handling)
+  const formatDateForInput = (dateString) => {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    
+    // Get UTC date components to avoid timezone shifts
+    const year = date.getUTCFullYear();
+    const month = String(date.getUTCMonth() + 1).padStart(2, '0');
+    const day = String(date.getUTCDate()).padStart(2, '0');
+    const hours = String(date.getUTCHours()).padStart(2, '0');
+    const minutes = String(date.getUTCMinutes()).padStart(2, '0');
+    
+    return `${year}-${month}-${day}T${hours}:${minutes}`;
+  };
+
   // Fetch programs
   const fetchPrograms = async () => {
     setLoading(true);
@@ -262,6 +278,18 @@ const HypnotherapyPage = () => {
     try {
       setLoading(true);
 
+      // Convert dates to UTC before sending to backend
+      const dataToSend = {
+        ...data,
+        upcomingEvents: data.upcomingEvents
+          ?.filter((event) => hasEventContent(event))
+          .map((event) => ({
+            ...event,
+            startDate: event.startDate ? new Date(event.startDate).toISOString() : null,
+            endDate: event.endDate ? new Date(event.endDate).toISOString() : null,
+          })),
+      };
+
       // Create FormData if we have a thumbnail file
       let formData;
       if (thumbnailFile) {
@@ -269,37 +297,30 @@ const HypnotherapyPage = () => {
         formData.append("thumbnail", thumbnailFile);
 
         // Append all other fields
-        Object.keys(data).forEach((key) => {
+        Object.keys(dataToSend).forEach((key) => {
           if (key !== "thumbnail") {
-            if (Array.isArray(data[key])) {
+            if (Array.isArray(dataToSend[key])) {
               if (key === "upcomingEvents") {
                 // Filter out empty events before sending
-                const filteredEvents = data[key].filter((event) =>
+                const filteredEvents = dataToSend[key].filter((event) =>
                   hasEventContent(event)
                 );
                 formData.append(key, JSON.stringify(filteredEvents));
               } else if (key === "cardPoints") {
                 // For cardPoints, we need to handle HTML content properly
-                formData.append(key, JSON.stringify(data[key]));
+                formData.append(key, JSON.stringify(dataToSend[key]));
               } else {
-                formData.append(key, JSON.stringify(data[key]));
+                formData.append(key, JSON.stringify(dataToSend[key]));
               }
             } else {
-              formData.append(key, data[key]);
+              formData.append(key, dataToSend[key]);
             }
           }
         });
       }
 
-      // Filter out empty events if no thumbnail file
-      if (!thumbnailFile && data.upcomingEvents) {
-        data.upcomingEvents = data.upcomingEvents.filter((event) =>
-          hasEventContent(event)
-        );
-      }
-
       if (currentProgram) {
-        const updateData = thumbnailFile ? formData : data;
+        const updateData = thumbnailFile ? formData : dataToSend;
         await hypnotherapyService.updateProgram(
           currentProgram._id,
           updateData,
@@ -307,7 +328,7 @@ const HypnotherapyPage = () => {
         );
         toast.success("Program updated successfully");
       } else {
-        const createData = thumbnailFile ? formData : data;
+        const createData = thumbnailFile ? formData : dataToSend;
         await hypnotherapyService.createProgram(
           createData,
           thumbnailFile ? true : false
@@ -347,11 +368,8 @@ const HypnotherapyPage = () => {
   // Open edit modal with program data
   const openEditModal = (program) => {
     try {
-      // Debug info removed
-
       // Set current program first
       setCurrentProgram(program);
-      // Debug info removed
 
       // Set basic form values with error handling
       try {
@@ -423,86 +441,33 @@ const HypnotherapyPage = () => {
         setValue("learningSections", [{ title: "", content: "" }]);
       }
 
-      // Handle upcoming events with error handling
+      // Handle upcoming events with UTC timezone fix
       try {
         const convertedEvents =
           program.upcomingEvents?.map((event) => {
-            // Debug info removed
-
-            // If event already has startDate and endDate, convert them to datetime-local format
+            // Use UTC dates directly without timezone conversion
             if (event.startDate && event.endDate) {
-              try {
-                // Debug info removed
-
-                // Convert to datetime-local format (YYYY-MM-DDTHH:MM)
-                const startDate = new Date(event.startDate);
-                const endDate = new Date(event.endDate);
-
-                // Convert UTC to local timezone for display
-                const localStartDate = new Date(
-                  startDate.getTime() - startDate.getTimezoneOffset() * 60000
-                );
-                const localEndDate = new Date(
-                  endDate.getTime() - endDate.getTimezoneOffset() * 60000
-                );
-
-                const formattedStartDate = localStartDate
-                  .toISOString()
-                  .slice(0, 16);
-                const formattedEndDate = localEndDate
-                  .toISOString()
-                  .slice(0, 16);
-
-                // Debug info removed
-
-                return {
-                  ...event,
-                  startDate: formattedStartDate,
-                  endDate: formattedEndDate,
-                };
-              } catch (dateError) {
-                console.error("Error formatting existing dates:", dateError);
-                return {
-                  ...event,
-                  startDate: "",
-                  endDate: "",
-                };
-              }
+              return {
+                ...event,
+                startDate: formatDateForInput(event.startDate),
+                endDate: formatDateForInput(event.endDate),
+              };
             }
 
             // If event has old date format, convert it
             if (event.date && !event.startDate) {
               try {
-                // Debug info removed
                 const eventDate = new Date(event.date);
                 const endDate = new Date(eventDate);
                 endDate.setHours(eventDate.getHours() + 2);
 
-                // Convert to local timezone for display
-                const localStartDate = new Date(
-                  eventDate.getTime() - eventDate.getTimezoneOffset() * 60000
-                );
-                const localEndDate = new Date(
-                  endDate.getTime() - endDate.getTimezoneOffset() * 60000
-                );
-
-                const formattedStartDate = localStartDate
-                  .toISOString()
-                  .slice(0, 16);
-                const formattedEndDate = localEndDate
-                  .toISOString()
-                  .slice(0, 16);
-
-                // Debug info removed
-
-                const convertedEvent = {
+                // Convert to UTC format for input
+                return {
                   ...event,
-                  startDate: formattedStartDate,
-                  endDate: formattedEndDate,
+                  startDate: formatDateForInput(eventDate),
+                  endDate: formatDateForInput(endDate),
                   date: undefined,
                 };
-                // Debug info removed
-                return convertedEvent;
               } catch (dateError) {
                 console.error("Error converting date:", dateError);
                 return {
@@ -515,7 +480,6 @@ const HypnotherapyPage = () => {
 
             // If event has no dates, create empty ones
             if (!event.startDate && !event.endDate && !event.date) {
-              // Debug info removed
               return {
                 ...event,
                 startDate: "",
@@ -531,18 +495,10 @@ const HypnotherapyPage = () => {
                 const endDate = new Date(startDate);
                 endDate.setHours(startDate.getHours() + 2);
 
-                // Convert to local timezone for display
-                const localStartDate = new Date(
-                  startDate.getTime() - startDate.getTimezoneOffset() * 60000
-                );
-                const localEndDate = new Date(
-                  endDate.getTime() - endDate.getTimezoneOffset() * 60000
-                );
-
                 return {
                   ...event,
-                  startDate: localStartDate.toISOString().slice(0, 16),
-                  endDate: localEndDate.toISOString().slice(0, 16),
+                  startDate: formatDateForInput(startDate),
+                  endDate: formatDateForInput(endDate),
                 };
               } catch (dateError) {
                 console.error("Error handling partial dates:", dateError);
@@ -557,14 +513,7 @@ const HypnotherapyPage = () => {
             return event;
           }) || [];
 
-        // Debug info removed
         setValue("upcomingEvents", convertedEvents);
-
-        // Debug: Check what was actually set in the form
-        setTimeout(() => {
-          const formEvents = watch("upcomingEvents");
-          // Debug info removed
-        }, 100);
       } catch (error) {
         console.error("Error setting upcoming events:", error);
         setValue("upcomingEvents", []);
@@ -586,7 +535,6 @@ const HypnotherapyPage = () => {
         setValue("thumbnail", null);
       }
 
-      // Debug info removed
       setShowModal(true);
     } catch (error) {
       console.error("Critical error in openEditModal:", error);
@@ -699,11 +647,6 @@ const HypnotherapyPage = () => {
       setAuthChecked(true);
     }
   }, [navigate]);
-
-  // Monitor modal state changes for debugging
-  useEffect(() => {
-    // Debug info removed
-  }, [showModal, currentProgram]);
 
   // Loading state
   if (loading) {
@@ -1001,7 +944,6 @@ const HypnotherapyPage = () => {
                         </div>
                         <div className="ml-9 space-y-3">
                           {program.cardPoints.map((point, pointIdx) => {
-                            // Debug info removed
                             return (
                               <div
                                 key={pointIdx}
@@ -1156,9 +1098,7 @@ const HypnotherapyPage = () => {
                   <div className="flex justify-end space-x-4 pt-6 border-t border-gray-200">
                     <button
                       onClick={() => {
-                        // Debug info removed
                         openEditModal(program);
-                        // Debug info removed
                       }}
                       className="bg-[#6E2D79] text-white px-4 py-2 rounded-lg hover:bg-[#5C2166] transition-colors flex items-center space-x-2"
                     >
@@ -1256,7 +1196,6 @@ const HypnotherapyPage = () => {
                   </h2>
                   <button
                     onClick={() => {
-                      // Debug info removed
                       setShowModal(false);
                     }}
                     className="text-white hover:text-gray-200 text-2xl"
@@ -1644,11 +1583,6 @@ const HypnotherapyPage = () => {
                                     }`}
                                   />
                                 </div>
-                                <div className="text-xs text-gray-500 mt-1">
-                                  Debug:{" "}
-                                  {watch(`upcomingEvents.${index}.startDate`) ||
-                                    "No value"}
-                                </div>
                                 {errors.upcomingEvents?.[index]?.startDate && (
                                   <p className="mt-1 text-sm text-red-600">
                                     {
@@ -1681,11 +1615,6 @@ const HypnotherapyPage = () => {
                                         : "border-gray-300"
                                     }`}
                                   />
-                                </div>
-                                <div className="text-xs text-gray-500 mt-1">
-                                  Debug:{" "}
-                                  {watch(`upcomingEvents.${index}.endDate`) ||
-                                    "No value"}
                                 </div>
                                 {errors.upcomingEvents?.[index]?.endDate && (
                                   <p className="mt-1 text-sm text-red-600">
